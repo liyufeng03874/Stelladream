@@ -48,7 +48,10 @@
       "Bash(xargs echo \"总提交数：\")",
       "Bash(git commit -m 'Fix search animation: Export full 34K dataset *)",
       "Bash(git commit -m 'Add full dataset export script to fix search animation *)",
-      "Bash(git commit -m 'Replace with full 33,919 star dataset *)"
+      "Bash(git commit -m 'Replace with full 33,919 star dataset *)",
+      "Bash(curl -s http://localhost:5178/api/star-data)",
+      "Bash(curl -s \"http://localhost:8000/api/star-data?limit=1000\")",
+      "Bash(git commit -m 'Fix: Limit API response to 1000 stars to prevent browser freeze *)"
     ]
   }
 }
