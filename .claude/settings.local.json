@@ -21,7 +21,8 @@
       "Bash(npm run *)",
       "Bash(curl -s http://localhost:5173/)",
       "Bash(git commit -m 'Phase 2: 3D star field foundation complete *)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(curl -s http://localhost:5175/)"
     ]
   }
 }
