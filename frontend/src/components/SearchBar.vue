@@ -43,12 +43,13 @@ const handleSearch = () => {
 .search-input-wrapper {
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
-  padding: 0.5rem 1rem;
-  min-width: 400px;
+  padding: 0.6rem 1.2rem;
+  min-width: 450px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .search-input {
@@ -58,7 +59,7 @@ const handleSearch = () => {
   color: white;
   font-size: 1rem;
   outline: none;
-  padding: 0.25rem 0.5rem;
+  padding: 0.3rem 0.5rem;
 }
 
 .search-input::placeholder {
@@ -71,8 +72,11 @@ const handleSearch = () => {
   color: white;
   cursor: pointer;
   font-size: 1.2rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.3rem 0.6rem;
   transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search-button:hover {

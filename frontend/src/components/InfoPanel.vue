@@ -72,17 +72,18 @@ const getDomainName = (domain: string) => domainNames[domain] || domain;
 <style scoped>
 .info-panel {
   position: absolute;
-  top: 6rem;
+  top: 8rem;
   right: 2rem;
-  width: 400px;
-  max-height: calc(100vh - 8rem);
-  background: rgba(0, 0, 0, 0.8);
+  width: 420px;
+  max-height: calc(100vh - 10rem);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
   overflow: hidden;
   z-index: 60;
   animation: slideIn 0.3s ease-out;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes slideIn {
