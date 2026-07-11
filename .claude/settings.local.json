@@ -32,7 +32,8 @@
       "Bash(curl -s http://localhost:5178/)",
       "Bash(git commit -m 'Optimize for immersive starfield experience *)",
       "Bash(git commit -m 'Major performance optimizations to fix lag *)",
-      "Bash(git commit -m 'Reduce to 1000 stars and make them smaller *)"
+      "Bash(git commit -m 'Reduce to 1000 stars and make them smaller *)",
+      "Bash(git commit -m 'Apply star size and count optimizations *)"
     ]
   }
 }
