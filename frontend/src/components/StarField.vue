@@ -118,8 +118,11 @@ const renderStars = () => {
   starSprites.forEach(sprite => scene.remove(sprite));
   starSprites = [];
 
+  // 只渲染前1000个星点以提升性能
+  const starsToRender = props.stars.slice(0, 1000);
+
   // 创建新的星点
-  props.stars.forEach((star) => {
+  starsToRender.forEach((star) => {
     const domainConfig = props.config.domains[star.domain];
     const color = domainConfig?.color || '#ffffff';
 
@@ -127,7 +130,7 @@ const renderStars = () => {
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: Math.min(star.brightness * 0.85, 0.9),
+      opacity: Math.min(star.brightness * 0.7, 0.8),
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false
@@ -135,7 +138,7 @@ const renderStars = () => {
 
     const sprite = new THREE.Sprite(material);
     sprite.position.set(star.x, star.y, star.z);
-    const scale = star.size * 1.2; // 进一步减小
+    const scale = star.size * 0.6; // 大幅减小星点
     sprite.scale.set(scale, scale, 1);
 
     sprite.userData = star;
@@ -144,7 +147,7 @@ const renderStars = () => {
     starSprites.push(sprite);
   });
 
-  console.log(`渲染 ${starSprites.length} 个星点 (${textureCache.size} 个纹理)`);
+  console.log(`渲染 ${starSprites.length} / ${props.stars.length} 个星点 (${textureCache.size} 个纹理)`);
 
   controls.update();
 };
