@@ -13,7 +13,14 @@
       "Bash(curl -s \"http://localhost:9200/unified_rag/_mapping\")",
       "Bash(python -m json.tool)",
       "Bash(curl -s \"http://localhost:9200/unified_rag/_search?size=1\")",
-      "Bash(git commit -m 'Phase 1: Data preparation in progress *)"
+      "Bash(git commit -m 'Phase 1: Data preparation in progress *)",
+      "Bash(curl -s http://localhost:8000/)",
+      "Bash(curl -s http://localhost:8000/api/star-data)",
+      "Bash(python -c \"import sys, json; d=json.load\\(sys.stdin\\); print\\(f\\\\\"Count: {d['count']}\\\\\"\\); print\\(f\\\\\"First star: x={d['data'][0]['x']}, y={d['data'][0]['y']}, z={d['data'][0]['z']}, domain={d['data'][0]['domain']}\\\\\"\\)\")",
+      "Bash(curl -s http://localhost:8000/api/config)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(git commit -m 'Phase 2: 3D star field foundation complete *)"
     ]
   }
 }
