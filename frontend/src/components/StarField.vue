@@ -30,32 +30,25 @@ let mouse: THREE.Vector2;
 let starSprites: THREE.Sprite[] = [];
 let animationId: number;
 
-// 创建星点纹理（高质量）
+// 创建星点纹理（优化性能）
 const createStarTexture = (color: string, size: number): THREE.CanvasTexture => {
   const canvas = document.createElement('canvas');
-  const textureSize = 64; // 提高纹理分辨率
+  const textureSize = 32; // 降低到32px提升性能
   canvas.width = textureSize;
   canvas.height = textureSize;
 
   const ctx = canvas.getContext('2d')!;
   const center = textureSize / 2;
 
-  // 创建更清晰的径向渐变
-  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center * 0.8);
-  gradient.addColorStop(0, color);
-  gradient.addColorStop(0.2, color);
-  gradient.addColorStop(0.5, color + 'dd');
-  gradient.addColorStop(0.8, color + '66');
+  // 简化的径向渐变
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center * 0.7);
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+  gradient.addColorStop(0.1, color);
+  gradient.addColorStop(0.5, color + 'aa');
   gradient.addColorStop(1, 'transparent');
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, textureSize, textureSize);
-
-  // 添加中心亮点
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-  ctx.beginPath();
-  ctx.arc(center, center, 2, 0, Math.PI * 2);
-  ctx.fill();
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
@@ -68,42 +61,42 @@ const initScene = () => {
 
   // Scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000510); // 更深的太空色
-  scene.fog = new THREE.Fog(0x000510, 50, 200); // 调整雾效范围适应新坐标
+  scene.background = new THREE.Color(0x000510);
+  scene.fog = new THREE.Fog(0x000510, 80, 300); // 雾效更远，让远处星点渐隐
 
-  // Camera - 调整位置适应新的坐标范围 [-12.64, 17.85] x [-13.58, 18.08] x [-8.89, 20.46]
+  // Camera - 相机在数据中心，环顾四周
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 500);
-  // 从更远的位置观察，让整个星云可见
-  camera.position.set(0, 0, 80);
-  camera.lookAt(2.5, 2.25, 5.8); // 指向数据中心点
+  camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 500); // 更大的FOV
+  // 相机位于星云中心
+  camera.position.set(2.5, 2.25, 5.8);
+  camera.lookAt(20, 10, 15); // 初始看向某个方向
 
-  // Renderer - 高质量渲染
+  // Renderer - 性能优化
   renderer = new THREE.WebGLRenderer({
-    antialias: true,
+    antialias: false, // 关闭抗锯齿提升性能
     alpha: true,
-    precision: 'highp'
+    powerPreference: 'high-performance'
   });
   renderer.setSize(width, height);
-  renderer.setPixelRatio(window.devicePixelRatio); // 使用完整像素比
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
 
   containerRef.value.appendChild(renderer.domElement);
 
-  // Controls
+  // Controls - 从中心环顾四周
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
-  controls.minDistance = 20;  // 最近距离
-  controls.maxDistance = 150; // 最远距离（调整适应新坐标）
-  controls.target.set(2.5, 2.25, 5.8); // 围绕数据中心旋转
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 1;  // 可以在星云中自由移动
+  controls.maxDistance = 80; // 不要飞太远
+  controls.target.set(20, 10, 15); // 初始目标点
+  controls.enablePan = true; // 允许平移
+  controls.panSpeed = 0.5;
 
   // Raycaster
   raycaster = new THREE.Raycaster();
-  raycaster.params.Sprite = { threshold: 3 };
+  raycaster.params.Sprite = { threshold: 2 };
   mouse = new THREE.Vector2();
-
-  // 不需要灯光，星点自发光
 };
 
 // 渲染星点
@@ -123,7 +116,7 @@ const renderStars = () => {
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: Math.min(star.brightness * 1.2, 1.0), // 提高亮度
+      opacity: Math.min(star.brightness * 0.9, 0.95), // 降低亮度避免过亮
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false
@@ -131,8 +124,8 @@ const renderStars = () => {
 
     const sprite = new THREE.Sprite(material);
     sprite.position.set(star.x, star.y, star.z);
-    // 放大星点尺寸，让它们更明显
-    const scale = star.size * 2.5;
+    // 适中的星点大小
+    const scale = star.size * 1.5;
     sprite.scale.set(scale, scale, 1);
 
     // 保存星点数据到 userData
@@ -144,11 +137,8 @@ const renderStars = () => {
 
   console.log(`渲染 ${starSprites.length} 个星点`);
 
-  // 调整相机看向星点中心（新坐标范围的中心点）
-  if (starSprites.length > 0) {
-    controls.target.set(2.5, 2.25, 5.8);
-    controls.update();
-  }
+  // 不需要调整target，因为相机已经在中心了
+  controls.update();
 };
 
 // 动画循环
