@@ -83,7 +83,7 @@ async def get_star_data(limit: int = 1000):
 @app.post("/api/search")
 async def search(request: SearchRequest) -> SearchResponse:
     """RAG 搜索接口"""
-    from backend.rag_search import get_search_engine
+    from rag_search import get_search_engine
 
     try:
         engine = get_search_engine()
