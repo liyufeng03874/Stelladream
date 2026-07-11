@@ -40,7 +40,14 @@
       "Bash(git push *)",
       "Bash(curl -s -X POST http://localhost:8000/api/search -H 'Content-Type: application/json' -d '{\"query\":\"糖尿病的治疗方法\"}')",
       "Bash(curl -s -X POST http://localhost:8000/api/search -H 'Content-Type: application/json' -d '{\"query\":\"糖尿病\"}')",
-      "Bash(git commit -m 'Implement Phase 4: RAG search visualization *)"
+      "Bash(git commit -m 'Implement Phase 4: RAG search visualization *)",
+      "Bash(where python *)",
+      "Bash(netstat -ano)",
+      "Bash(tasklist)",
+      "Bash(taskkill *)",
+      "Bash(xargs echo \"总提交数：\")",
+      "Bash(git commit -m 'Fix search animation: Export full 34K dataset *)",
+      "Bash(git commit -m 'Add full dataset export script to fix search animation *)"
     ]
   }
 }

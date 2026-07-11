@@ -32,29 +32,51 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   }>();
 
   /**
-   * 创建查询球体
+   * 创建查询球体 — 放在场景中心前方，不贴在相机上
    */
   function createQueryOrb(): THREE.Mesh {
-    const geometry = new THREE.SphereGeometry(2, 16, 16);
+    // 计算场景中心（根据相机 target）
+    const target = controls.target.clone();
+    // 在相机和场景中心之间，偏前 1/4 处放置 query orb
+    const orbPos = new THREE.Vector3().lerp(
+      camera.position,
+      new THREE.Vector3(target.x, target.y + 15, target.z),
+      0.75 // 靠近场景中心
+    );
+
+    // 小尺寸球体，远看是一个光点，不是大网格
+    const geometry = new THREE.SphereGeometry(1.2, 12, 12);
     const material = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.9,
       wireframe: true
     });
     const orb = new THREE.Mesh(geometry, material);
-    orb.position.copy(camera.position);
+    orb.position.copy(orbPos);
     scene.add(orb);
 
-    // 脉冲动画
+    // 脉冲动画 — 幅度减小，不再巨大化
     gsap.to(orb.scale, {
-      x: 1.5,
-      y: 1.5,
-      z: 1.5,
+      x: 1.2,
+      y: 1.2,
+      z: 1.2,
       duration: 0.5,
       yoyo: true,
-      repeat: -1,
-      ease: 'sine.inOut'
+      repeat: 2, // 脉冲 2 次后停止，不是无限循环
+      ease: 'sine.inOut',
+      onComplete: () => {
+        // 脉冲结束后缩小到更小，融入场景
+        gsap.to(orb.scale, {
+          x: 0.8, y: 0.8, z: 0.8,
+          duration: 0.5,
+          ease: 'sine.out'
+        });
+        gsap.to(orb.material, {
+          opacity: 0.6,
+          duration: 0.5
+        });
+      }
     });
 
     return orb;
