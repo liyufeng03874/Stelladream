@@ -69,15 +69,15 @@ const initScene = () => {
   // Scene
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000510); // 更深的太空色
-  scene.fog = new THREE.Fog(0x000510, 200, 800); // 更远的雾效
+  scene.fog = new THREE.Fog(0x000510, 50, 200); // 调整雾效范围适应新坐标
 
-  // Camera - 调整位置让星点分布更均匀
+  // Camera - 调整位置适应新的坐标范围 [-12.64, 17.85] x [-13.58, 18.08] x [-8.89, 20.46]
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
-  // 从更远的位置观察，让星点分散开
-  camera.position.set(0, 0, 250);
-  camera.lookAt(0, 0, 0);
+  camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 500);
+  // 从更远的位置观察，让整个星云可见
+  camera.position.set(0, 0, 80);
+  camera.lookAt(2.5, 2.25, 5.8); // 指向数据中心点
 
   // Renderer - 高质量渲染
   renderer = new THREE.WebGLRenderer({
@@ -94,9 +94,9 @@ const initScene = () => {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
-  controls.minDistance = 50;  // 最近距离
-  controls.maxDistance = 600; // 最远距离
-  controls.target.set(0, 0, 0); // 围绕中心旋转
+  controls.minDistance = 20;  // 最近距离
+  controls.maxDistance = 150; // 最远距离（调整适应新坐标）
+  controls.target.set(2.5, 2.25, 5.8); // 围绕数据中心旋转
 
   // Raycaster
   raycaster = new THREE.Raycaster();
@@ -144,9 +144,9 @@ const renderStars = () => {
 
   console.log(`渲染 ${starSprites.length} 个星点`);
 
-  // 调整相机看向星点中心
+  // 调整相机看向星点中心（新坐标范围的中心点）
   if (starSprites.length > 0) {
-    controls.target.set(0, 0, 0);
+    controls.target.set(2.5, 2.25, 5.8);
     controls.update();
   }
 };
