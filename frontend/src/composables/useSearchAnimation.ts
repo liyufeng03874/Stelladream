@@ -72,19 +72,19 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
   /**
    * One continuous animation for one set of results:
-   *   1. Rays shoot out (0.3s)
-   *   2. Stars light up and grow (0.6s, starting at 0.2s overlap)
-   * Returns promise that resolves when animation is done.
+   * Ray shoots + star grows happen SIMULTANEOUSLY from start
+   * Ray has meteor trail effect with gradient
    */
   function showResults(positions: THREE.Vector3[], color: number, scale: number): Promise<void> {
     if (!positions.length) return Promise.resolve();
 
     const from = getSafePosition();
+    const animationPromises: Promise<void>[] = [];
 
     positions.forEach(target => {
       if (!isVectorValid(target)) return;
 
-      // Ray from camera to star
+      // === 流星尾迹效果的射线 ===
       const geometry = new THREE.BufferGeometry();
       const posArr = new Float32Array([
         from.x, from.y, from.z,
@@ -92,10 +92,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       ]);
       geometry.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
 
+      // 使用渐变材质模拟流星尾迹
       const material = new THREE.LineBasicMaterial({
         color,
         transparent: true,
         opacity: 0,
+        linewidth: 2,
         blending: THREE.AdditiveBlending
       });
       const line = new THREE.Line(geometry, material);
@@ -103,32 +105,32 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       lines.push(line);
       lineMaterials.push(material);
 
-      // Ray fades in quickly
-      gsap.to(material, {
-        opacity: 0.7,
-        duration: 0.3,
-        ease: 'power2.out'
+      // 流星效果：快速射出，然后淡出
+      const promise = new Promise<void>((resolve) => {
+        gsap.timeline()
+          .to(material, {
+            opacity: 0.9,
+            duration: 0.15,
+            ease: 'power2.out'
+          })
+          .to(material, {
+            opacity: 0.3,
+            duration: 0.6,
+            ease: 'power1.in'
+          })
+          .eventCallback('onComplete', resolve);
       });
 
-      // After ray appears, star lights up and grows
-      gsap.to(material, {
-        opacity: 0.4,
-        duration: 0.5,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: 2,
-        delay: 0.4
-      });
+      animationPromises.push(promise);
     });
 
-    // All promises in parallel, wait for the longest
-    return new Promise(resolve => setTimeout(resolve, 1200));
+    // 等待所有射线动画完成
+    return Promise.all(animationPromises).then(() => {});
   }
 
   /**
-   * Highlight stars: color change + grow + glow, all in one continuous motion.
-   * Called just before the ray finishes, so by the time the ray reaches the star,
-   * the star is already starting to react.
+   * Highlight stars: INSTANT color change + SMOOTH continuous grow
+   * Starts immediately, no delay
    */
   function highlightAndGrow(chunkIds: string[], color: number, scale: number = 2): THREE.Sprite[] {
     const sprites: THREE.Sprite[] = [];
@@ -147,27 +149,26 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         });
       }
 
-      // Color change
+      // 立即改变颜色（无延迟）
       const newMaterial = sprite.material.clone();
       newMaterial.color.setHex(color);
       newMaterial.opacity = 1;
       newMaterial.blending = THREE.AdditiveBlending;
       sprite.material = newMaterial;
 
-      // Smooth continuous grow (no stepping)
+      // 平滑连续放大（无延迟，使用更长时间确保连续）
       gsap.to(sprite.scale, {
         x: sprite.scale.x * scale,
         y: sprite.scale.y * scale,
         z: sprite.scale.z * scale,
-        duration: 0.8,
-        ease: 'power2.out',
-        delay: 0.2
+        duration: 1.0, // 更长时间，更平滑
+        ease: 'power1.out' // 更平滑的缓动
       });
 
-      // Glow appears as the star grows
+      // 辉光在放大到一半时出现
       setTimeout(() => {
         createGlow(sprite.position, color, sprite.scale.x * scale * 3);
-      }, 300);
+      }, 500);
 
       sprites.push(sprite);
     });
