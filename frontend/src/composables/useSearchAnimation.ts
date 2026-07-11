@@ -197,27 +197,45 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   }
 
   /**
-   * 相机飞向目标
+   * 相机飞向目标（使用贝塞尔曲线创建弧线飞行）
    */
-  function flyToStar(targetPos: THREE.Vector3, duration: number = 1.5) {
-    // 相机向目标移动，保持合适的观察距离
-    const direction = new THREE.Vector3().subVectors(targetPos, camera.position).normalize();
-    const distance = 50; // 观察距离
-    const newPos = targetPos.clone().add(direction.multiplyScalar(-distance));
+  function flyToStar(targetPos: THREE.Vector3, duration: number = 2.5) {
+    const startPos = camera.position.clone();
+    const distance = startPos.distanceTo(targetPos);
+
+    // 计算弧线中间点（向上抬高）
+    const midPoint = new THREE.Vector3().lerpVectors(startPos, targetPos, 0.5);
+    midPoint.y += distance * 0.3; // 向上抬高30%，形成明显弧线
+
+    // 目标观察位置（目标前方一定距离）
+    const direction = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
+    const finalPos = targetPos.clone().add(direction.multiplyScalar(-30));
+
+    // 创建贝塞尔曲线
+    const curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, finalPos);
+
+    let progress = 0;
+    const startTime = Date.now();
 
     return new Promise<void>(resolve => {
-      gsap.to(camera.position, {
-        x: newPos.x,
-        y: newPos.y,
-        z: newPos.z,
-        duration,
-        ease: 'power2.inOut',
-        onUpdate: () => {
-          controls.target.copy(targetPos);
-          controls.update();
-        },
-        onComplete: () => resolve()
-      });
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        progress = Math.min(elapsed / (duration * 1000), 1);
+
+        // 沿曲线移动
+        const point = curve.getPoint(progress);
+        camera.position.copy(point);
+        camera.lookAt(targetPos);
+        controls.target.copy(targetPos);
+        controls.update();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          resolve();
+        }
+      };
+      animate();
     });
   }
 
