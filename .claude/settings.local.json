@@ -63,7 +63,8 @@
       "Bash(git commit -m 'Fix: Increase API timeout to 120s for model loading *)",
       "Bash(git commit -m 'Fix CORS: Allow all localhost origins *)",
       "Bash(curl -s -X POST http://localhost:8000/api/search -H 'Content-Type: application/json' -H 'Origin: http://localhost:5175' -d '{\"query\":\"感冒\"}')",
-      "Bash(git commit -m 'Complete search function testing and CORS fix *)"
+      "Bash(git commit -m 'Complete search function testing and CORS fix *)",
+      "Bash(git commit -m 'Fix: Add validation for search animation coordinates *)"
     ]
   }
 }

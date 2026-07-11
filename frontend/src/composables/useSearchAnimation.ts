@@ -90,9 +90,18 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     chunkIds.forEach(chunkId => {
       const starInfo = starDataMap.get(chunkId);
-      if (!starInfo) return;
+      if (!starInfo) {
+        console.warn(`[search] chunk_id未找到: ${chunkId}`);
+        return;
+      }
 
       const sprite = starInfo.sprite;
+
+      // 验证sprite有效性
+      if (!sprite || !sprite.position) {
+        console.warn(`[search] sprite无效: ${chunkId}`);
+        return;
+      }
 
       // 保存原始状态
       if (!highlightedSprites.has(sprite)) {
@@ -120,6 +129,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       highlighted.push(sprite);
     });
 
+    console.log(`[search] 高亮了 ${highlighted.length} / ${chunkIds.length} 个星点`);
     return highlighted;
   }
 
