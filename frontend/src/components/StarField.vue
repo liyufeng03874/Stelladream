@@ -37,15 +37,14 @@ let mouse: THREE.Vector2;
 let starSprites: THREE.Sprite[] = [];
 let animationId: number;
 
-// 纹理缓存 - 避免重复创建
+// Texture cache
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
-// chunk_id 到星点的映射
+// chunk_id to star mapping (includes ALL stars, not just rendered ones)
 const starDataMap = new Map<string, { sprite: THREE.Sprite; data: StarPoint }>();
 
-// 创建星点纹理（优化性能 + 缓存）
+// Create star texture with caching
 const createStarTexture = (color: string): THREE.CanvasTexture => {
-  // 检查缓存
   if (textureCache.has(color)) {
     return textureCache.get(color)!;
   }
@@ -58,11 +57,10 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
   const ctx = canvas.getContext('2d')!;
   const center = textureSize / 2;
 
-  // 锐利的核心亮点 + 柔和的光晕
   const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
   gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-  gradient.addColorStop(0.03, 'rgba(255, 255, 255, 0.95)'); // 锐利核心
-  gradient.addColorStop(0.08, color); // 颜色在稍外层
+  gradient.addColorStop(0.03, 'rgba(255, 255, 255, 0.95)');
+  gradient.addColorStop(0.08, color);
   gradient.addColorStop(0.35, color + '88');
   gradient.addColorStop(1, 'transparent');
 
@@ -72,79 +70,69 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
 
-  // 缓存纹理
   textureCache.set(color, texture);
   return texture;
 };
 
-// 初始化场景
+// Init scene
 const initScene = () => {
   if (!containerRef.value) return;
 
-  // Scene
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000005);
-  scene.fog = new THREE.Fog(0x000005, 300, 800); // 远处星星渐隐，营造深空感
+  scene.fog = new THREE.Fog(0x000005, 300, 800);
 
-  // Camera - 窄FOV + 远距离 = 望远镜效果
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 2000); // 25°窄FOV，望远镜视角
+  camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 2000);
 
-  // 相机位置 - 数据中心附近
-  const centerX = 67.1;  // 数据平均值
+  const centerX = 67.1;
   const centerY = 96.2;
   const centerZ = 30.9;
   camera.position.set(centerX, centerY + 50, centerZ + 300);
   camera.lookAt(centerX, centerY, centerZ);
 
-  // Renderer - 性能优化
   renderer = new THREE.WebGLRenderer({
-    antialias: false, // 关闭抗锯齿提升性能
+    antialias: false,
     alpha: true,
     powerPreference: 'high-performance'
   });
   renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
   containerRef.value.appendChild(renderer.domElement);
 
-  // Controls - 远距离观测模式
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = 100;  // 最近100，保持远距离
-  controls.maxDistance = 800;  // 最远800
-  controls.target.set(67.1, 96.2, 30.9);  // 看向数据中心
+  controls.minDistance = 100;
+  controls.maxDistance = 800;
+  controls.target.set(67.1, 96.2, 30.9);
   controls.enablePan = true;
   controls.panSpeed = 0.5;
 
-  // Raycaster
   raycaster = new THREE.Raycaster();
   raycaster.params.Sprite = { threshold: 2 };
   mouse = new THREE.Vector2();
 };
 
-// 渲染星点
+// Render stars
 const renderStars = () => {
   if (!props.stars.length || !props.config.domains) return;
 
-  // 清除旧的星点
+  // Clear old sprites
   starSprites.forEach(sprite => scene.remove(sprite));
   starSprites = [];
-
-  // 只渲染前1000个星点以提升性能
-  const starsToRender = props.stars.slice(0, 1000);
-
-  // 清空映射
   starDataMap.clear();
 
-  // starDataMap 必须包含所有数据（不只是渲染的），否则搜索动画找不到目标
-  props.stars.forEach(star => {
+  // Build mapping for ALL stars (so search can find any of them)
+  // Only render first 1000 for performance
+  const RENDER_LIMIT = 1000;
+
+  props.stars.forEach((star, index) => {
     const domainConfig = props.config.domains[star.domain];
     const color = domainConfig?.color || '#ffffff';
 
-    // 为所有星点创建 Sprite（不一定要添加到场景）
     const texture = createStarTexture(color);
     const material = new THREE.SpriteMaterial({
       map: texture,
@@ -161,22 +149,20 @@ const renderStars = () => {
     sprite.scale.set(scale, scale, 1);
     sprite.userData = star;
 
-    // 所有星点都加入映射表（搜索动画靠这个查找）
+    // Add ALL stars to the map for search lookup
     starDataMap.set(star.chunk_id, { sprite, data: star });
+
+    // Only first 1000 are added to the scene
+    if (index < RENDER_LIMIT) {
+      scene.add(sprite);
+      starSprites.push(sprite);
+    }
   });
 
-  // 只有前1000个添加到场景渲染
-  const spritesToRender = Array.from(starDataMap.values()).slice(0, 1000);
-  spritesToRender.forEach(({ sprite }) => {
-    scene.add(sprite);
-    starSprites.push(sprite);
-  });
-
-  console.log(`渲染 ${starSprites.length} / ${props.stars.length} 个星点 (${textureCache.size} 个纹理)`);
+  console.log(`Rendered ${starSprites.length} / ${props.stars.length} stars, map size: ${starDataMap.size}`);
 
   controls.update();
 
-  // 发送就绪事件
   emit('ready', {
     scene,
     camera,
@@ -186,39 +172,33 @@ const renderStars = () => {
   });
 };
 
-// 动画循环
+// Animation loop
 const animate = () => {
   animationId = requestAnimationFrame(animate);
-
   controls.update();
   renderer.render(scene, camera);
 };
 
-// 处理窗口大小变化
+// Handle resize
 const handleResize = () => {
   if (!containerRef.value) return;
-
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
-
   renderer.setSize(width, height);
 };
 
-// 处理鼠标移动 - 节流优化
+// Mouse move with throttle
 let lastRaycastTime = 0;
-const RAYCAST_THROTTLE = 100; // 每100ms最多一次射线检测
+const RAYCAST_THROTTLE = 100;
 
 const handleMouseMove = (event: MouseEvent) => {
   if (!containerRef.value) return;
-
   const rect = containerRef.value.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-  // 节流射线检测
   const now = Date.now();
   if (now - lastRaycastTime < RAYCAST_THROTTLE) return;
   lastRaycastTime = now;
@@ -227,8 +207,7 @@ const handleMouseMove = (event: MouseEvent) => {
   const intersects = raycaster.intersectObjects(starSprites);
 
   if (intersects.length > 0) {
-    const hoveredStar = intersects[0].object.userData as StarPoint;
-    emit('star-hover', hoveredStar);
+    emit('star-hover', intersects[0].object.userData as StarPoint);
     document.body.style.cursor = 'pointer';
   } else {
     emit('star-hover', null);
@@ -236,10 +215,9 @@ const handleMouseMove = (event: MouseEvent) => {
   }
 };
 
-// 处理点击
+// Handle click
 const handleClick = (event: MouseEvent) => {
   if (!containerRef.value) return;
-
   const rect = containerRef.value.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -248,12 +226,11 @@ const handleClick = (event: MouseEvent) => {
   const intersects = raycaster.intersectObjects(starSprites);
 
   if (intersects.length > 0) {
-    const clickedStar = intersects[0].object.userData as StarPoint;
-    emit('star-click', clickedStar);
+    emit('star-click', intersects[0].object.userData as StarPoint);
   }
 };
 
-// 生命周期
+// Lifecycle
 onMounted(() => {
   initScene();
   renderStars();
@@ -270,13 +247,11 @@ onUnmounted(() => {
   containerRef.value?.removeEventListener('mousemove', handleMouseMove);
   containerRef.value?.removeEventListener('click', handleClick);
 
-  // 清理资源
   starSprites.forEach(sprite => {
     sprite.material.dispose();
     scene.remove(sprite);
   });
 
-  // 清理纹理缓存
   textureCache.forEach(texture => texture.dispose());
   textureCache.clear();
 
@@ -284,7 +259,6 @@ onUnmounted(() => {
   controls.dispose();
 });
 
-// 监听数据变化
 watch(() => props.stars, renderStars, { deep: true });
 </script>
 

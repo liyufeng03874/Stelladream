@@ -65,7 +65,10 @@
       "Bash(curl -s -X POST http://localhost:8000/api/search -H 'Content-Type: application/json' -H 'Origin: http://localhost:5175' -d '{\"query\":\"感冒\"}')",
       "Bash(git commit -m 'Complete search function testing and CORS fix *)",
       "Bash(git commit -m 'Fix: Add validation for search animation coordinates *)",
-      "Bash(git commit -m 'Fix: Validate line coordinates to prevent NaN error *)"
+      "Bash(git commit -m 'Fix: Validate line coordinates to prevent NaN error *)",
+      "Read(//c/Users/Administrator/Desktop/**)",
+      "Read(//c/Users/**)",
+      "Bash(git commit -m 'Fix search animation issues *)"
     ]
   }
 }
