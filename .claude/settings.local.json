@@ -51,7 +51,12 @@
       "Bash(git commit -m 'Replace with full 33,919 star dataset *)",
       "Bash(curl -s http://localhost:5178/api/star-data)",
       "Bash(curl -s \"http://localhost:8000/api/star-data?limit=1000\")",
-      "Bash(git commit -m 'Fix: Limit API response to 1000 stars to prevent browser freeze *)"
+      "Bash(git commit -m 'Fix: Limit API response to 1000 stars to prevent browser freeze *)",
+      "Bash(findstr :8000)",
+      "Bash(findstr LISTENING)",
+      "Bash(curl -s \"http://localhost:8000/api/star-data?limit=100\")",
+      "Bash(curl -s \"http://localhost:8000/api/star-data?limit=10\")",
+      "Bash(git commit -m 'Fix: Remove duplicate 15x coordinate scaling *)"
     ]
   }
 }

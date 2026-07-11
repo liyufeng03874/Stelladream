@@ -91,11 +91,10 @@ const initScene = () => {
   const height = containerRef.value.clientHeight;
   camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 2000); // 25°窄FOV，望远镜视角
 
-  // 相机拉远到300，让星点在视野中收缩成遥远的亮点
-  const scale = 15; // 坐标放大倍数
-  const centerX = 0.92 * scale;
-  const centerY = 1.03 * scale;
-  const centerZ = 3.56 * scale;
+  // 相机位置 - 数据中心附近
+  const centerX = 67.1;  // 数据平均值
+  const centerY = 96.2;
+  const centerZ = 30.9;
   camera.position.set(centerX, centerY + 50, centerZ + 300);
   camera.lookAt(centerX, centerY, centerZ);
 
@@ -116,7 +115,7 @@ const initScene = () => {
   controls.dampingFactor = 0.08;
   controls.minDistance = 100;  // 最近100，保持远距离
   controls.maxDistance = 800;  // 最远800
-  controls.target.set(centerX, centerY, centerZ);
+  controls.target.set(67.1, 96.2, 30.9);  // 看向数据中心
   controls.enablePan = true;
   controls.panSpeed = 0.5;
 
@@ -137,10 +136,10 @@ const renderStars = () => {
   // 只渲染前1000个星点以提升性能
   const starsToRender = props.stars.slice(0, 1000);
 
-  // 坐标放大 + 缩放调整
-  const SCALE = 15; // 放大坐标，拉开星点间距
+  // 清空映射
+  starDataMap.clear();
 
-  // 创建新的星点
+  // 创建新的星点（数据已经放大过15倍，不需要再放大）
   starsToRender.forEach((star) => {
     const domainConfig = props.config.domains[star.domain];
     const color = domainConfig?.color || '#ffffff';
@@ -156,8 +155,8 @@ const renderStars = () => {
     });
 
     const sprite = new THREE.Sprite(material);
-    // 放大坐标，拉开星点间距
-    sprite.position.set(star.x * SCALE, star.y * SCALE, star.z * SCALE);
+    // 直接使用坐标（已在导出时放大过15倍）
+    sprite.position.set(star.x, star.y, star.z);
     // 缩小星点，让远距离下看起来像远处的星星
     const scale = star.size * 0.06;
     sprite.scale.set(scale, scale, 1);
