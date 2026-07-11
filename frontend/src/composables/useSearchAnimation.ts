@@ -1,9 +1,9 @@
 /**
  * Search Animation Composable
  *
- * Each step is a continuous motion:
- *   ray shoots out → star lights up and grows → next step
- * No stepping/PPT effect. Everything flows.
+ * Meteor-style rays: bright head with trailing tail, like shooting stars
+ * flying from your viewpoint to target stars.
+ * ALL groups fire simultaneously with small stagger for visual ripple.
  */
 
 import * as THREE from 'three';
@@ -23,8 +23,6 @@ const FALLBACK_ORIGIN = new THREE.Vector3(0, 100, 300);
 export function useSearchAnimation(context: SearchAnimationContext) {
   const { scene, camera, controls, starSprites, starDataMap } = context;
 
-  let lines: THREE.Line[] = [];
-  let lineMaterials: THREE.Material[] = [];
   let glowSprites: THREE.Sprite[] = [];
   let highlightedSprites = new Map<THREE.Sprite, {
     originalScale: THREE.Vector3;
@@ -35,9 +33,20 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
   }
 
-  function getSafePosition(): THREE.Vector3 {
-    if (isVectorValid(camera.position)) {
-      return camera.position.clone();
+  /**
+   * Get the origin point for meteors.
+   * Uses controls.target (scene center) + offset toward camera, NOT camera.position directly.
+   * This avoids the issue where camera.position is unstable on first render.
+   */
+  function getMeteorOrigin(): THREE.Vector3 {
+    if (isVectorValid(controls.target)) {
+      const center = controls.target.clone();
+      // Offset toward camera direction
+      if (isVectorValid(camera.position)) {
+        const dir = new THREE.Vector3().subVectors(camera.position, center).normalize();
+        return center.add(dir.multiplyScalar(20));
+      }
+      return center.add(new THREE.Vector3(0, 5, 20));
     }
     return FALLBACK_ORIGIN.clone();
   }
@@ -71,67 +80,113 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   }
 
   /**
-   * One continuous animation for one set of results:
-   * Ray shoots + star grows happen SIMULTANEOUSLY from start
-   * Ray has meteor trail effect with gradient
+   * Create a meteor effect: bright head + trailing tail along a curve
    */
-  function showResults(positions: THREE.Vector3[], color: number, scale: number): Promise<void> {
-    if (!positions.length) return Promise.resolve();
+  function createMeteor(from: THREE.Vector3, to: THREE.Vector3, color: number, delayMs: number = 0): Promise<void> {
+    if (!isVectorValid(from) || !isVectorValid(to)) {
+      return Promise.resolve();
+    }
 
-    const from = getSafePosition();
-    const animationPromises: Promise<void>[] = [];
+    const hexColor = new THREE.Color(color);
 
-    positions.forEach(target => {
-      if (!isVectorValid(target)) return;
+    const curvePoints: THREE.Vector3[] = [];
+    const segments = 40;
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      const x = from.x + (to.x - from.x) * t;
+      const z = from.z + (to.z - from.z) * t;
+      const y = from.y + (to.y - from.y) * t + Math.sin(t * Math.PI) * 3;
+      curvePoints.push(new THREE.Vector3(x, y, z));
+    }
+    const curve = new THREE.CatmullRomCurve3(curvePoints);
 
-      // === 流星尾迹效果的射线 ===
-      const geometry = new THREE.BufferGeometry();
-      const posArr = new Float32Array([
-        from.x, from.y, from.z,
-        target.x, target.y, target.z
-      ]);
-      geometry.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-
-      // 使用渐变材质模拟流星尾迹
-      const material = new THREE.LineBasicMaterial({
-        color,
-        transparent: true,
-        opacity: 0,
-        linewidth: 2,
-        blending: THREE.AdditiveBlending
-      });
-      const line = new THREE.Line(geometry, material);
-      scene.add(line);
-      lines.push(line);
-      lineMaterials.push(material);
-
-      // 流星效果：快速射出，然后淡出
-      const promise = new Promise<void>((resolve) => {
-        gsap.timeline()
-          .to(material, {
-            opacity: 0.9,
-            duration: 0.15,
-            ease: 'power2.out'
-          })
-          .to(material, {
-            opacity: 0.3,
-            duration: 0.6,
-            ease: 'power1.in'
-          })
-          .eventCallback('onComplete', resolve);
-      });
-
-      animationPromises.push(promise);
+    // Head: small bright sprite
+    const headCanvas = document.createElement('canvas');
+    headCanvas.width = 16;
+    headCanvas.height = 16;
+    const headCtx = headCanvas.getContext('2d')!;
+    const headGrad = headCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
+    headGrad.addColorStop(0, 'rgba(255,255,255,1)');
+    headGrad.addColorStop(0.4, `rgba(${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)},0.6)`);
+    headGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    headCtx.fillStyle = headGrad;
+    headCtx.fillRect(0, 0, 16, 16);
+    const headTexture = new THREE.CanvasTexture(headCanvas);
+    const headMat = new THREE.SpriteMaterial({
+      map: headTexture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      opacity: 0
     });
+    const head = new THREE.Sprite(headMat);
+    head.scale.set(0.6, 0.6, 1);
+    head.position.copy(from);
+    scene.add(head);
 
-    // 等待所有射线动画完成
-    return Promise.all(animationPromises).then(() => {});
+    // Trail: growing line behind the head
+    const trailMat = new THREE.LineBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending
+    });
+    const trailGeo = new THREE.BufferGeometry();
+    const trail = new THREE.Line(trailGeo, trailMat);
+    scene.add(trail);
+
+    const flightDuration = 0.8;
+
+    return new Promise<void>(resolve => {
+      setTimeout(() => {
+        const startTimeMs = Date.now();
+
+        const update = () => {
+          const t = Math.min((Date.now() - startTimeMs) / (flightDuration * 1000), 1);
+
+          const headPos = curve.getPoint(t);
+          if (isVectorValid(headPos)) {
+            head.position.copy(headPos);
+            head.material.opacity = 1;
+          }
+
+          // Trail: all points from 0 to t
+          const trailSegments = Math.floor(t * segments);
+          if (trailSegments > 0) {
+            const positions: number[] = [];
+            for (let i = 0; i <= trailSegments; i++) {
+              const pt = curvePoints[i];
+              positions.push(pt.x, pt.y, pt.z);
+            }
+            trail.geometry.dispose();
+            trail.geometry = new THREE.BufferGeometry();
+            trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+          }
+          trail.material.opacity = 0.6;
+
+          if (t >= 1) {
+            gsap.to(head.material, { opacity: 0, duration: 0.2 });
+            gsap.to(trail.material, { opacity: 0, duration: 0.4 });
+            setTimeout(() => {
+              scene.remove(head);
+              scene.remove(trail);
+              head.geometry?.dispose();
+              trail.geometry.dispose();
+              head.material.dispose();
+              trail.material.dispose();
+              resolve();
+            }, 400);
+            return;
+          }
+
+          requestAnimationFrame(update);
+        };
+
+        update();
+      }, delayMs);
+    });
   }
 
-  /**
-   * Highlight stars: INSTANT color change + SMOOTH continuous grow
-   * Starts immediately, no delay
-   */
   function highlightAndGrow(chunkIds: string[], color: number, scale: number = 2): THREE.Sprite[] {
     const sprites: THREE.Sprite[] = [];
 
@@ -149,26 +204,24 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         });
       }
 
-      // 立即改变颜色（无延迟）
       const newMaterial = sprite.material.clone();
       newMaterial.color.setHex(color);
       newMaterial.opacity = 1;
       newMaterial.blending = THREE.AdditiveBlending;
       sprite.material = newMaterial;
 
-      // 平滑连续放大（无延迟，使用更长时间确保连续）
       gsap.to(sprite.scale, {
         x: sprite.scale.x * scale,
         y: sprite.scale.y * scale,
         z: sprite.scale.z * scale,
-        duration: 1.0, // 更长时间，更平滑
-        ease: 'power1.out' // 更平滑的缓动
+        duration: 0.8,
+        ease: 'power2.out',
+        delay: 0.3
       });
 
-      // 辉光在放大到一半时出现
       setTimeout(() => {
         createGlow(sprite.position, color, sprite.scale.x * scale * 3);
-      }, 500);
+      }, 400);
 
       sprites.push(sprite);
     });
@@ -177,18 +230,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   }
 
   function cleanup() {
-    lines.forEach(line => {
-      scene.remove(line);
-      line.geometry.dispose();
-    });
-    lines = [];
-
-    lineMaterials.forEach(mat => {
-      gsap.killTweensOf(mat);
-      (mat as THREE.Material).dispose();
-    });
-    lineMaterials = [];
-
     glowSprites.forEach(glow => {
       scene.remove(glow);
       (glow.material as THREE.Material).dispose();
@@ -212,7 +253,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   }
 
   function flyToStar(targetPos: THREE.Vector3, duration: number = 2.0) {
-    const startPos = getSafePosition();
+    // Use actual camera position - this is where the user is looking from
+    const startPos = camera.position.clone();
 
     if (!isVectorValid(targetPos)) {
       console.warn('[search] flyToStar: invalid targetPos', targetPos);
@@ -249,6 +291,39 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     });
   }
 
+  /**
+   * Get a stable emission point for meteors and camera flight.
+   * This is between the camera and scene center, at a comfortable viewing angle.
+   * The key: use this SAME point for both meteor origin AND flight start.
+   */
+  function getEmissionPoint(): THREE.Vector3 {
+    const sceneCenter = isVectorValid(controls.target)
+      ? controls.target.clone()
+      : new THREE.Vector3(67.1, 96.2, 30.9);
+
+    // Between camera and scene center, but lowered to scene height
+    // This gives a side-angle view, not overhead
+    const fromCamera = camera.position.clone();
+    const fromSceneCenter = sceneCenter.clone();
+
+    // X/Z: midpoint between camera and scene
+    const x = (fromCamera.x + fromSceneCenter.x) / 2;
+    const z = (fromCamera.z + fromSceneCenter.z) / 2;
+    // Y: scene height (not camera height)
+    const y = sceneCenter.y + 10;
+
+    return new THREE.Vector3(x, y, z);
+  }
+
+  /**
+   * Shoot meteors from a consistent emission point.
+   */
+  function shootMeteors(positions: THREE.Vector3[], color: number, staggerMs: number = 0): Promise<void[]> {
+    const origin = getEmissionPoint();
+    const promises = positions.map((pos, i) => createMeteor(origin, pos, color, i * staggerMs));
+    return Promise.all(promises);
+  }
+
   async function animateSearch(results: {
     bm25: Array<{ chunk_id: string }>;
     knn: Array<{ chunk_id: string }>;
@@ -266,25 +341,36 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     await new Promise(resolve => setTimeout(resolve, 200));
 
-    // === BM25: ray + grow (continuous) ===
+    // Wait a beat for camera to be in a stable position
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    // Collect all targets and colors
     const bm25Ids = results.bm25.map(r => r.chunk_id);
-    const bm25Sprites = highlightAndGrow(bm25Ids.slice(0, 10), 0xFFD700, 2.2);
-    const bm25Positions = bm25Sprites.map(s => s.position);
-    await showResults(bm25Positions, 0xFFD700, 2.2);
-
-    // === kNN: ray + grow (continuous) ===
     const knnIds = results.knn.map(r => r.chunk_id);
-    const knnSprites = highlightAndGrow(knnIds.slice(0, 10), 0x60A5FA, 2.2);
-    const knnPositions = knnSprites.map(s => s.position);
-    await showResults(knnPositions, 0x60A5FA, 2.2);
-
-    // === RRF: ray + grow (continuous) ===
     const rrfIds = results.rrf_top5.map(r => r.chunk_id);
-    const rrfSprites = highlightAndGrow(rrfIds, 0xA78BFA, 2.8);
-    const rrfPositions = rrfSprites.map(s => s.position);
-    await showResults(rrfPositions, 0xA78BFA, 2.8);
 
-    // === Final: ray + grow + fly seamless ===
+    // Highlight all stars first
+    const bm25Sprites = highlightAndGrow(bm25Ids.slice(0, 10), 0xFFD700, 2.2);
+    const knnSprites = highlightAndGrow(knnIds.slice(0, 10), 0x60A5FA, 2.2);
+    const rrfSprites = highlightAndGrow(rrfIds, 0xA78BFA, 2.8);
+
+    const bm25Positions = bm25Sprites.map(s => s.position);
+    const knnPositions = knnSprites.map(s => s.position);
+    const rrfPositions = rrfSprites.map(s => s.position);
+
+    // ALL meteors fire at once
+    shootMeteors(bm25Positions, 0xFFD700, 50);
+    shootMeteors(knnPositions, 0x60A5FA, 50);
+    shootMeteors(rrfPositions, 0xA78BFA, 50);
+
+    // Wait for all meteors to complete
+    await Promise.all([
+      Promise.all(bm25Positions.map((_, i) => new Promise<void>(r => setTimeout(r, 800 + i * 50)))),
+      Promise.all(knnPositions.map((_, i) => new Promise<void>(r => setTimeout(r, 800 + i * 50)))),
+      Promise.all(rrfPositions.map((_, i) => new Promise<void>(r => setTimeout(r, 800 + i * 50)))),
+    ]);
+
+    // Final: meteor + grow + fly seamless
     if (results.reranker_final) {
       const finalId = results.reranker_final.chunk_id;
       const finalStar = starDataMap.get(finalId);
@@ -312,34 +398,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
       createGlow(finalStar.sprite.position, 0x34D399, 30);
 
-      // Everything starts together
       const flightDuration = 1.8;
 
-      // Ray
-      const from = getSafePosition();
       const targetPos = finalStar.sprite.position;
       if (isVectorValid(targetPos)) {
-        const geo = new THREE.BufferGeometry();
-        const posArr = new Float32Array([
-          from.x, from.y, from.z,
-          targetPos.x, targetPos.y, targetPos.z
-        ]);
-        geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-        const mat = new THREE.LineBasicMaterial({
-          color: 0x34D399,
-          transparent: true,
-          opacity: 0,
-          blending: THREE.AdditiveBlending
-        });
-        const line = new THREE.Line(geo, mat);
-        scene.add(line);
-        lines.push(line);
-        lineMaterials.push(mat);
-
-        gsap.to(mat, { opacity: 0.9, duration: 0.3, ease: 'power2.out' });
+        shootMeteors([targetPos], 0x34D399, 0);
       }
 
-      // Star grows
       gsap.to(finalStar.sprite.scale, {
         x: finalStar.sprite.scale.x * 5,
         y: finalStar.sprite.scale.y * 5,
@@ -348,7 +413,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         ease: 'power3.out'
       });
 
-      // Pulsing glow
       gsap.to(finalStar.sprite.material, {
         opacity: 0.7,
         duration: 0.8,
