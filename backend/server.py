@@ -18,6 +18,8 @@ from pydantic import BaseModel
 
 # 添加 other-world 项目路径以复用 RAG 组件
 sys.path.insert(0, "D:/code/other-world/backend")
+# 添加 Stelladream 自己的 backend 路径
+sys.path.insert(0, str(Path(__file__).parent))
 
 app = FastAPI(title="Stelladream API")
 
@@ -83,7 +85,7 @@ async def get_star_data(limit: int = 1000):
 @app.post("/api/search")
 async def search(request: SearchRequest) -> SearchResponse:
     """RAG 搜索接口"""
-    from rag_search import get_search_engine
+    from backend.rag_search import get_search_engine
 
     try:
         engine = get_search_engine()

@@ -127,7 +127,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
    * 绘制连线
    */
   function drawLines(from: THREE.Vector3, targets: THREE.Vector3[], color: number, opacity: number = 0.6) {
+    // 防止空数组导致 NaN
+    if (!targets.length) return;
+
     targets.forEach(target => {
+      // 验证坐标
+      if (!isFinite(target.x) || !isFinite(target.y) || !isFinite(target.z)) return;
+
       const points = [from.clone(), target.clone()];
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       const material = new THREE.LineBasicMaterial({
@@ -184,8 +190,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
    * 相机飞向目标
    */
   function flyToStar(targetPos: THREE.Vector3, duration: number = 1.5) {
-    const offset = new THREE.Vector3(0, 0, 10);
-    const newPos = targetPos.clone().add(offset);
+    // 相机向目标移动，保持合适的观察距离
+    const direction = new THREE.Vector3().subVectors(targetPos, camera.position).normalize();
+    const distance = 50; // 观察距离
+    const newPos = targetPos.clone().add(direction.multiplyScalar(-distance));
 
     return new Promise<void>(resolve => {
       gsap.to(camera.position, {
@@ -212,15 +220,27 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     rrf_top5: Array<{ chunk_id: string }>;
     reranker_final: { chunk_id: string } | null;
   }) {
+    console.log('[search] animateSearch 开始', {
+      bm25: results.bm25.length,
+      knn: results.knn.length,
+      rrf: results.rrf_top5.length,
+      reranker: results.reranker_final?.chunk_id || null
+    });
+    console.log('[search] starDataMap 大小:', starDataMap.size);
+
     // 清理之前的动画
     cleanup();
 
     // Step 1: 创建查询球体
     queryOrb = createQueryOrb();
+    console.log('[search] Step 1: query orb 创建');
     await new Promise(resolve => setTimeout(resolve, 500));
 
     // Step 2: BM25 召回（黄色）
     const bm25Ids = results.bm25.map(r => r.chunk_id);
+    console.log('[search] Step 2: BM25 IDs:', bm25Ids.slice(0, 3));
+    const bm25Found = bm25Ids.filter(id => starDataMap.has(id));
+    console.log('[search] BM25 找到:', bm25Found.length, '/', bm25Ids.length);
     const bm25Sprites = highlightStars(bm25Ids.slice(0, 10), 0xffff00, 1.8);
 
     const bm25Positions = bm25Sprites.map(s => s.position);
@@ -230,6 +250,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // Step 3: kNN 召回（蓝色）
     const knnIds = results.knn.map(r => r.chunk_id);
+    console.log('[search] Step 3: kNN IDs:', knnIds.slice(0, 3));
+    const knnFound = knnIds.filter(id => starDataMap.has(id));
+    console.log('[search] kNN 找到:', knnFound.length, '/', knnIds.length);
     const knnSprites = highlightStars(knnIds.slice(0, 10), 0x4A9AF5, 1.8);
 
     const knnPositions = knnSprites.map(s => s.position);
@@ -239,6 +262,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // Step 4: RRF Top 5（紫色，更大）
     const rrfIds = results.rrf_top5.map(r => r.chunk_id);
+    console.log('[search] Step 4: RRF IDs:', rrfIds);
+    const rrfFound = rrfIds.filter(id => starDataMap.has(id));
+    console.log('[search] RRF 找到:', rrfFound.length, '/', rrfIds.length);
     highlightStars(rrfIds, 0xa78bfa, 2.5);
 
     await new Promise(resolve => setTimeout(resolve, 800));
@@ -246,11 +272,15 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     // Step 5: Reranker 最终结果（绿色，最大）
     if (results.reranker_final) {
       const finalId = results.reranker_final.chunk_id;
+      console.log('[search] Step 5: Reranker ID:', finalId);
+      const hasFinal = starDataMap.has(finalId);
+      console.log('[search] Reranker 是否在 starDataMap:', hasFinal);
       highlightStars([finalId], 0x2ECC71, 3.5);
 
       // 脉冲动画
       const finalStar = starDataMap.get(finalId);
       if (finalStar) {
+        console.log('[search] 最终星点位置:', finalStar.sprite.position);
         gsap.to(finalStar.sprite.material, {
           opacity: 1,
           duration: 0.3,
@@ -262,7 +292,11 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         await new Promise(resolve => setTimeout(resolve, 600));
 
         // 飞向最终结果
+        console.log('[search] 开始飞向星点...');
         await flyToStar(finalStar.sprite.position, 1.5);
+        console.log('[search] 搜索动画完成');
+      } else {
+        console.warn('[search] Reranker 结果不在 starDataMap 中！');
       }
     }
   }

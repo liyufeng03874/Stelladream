@@ -139,12 +139,13 @@ const renderStars = () => {
   // 清空映射
   starDataMap.clear();
 
-  // 创建新的星点（数据已经放大过15倍，不需要再放大）
-  starsToRender.forEach((star) => {
+  // starDataMap 必须包含所有数据（不只是渲染的），否则搜索动画找不到目标
+  props.stars.forEach(star => {
     const domainConfig = props.config.domains[star.domain];
     const color = domainConfig?.color || '#ffffff';
 
-    const texture = createStarTexture(color); // 使用缓存的纹理
+    // 为所有星点创建 Sprite（不一定要添加到场景）
+    const texture = createStarTexture(color);
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
@@ -155,19 +156,20 @@ const renderStars = () => {
     });
 
     const sprite = new THREE.Sprite(material);
-    // 直接使用坐标（已在导出时放大过15倍）
     sprite.position.set(star.x, star.y, star.z);
-    // 缩小星点，让远距离下看起来像远处的星星
     const scale = star.size * 0.06;
     sprite.scale.set(scale, scale, 1);
-
     sprite.userData = star;
 
+    // 所有星点都加入映射表（搜索动画靠这个查找）
+    starDataMap.set(star.chunk_id, { sprite, data: star });
+  });
+
+  // 只有前1000个添加到场景渲染
+  const spritesToRender = Array.from(starDataMap.values()).slice(0, 1000);
+  spritesToRender.forEach(({ sprite }) => {
     scene.add(sprite);
     starSprites.push(sprite);
-
-    // 添加到映射表
-    starDataMap.set(star.chunk_id, { sprite, data: star });
   });
 
   console.log(`渲染 ${starSprites.length} / ${props.stars.length} 个星点 (${textureCache.size} 个纹理)`);
