@@ -21,10 +21,17 @@ sys.path.insert(0, "D:/code/other-world/backend")
 
 app = FastAPI(title="Stelladream API")
 
-# CORS 配置
+# CORS 配置 — 不能用 * + credentials，必须指定具体域名
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5176",
+        "http://localhost:5177",
+        "http://localhost:5178",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -89,7 +96,12 @@ async def search(request: SearchRequest) -> SearchResponse:
             reranker_final=results["reranker_final"]
         )
     except Exception as e:
-        print(f"检索错误: {e}")
+        import traceback
+        print(f"\n========== 检索错误 ==========")
+        print(f"Query: {request.query}")
+        print(f"Error: {e}")
+        traceback.print_exc()
+        print(f"================================\n")
         raise HTTPException(status_code=500, detail=str(e))
 
 

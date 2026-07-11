@@ -56,7 +56,9 @@
       "Bash(findstr LISTENING)",
       "Bash(curl -s \"http://localhost:8000/api/star-data?limit=100\")",
       "Bash(curl -s \"http://localhost:8000/api/star-data?limit=10\")",
-      "Bash(git commit -m 'Fix: Remove duplicate 15x coordinate scaling *)"
+      "Bash(git commit -m 'Fix: Remove duplicate 15x coordinate scaling *)",
+      "Bash(curl -s -X POST http://localhost:8000/api/search -H \"Content-Type: application/json\" -d '{\"query\":\"test\"}')",
+      "Bash(git commit -m 'Fix: Module import error in search endpoint *)"
     ]
   }
 }
