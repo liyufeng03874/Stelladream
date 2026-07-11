@@ -41,18 +41,19 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
   }
 
   const canvas = document.createElement('canvas');
-  const textureSize = 32;
+  const textureSize = 64;
   canvas.width = textureSize;
   canvas.height = textureSize;
 
   const ctx = canvas.getContext('2d')!;
   const center = textureSize / 2;
 
-  // 简化的径向渐变
-  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center * 0.7);
+  // 锐利的核心亮点 + 柔和的光晕
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
   gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-  gradient.addColorStop(0.1, color);
-  gradient.addColorStop(0.5, color + 'aa');
+  gradient.addColorStop(0.03, 'rgba(255, 255, 255, 0.95)'); // 锐利核心
+  gradient.addColorStop(0.08, color); // 颜色在稍外层
+  gradient.addColorStop(0.35, color + '88');
   gradient.addColorStop(1, 'transparent');
 
   ctx.fillStyle = gradient;
@@ -72,18 +73,21 @@ const initScene = () => {
 
   // Scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000510);
-  scene.fog = new THREE.Fog(0x000510, 60, 150); // 雾效范围适应新距离
+  scene.background = new THREE.Color(0x000005);
+  scene.fog = new THREE.Fog(0x000005, 300, 800); // 远处星星渐隐，营造深空感
 
-  // Camera - 相机在数据中心，但要远离星点
+  // Camera - 窄FOV + 远距离 = 望远镜效果
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 500); // 降低FOV让星点看起来更小
+  camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 2000); // 25°窄FOV，望远镜视角
 
-  // 相机位于星云中心，但距离拉远
-  // 星点平均距中心6.47，最远20，所以相机应该在40-50的距离
-  camera.position.set(0.92, 1.03, 50); // Z轴拉远到50
-  camera.lookAt(0.92, 1.03, 3.56); // 看向星云中心
+  // 相机拉远到300，让星点在视野中收缩成遥远的亮点
+  const scale = 15; // 坐标放大倍数
+  const centerX = 0.92 * scale;
+  const centerY = 1.03 * scale;
+  const centerZ = 3.56 * scale;
+  camera.position.set(centerX, centerY + 50, centerZ + 300);
+  camera.lookAt(centerX, centerY, centerZ);
 
   // Renderer - 性能优化
   renderer = new THREE.WebGLRenderer({
@@ -96,13 +100,13 @@ const initScene = () => {
 
   containerRef.value.appendChild(renderer.domElement);
 
-  // Controls - 从中心环顾四周
+  // Controls - 远距离观测模式
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = 10;  // 最近可以到10
-  controls.maxDistance = 100; // 最远100
-  controls.target.set(0.92, 1.03, 3.56); // 看向星云中心
+  controls.minDistance = 100;  // 最近100，保持远距离
+  controls.maxDistance = 800;  // 最远800
+  controls.target.set(centerX, centerY, centerZ);
   controls.enablePan = true;
   controls.panSpeed = 0.5;
 
@@ -123,6 +127,9 @@ const renderStars = () => {
   // 只渲染前1000个星点以提升性能
   const starsToRender = props.stars.slice(0, 1000);
 
+  // 坐标放大 + 缩放调整
+  const SCALE = 15; // 放大坐标，拉开星点间距
+
   // 创建新的星点
   starsToRender.forEach((star) => {
     const domainConfig = props.config.domains[star.domain];
@@ -132,15 +139,17 @@ const renderStars = () => {
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: Math.min(star.brightness * 0.7, 0.8),
+      opacity: star.brightness,
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false
     });
 
     const sprite = new THREE.Sprite(material);
-    sprite.position.set(star.x, star.y, star.z);
-    const scale = star.size * 0.3; // 更小，因为距离更远了
+    // 放大坐标，拉开星点间距
+    sprite.position.set(star.x * SCALE, star.y * SCALE, star.z * SCALE);
+    // 缩小星点，让远距离下看起来像远处的星星
+    const scale = star.size * 0.06;
     sprite.scale.set(scale, scale, 1);
 
     sprite.userData = star;
