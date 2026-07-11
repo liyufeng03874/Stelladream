@@ -17,6 +17,13 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
   'star-click': [star: StarPoint];
   'star-hover': [star: StarPoint | null];
+  'ready': [context: {
+    scene: THREE.Scene;
+    camera: THREE.Camera;
+    controls: any;
+    starSprites: THREE.Sprite[];
+    starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }>;
+  }];
 }>();
 
 const containerRef = ref<HTMLDivElement>();
@@ -32,6 +39,9 @@ let animationId: number;
 
 // 纹理缓存 - 避免重复创建
 const textureCache = new Map<string, THREE.CanvasTexture>();
+
+// chunk_id 到星点的映射
+const starDataMap = new Map<string, { sprite: THREE.Sprite; data: StarPoint }>();
 
 // 创建星点纹理（优化性能 + 缓存）
 const createStarTexture = (color: string): THREE.CanvasTexture => {
@@ -156,11 +166,23 @@ const renderStars = () => {
 
     scene.add(sprite);
     starSprites.push(sprite);
+
+    // 添加到映射表
+    starDataMap.set(star.chunk_id, { sprite, data: star });
   });
 
   console.log(`渲染 ${starSprites.length} / ${props.stars.length} 个星点 (${textureCache.size} 个纹理)`);
 
   controls.update();
+
+  // 发送就绪事件
+  emit('ready', {
+    scene,
+    camera,
+    controls,
+    starSprites,
+    starDataMap
+  });
 };
 
 // 动画循环

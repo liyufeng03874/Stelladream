@@ -6,6 +6,7 @@
       :config="config"
       @star-click="handleStarClick"
       @star-hover="handleStarHover"
+      @ready="handleStarFieldReady"
     />
 
     <div v-else class="loading">
@@ -35,11 +36,16 @@ import { ref, onMounted } from 'vue';
 import StarField from './components/StarField.vue';
 import SearchBar from './components/SearchBar.vue';
 import InfoPanel from './components/InfoPanel.vue';
-import { getStarData, getConfig, type StarPoint } from './api';
+import { getStarData, getConfig, search, type StarPoint } from './api';
+import { useSearchAnimation } from './composables/useSearchAnimation';
 
 const starData = ref<StarPoint[]>([]);
 const config = ref<any>({});
 const selectedStar = ref<StarPoint | null>(null);
+const isSearching = ref(false);
+
+// 搜索动画上下文
+let searchAnimation: ReturnType<typeof useSearchAnimation> | null = null;
 
 const handleStarClick = (star: StarPoint) => {
   selectedStar.value = star;
@@ -50,8 +56,39 @@ const handleStarHover = (star: StarPoint | null) => {
 };
 
 const handleSearch = async (query: string) => {
-  // TODO: 实现搜索可视化
-  console.log('Search:', query);
+  if (isSearching.value || !searchAnimation) return;
+
+  try {
+    isSearching.value = true;
+    console.log('搜索:', query);
+
+    // 调用后端检索
+    const results = await search(query);
+    console.log('检索结果:', results);
+
+    // 执行搜索动画
+    await searchAnimation.animateSearch(results);
+
+    // 显示最终结果详情
+    if (results.reranker_final) {
+      const finalStar = starData.value.find(
+        s => s.chunk_id === results.reranker_final!.chunk_id
+      );
+      if (finalStar) {
+        selectedStar.value = finalStar;
+      }
+    }
+  } catch (error) {
+    console.error('搜索失败:', error);
+    alert('搜索失败，请检查后端服务');
+  } finally {
+    isSearching.value = false;
+  }
+};
+
+const handleStarFieldReady = (context: any) => {
+  console.log('StarField 就绪，初始化搜索动画');
+  searchAnimation = useSearchAnimation(context);
 };
 
 onMounted(async () => {

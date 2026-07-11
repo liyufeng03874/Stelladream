@@ -73,15 +73,21 @@ async def get_star_data():
 @app.post("/api/search")
 async def search(request: SearchRequest) -> SearchResponse:
     """RAG 搜索接口"""
-    # TODO: 实现 BM25 + kNN + RRF + Reranker 检索流程
-    # 这将在 Phase 4 实现
+    from backend.rag_search import get_search_engine
 
-    return SearchResponse(
-        bm25=[],
-        knn=[],
-        rrf_top5=[],
-        reranker_final=None
-    )
+    try:
+        engine = get_search_engine()
+        results = engine.search(request.query)
+
+        return SearchResponse(
+            bm25=results["bm25"],
+            knn=results["knn"],
+            rrf_top5=results["rrf_top5"],
+            reranker_final=results["reranker_final"]
+        )
+    except Exception as e:
+        print(f"检索错误: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/eval/{domain}")

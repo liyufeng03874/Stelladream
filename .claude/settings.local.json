@@ -36,7 +36,11 @@
       "Bash(git commit -m 'Apply star size and count optimizations *)",
       "Bash(git commit -m 'Fix star distance and full-screen display *)",
       "Bash(git commit -m 'Fix star field to look like real space \\(credit to reviewer\\) *)",
-      "Bash(git commit -m 'Apply final visual adjustments from expert review *)"
+      "Bash(git commit -m 'Apply final visual adjustments from expert review *)",
+      "Bash(git push *)",
+      "Bash(curl -s -X POST http://localhost:8000/api/search -H 'Content-Type: application/json' -d '{\"query\":\"糖尿病的治疗方法\"}')",
+      "Bash(curl -s -X POST http://localhost:8000/api/search -H 'Content-Type: application/json' -d '{\"query\":\"糖尿病\"}')",
+      "Bash(git commit -m 'Implement Phase 4: RAG search visualization *)"
     ]
   }
 }
