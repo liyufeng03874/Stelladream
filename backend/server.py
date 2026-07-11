@@ -23,18 +23,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 app = FastAPI(title="Stelladream API")
 
-# CORS 配置 — 不能用 * + credentials，必须指定具体域名
+# CORS 配置
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
-        "http://localhost:5176",
-        "http://localhost:5177",
-        "http://localhost:5178",
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
