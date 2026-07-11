@@ -59,8 +59,8 @@ async def root():
 
 
 @app.get("/api/star-data")
-async def get_star_data(limit: int = 1000):
-    """获取星图数据（限制返回数量）"""
+async def get_star_data(limit: int = 0):
+    """获取星图数据（limit=0 表示返回全部）"""
     data_path = Path(__file__).parent.parent / "data" / "star_data.json"
 
     if not data_path.exists():
@@ -69,10 +69,13 @@ async def get_star_data(limit: int = 1000):
     with open(data_path, "r", encoding="utf-8") as f:
         star_data = json.load(f)
 
-    # 只返回前N个星点，避免传输过大
-    limited_data = star_data[:limit]
+    # limit=0 返回全部数据
+    if limit <= 0:
+        return_data = star_data
+    else:
+        return_data = star_data[:limit]
 
-    return {"count": len(star_data), "data": limited_data, "displayed": len(limited_data)}
+    return {"count": len(star_data), "data": return_data, "displayed": len(return_data)}
 
 
 @app.post("/api/search")

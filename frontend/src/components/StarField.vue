@@ -125,11 +125,8 @@ const renderStars = () => {
   starSprites = [];
   starDataMap.clear();
 
-  // Build mapping for ALL stars (so search can find any of them)
-  // Only render first 1000 for performance
-  const RENDER_LIMIT = 1000;
-
-  props.stars.forEach((star, index) => {
+  // Build mapping and render ALL stars
+  props.stars.forEach((star) => {
     const domainConfig = props.config.domains[star.domain];
     const color = domainConfig?.color || '#ffffff';
 
@@ -149,14 +146,10 @@ const renderStars = () => {
     sprite.scale.set(scale, scale, 1);
     sprite.userData = star;
 
-    // Add ALL stars to the map for search lookup
-    starDataMap.set(star.chunk_id, { sprite, data: star });
+    scene.add(sprite);
+    starSprites.push(sprite);
 
-    // Only first 1000 are added to the scene
-    if (index < RENDER_LIMIT) {
-      scene.add(sprite);
-      starSprites.push(sprite);
-    }
+    starDataMap.set(star.chunk_id, { sprite, data: star });
   });
 
   console.log(`Rendered ${starSprites.length} / ${props.stars.length} stars, map size: ${starDataMap.size}`);

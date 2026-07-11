@@ -1,11 +1,9 @@
 /**
- * 搜索动画 Composable
+ * Search Animation Composable
  *
- * 负责 RAG 检索过程的 3D 可视化：
- * 1. BM25 召回高亮
- * 2. kNN 召回高亮
- * 3. RRF 融合动画
- * 4. Reranker 最终结果
+ * Each step is a continuous motion:
+ *   ray shoots out → star lights up and grows → next step
+ * No stepping/PPT effect. Everything flows.
  */
 
 import * as THREE from 'three';
@@ -20,90 +18,128 @@ interface SearchAnimationContext {
   starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }>;
 }
 
+const FALLBACK_ORIGIN = new THREE.Vector3(0, 100, 300);
+
 export function useSearchAnimation(context: SearchAnimationContext) {
   const { scene, camera, controls, starSprites, starDataMap } = context;
 
-  // 动画对象存储
-  let queryOrb: THREE.Mesh | null = null;
   let lines: THREE.Line[] = [];
+  let lineMaterials: THREE.Material[] = [];
+  let glowSprites: THREE.Sprite[] = [];
   let highlightedSprites = new Map<THREE.Sprite, {
     originalScale: THREE.Vector3;
     originalMaterial: THREE.SpriteMaterial;
   }>();
 
-  /**
-   * 创建查询球体 — 放在场景中心前方，不贴在相机上
-   */
-  function createQueryOrb(): THREE.Mesh {
-    // 计算场景中心（根据相机 target）
-    const target = controls.target.clone();
-    // 在相机和场景中心之间，偏前 1/4 处放置 query orb
-    const orbPos = new THREE.Vector3().lerp(
-      camera.position,
-      new THREE.Vector3(target.x, target.y + 15, target.z),
-      0.75 // 靠近场景中心
-    );
+  function isVectorValid(v: THREE.Vector3): boolean {
+    return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
+  }
 
-    // 小尺寸球体，远看是一个光点，不是大网格
-    const geometry = new THREE.SphereGeometry(1.2, 12, 12);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+  function getSafePosition(): THREE.Vector3 {
+    if (isVectorValid(camera.position)) {
+      return camera.position.clone();
+    }
+    return FALLBACK_ORIGIN.clone();
+  }
+
+  function createGlow(position: THREE.Vector3, color: number, size: number): THREE.Sprite {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d')!;
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    const hexColor = new THREE.Color(color);
+    gradient.addColorStop(0, `rgba(${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)},0.8)`);
+    gradient.addColorStop(0.4, `rgba(${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)},0.3)`);
+    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 64, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({
+      map: texture,
       transparent: true,
-      opacity: 0.9,
-      wireframe: true
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     });
-    const orb = new THREE.Mesh(geometry, material);
-    orb.position.copy(orbPos);
-    scene.add(orb);
-
-    // 脉冲动画 — 幅度减小，不再巨大化
-    gsap.to(orb.scale, {
-      x: 1.2,
-      y: 1.2,
-      z: 1.2,
-      duration: 0.5,
-      yoyo: true,
-      repeat: 2, // 脉冲 2 次后停止，不是无限循环
-      ease: 'sine.inOut',
-      onComplete: () => {
-        // 脉冲结束后缩小到更小，融入场景
-        gsap.to(orb.scale, {
-          x: 0.8, y: 0.8, z: 0.8,
-          duration: 0.5,
-          ease: 'sine.out'
-        });
-        gsap.to(orb.material, {
-          opacity: 0.6,
-          duration: 0.5
-        });
-      }
-    });
-
-    return orb;
+    const glow = new THREE.Sprite(material);
+    glow.position.copy(position);
+    glow.scale.set(size, size, 1);
+    scene.add(glow);
+    glowSprites.push(glow);
+    return glow;
   }
 
   /**
-   * 高亮星点
+   * One continuous animation for one set of results:
+   *   1. Rays shoot out (0.3s)
+   *   2. Stars light up and grow (0.6s, starting at 0.2s overlap)
+   * Returns promise that resolves when animation is done.
    */
-  function highlightStars(chunkIds: string[], color: number, scale: number = 2) {
-    const highlighted: THREE.Sprite[] = [];
+  function showResults(positions: THREE.Vector3[], color: number, scale: number): Promise<void> {
+    if (!positions.length) return Promise.resolve();
+
+    const from = getSafePosition();
+
+    positions.forEach(target => {
+      if (!isVectorValid(target)) return;
+
+      // Ray from camera to star
+      const geometry = new THREE.BufferGeometry();
+      const posArr = new Float32Array([
+        from.x, from.y, from.z,
+        target.x, target.y, target.z
+      ]);
+      geometry.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+
+      const material = new THREE.LineBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending
+      });
+      const line = new THREE.Line(geometry, material);
+      scene.add(line);
+      lines.push(line);
+      lineMaterials.push(material);
+
+      // Ray fades in quickly
+      gsap.to(material, {
+        opacity: 0.7,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+
+      // After ray appears, star lights up and grows
+      gsap.to(material, {
+        opacity: 0.4,
+        duration: 0.5,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: 2,
+        delay: 0.4
+      });
+    });
+
+    // All promises in parallel, wait for the longest
+    return new Promise(resolve => setTimeout(resolve, 1200));
+  }
+
+  /**
+   * Highlight stars: color change + grow + glow, all in one continuous motion.
+   * Called just before the ray finishes, so by the time the ray reaches the star,
+   * the star is already starting to react.
+   */
+  function highlightAndGrow(chunkIds: string[], color: number, scale: number = 2): THREE.Sprite[] {
+    const sprites: THREE.Sprite[] = [];
 
     chunkIds.forEach(chunkId => {
       const starInfo = starDataMap.get(chunkId);
-      if (!starInfo) {
-        console.warn(`[search] chunk_id未找到: ${chunkId}`);
-        return;
-      }
+      if (!starInfo) return;
 
       const sprite = starInfo.sprite;
+      if (!sprite || !isVectorValid(sprite.position)) return;
 
-      // 验证sprite有效性
-      if (!sprite || !sprite.position) {
-        console.warn(`[search] sprite无效: ${chunkId}`);
-        return;
-      }
-
-      // 保存原始状态
       if (!highlightedSprites.has(sprite)) {
         highlightedSprites.set(sprite, {
           originalScale: sprite.scale.clone(),
@@ -111,81 +147,59 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         });
       }
 
-      // 创建新材质（高亮）
+      // Color change
       const newMaterial = sprite.material.clone();
       newMaterial.color.setHex(color);
-      newMaterial.opacity = Math.min(newMaterial.opacity * 1.5, 1);
+      newMaterial.opacity = 1;
+      newMaterial.blending = THREE.AdditiveBlending;
       sprite.material = newMaterial;
 
-      // 放大
+      // Smooth continuous grow (no stepping)
       gsap.to(sprite.scale, {
         x: sprite.scale.x * scale,
         y: sprite.scale.y * scale,
         z: sprite.scale.z * scale,
-        duration: 0.3,
-        ease: 'back.out'
+        duration: 0.8,
+        ease: 'power2.out',
+        delay: 0.2
       });
 
-      highlighted.push(sprite);
+      // Glow appears as the star grows
+      setTimeout(() => {
+        createGlow(sprite.position, color, sprite.scale.x * scale * 3);
+      }, 300);
+
+      sprites.push(sprite);
     });
 
-    console.log(`[search] 高亮了 ${highlighted.length} / ${chunkIds.length} 个星点`);
-    return highlighted;
+    return sprites;
   }
 
-  /**
-   * 绘制连线
-   */
-  function drawLines(from: THREE.Vector3, targets: THREE.Vector3[], color: number, opacity: number = 0.6) {
-    // 防止空数组导致 NaN
-    if (!targets.length) return;
-
-    targets.forEach(target => {
-      // 验证坐标
-      if (!isFinite(target.x) || !isFinite(target.y) || !isFinite(target.z)) return;
-
-      const points = [from.clone(), target.clone()];
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      const material = new THREE.LineBasicMaterial({
-        color,
-        transparent: true,
-        opacity: 0
-      });
-      const line = new THREE.Line(geometry, material);
-      scene.add(line);
-      lines.push(line);
-
-      // 渐显动画
-      gsap.to(material, {
-        opacity,
-        duration: 0.3,
-        ease: 'sine.out'
-      });
-    });
-  }
-
-  /**
-   * 清理动画对象
-   */
   function cleanup() {
-    // 移除查询球体
-    if (queryOrb) {
-      gsap.killTweensOf(queryOrb.scale);
-      scene.remove(queryOrb);
-      queryOrb = null;
-    }
-
-    // 移除连线
     lines.forEach(line => {
       scene.remove(line);
       line.geometry.dispose();
-      (line.material as THREE.Material).dispose();
     });
     lines = [];
 
-    // 恢复星点状态
+    lineMaterials.forEach(mat => {
+      gsap.killTweensOf(mat);
+      (mat as THREE.Material).dispose();
+    });
+    lineMaterials = [];
+
+    glowSprites.forEach(glow => {
+      scene.remove(glow);
+      (glow.material as THREE.Material).dispose();
+      if (glow.material instanceof THREE.SpriteMaterial && glow.material.map) {
+        glow.material.map.dispose();
+      }
+    });
+    glowSprites = [];
+
     highlightedSprites.forEach((original, sprite) => {
       sprite.material = original.originalMaterial;
+      gsap.killTweensOf(sprite.scale);
       gsap.to(sprite.scale, {
         x: original.originalScale.x,
         y: original.originalScale.y,
@@ -196,141 +210,155 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     highlightedSprites.clear();
   }
 
-  /**
-   * 相机飞向目标（使用贝塞尔曲线创建弧线飞行）
-   */
-  function flyToStar(targetPos: THREE.Vector3, duration: number = 2.5) {
-    const startPos = camera.position.clone();
-    const distance = startPos.distanceTo(targetPos);
+  function flyToStar(targetPos: THREE.Vector3, duration: number = 2.0) {
+    const startPos = getSafePosition();
 
-    // 计算弧线中间点（向上抬高）
-    const midPoint = new THREE.Vector3().lerpVectors(startPos, targetPos, 0.5);
-    midPoint.y += distance * 0.3; // 向上抬高30%，形成明显弧线
+    if (!isVectorValid(targetPos)) {
+      console.warn('[search] flyToStar: invalid targetPos', targetPos);
+      return Promise.resolve();
+    }
 
-    // 目标观察位置（目标前方一定距离）
-    const direction = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
-    const finalPos = targetPos.clone().add(direction.multiplyScalar(-30));
+    const dir = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
+    const finalCamPos = targetPos.clone().add(dir.clone().multiplyScalar(-30));
 
-    // 创建贝塞尔曲线
-    const curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, finalPos);
+    const midPoint = new THREE.Vector3().lerpVectors(startPos, finalCamPos, 0.5);
+    midPoint.y += Math.min(15, Math.abs(finalCamPos.y - startPos.y) * 0.2);
 
-    let progress = 0;
-    const startTime = Date.now();
+    const curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, finalCamPos);
 
     return new Promise<void>(resolve => {
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        progress = Math.min(elapsed / (duration * 1000), 1);
+      const startTime = Date.now();
+      const durationMs = duration * 1000;
 
-        // 沿曲线移动
-        const point = curve.getPoint(progress);
+      const update = () => {
+        const t = Math.min((Date.now() - startTime) / durationMs, 1);
+        const point = curve.getPoint(t);
         camera.position.copy(point);
         camera.lookAt(targetPos);
-        controls.target.copy(targetPos);
-        controls.update();
 
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
+        if (t >= 1) {
           resolve();
+          return;
         }
+
+        requestAnimationFrame(update);
       };
-      animate();
+
+      update();
     });
   }
 
-  /**
-   * 执行完整搜索动画
-   */
   async function animateSearch(results: {
     bm25: Array<{ chunk_id: string }>;
     knn: Array<{ chunk_id: string }>;
     rrf_top5: Array<{ chunk_id: string }>;
     reranker_final: { chunk_id: string } | null;
   }) {
-    console.log('[search] animateSearch 开始', {
+    console.log('[search] animateSearch start', {
       bm25: results.bm25.length,
       knn: results.knn.length,
       rrf: results.rrf_top5.length,
       reranker: results.reranker_final?.chunk_id || null
     });
-    console.log('[search] starDataMap 大小:', starDataMap.size);
 
-    // 清理之前的动画
     cleanup();
 
-    // Step 1: 创建查询球体
-    queryOrb = createQueryOrb();
-    console.log('[search] Step 1: query orb 创建');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 200));
 
-    // Step 2: BM25 召回（黄色）
+    // === BM25: ray + grow (continuous) ===
     const bm25Ids = results.bm25.map(r => r.chunk_id);
-    console.log('[search] Step 2: BM25 IDs:', bm25Ids.slice(0, 3));
-    const bm25Found = bm25Ids.filter(id => starDataMap.has(id));
-    console.log('[search] BM25 找到:', bm25Found.length, '/', bm25Ids.length);
-    const bm25Sprites = highlightStars(bm25Ids.slice(0, 10), 0xffff00, 1.8);
-
+    const bm25Sprites = highlightAndGrow(bm25Ids.slice(0, 10), 0xFFD700, 2.2);
     const bm25Positions = bm25Sprites.map(s => s.position);
-    drawLines(queryOrb.position, bm25Positions, 0xffff00, 0.4);
+    await showResults(bm25Positions, 0xFFD700, 2.2);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Step 3: kNN 召回（蓝色）
+    // === kNN: ray + grow (continuous) ===
     const knnIds = results.knn.map(r => r.chunk_id);
-    console.log('[search] Step 3: kNN IDs:', knnIds.slice(0, 3));
-    const knnFound = knnIds.filter(id => starDataMap.has(id));
-    console.log('[search] kNN 找到:', knnFound.length, '/', knnIds.length);
-    const knnSprites = highlightStars(knnIds.slice(0, 10), 0x4A9AF5, 1.8);
-
+    const knnSprites = highlightAndGrow(knnIds.slice(0, 10), 0x60A5FA, 2.2);
     const knnPositions = knnSprites.map(s => s.position);
-    drawLines(queryOrb.position, knnPositions, 0x4A9AF5, 0.6);
+    await showResults(knnPositions, 0x60A5FA, 2.2);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Step 4: RRF Top 5（紫色，更大）
+    // === RRF: ray + grow (continuous) ===
     const rrfIds = results.rrf_top5.map(r => r.chunk_id);
-    console.log('[search] Step 4: RRF IDs:', rrfIds);
-    const rrfFound = rrfIds.filter(id => starDataMap.has(id));
-    console.log('[search] RRF 找到:', rrfFound.length, '/', rrfIds.length);
-    highlightStars(rrfIds, 0xa78bfa, 2.5);
+    const rrfSprites = highlightAndGrow(rrfIds, 0xA78BFA, 2.8);
+    const rrfPositions = rrfSprites.map(s => s.position);
+    await showResults(rrfPositions, 0xA78BFA, 2.8);
 
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    // Step 5: Reranker 最终结果（绿色，最大）
+    // === Final: ray + grow + fly seamless ===
     if (results.reranker_final) {
       const finalId = results.reranker_final.chunk_id;
-      console.log('[search] Step 5: Reranker ID:', finalId);
-      const hasFinal = starDataMap.has(finalId);
-      console.log('[search] Reranker 是否在 starDataMap:', hasFinal);
-      highlightStars([finalId], 0x2ECC71, 3.5);
-
-      // 脉冲动画
       const finalStar = starDataMap.get(finalId);
-      if (finalStar) {
-        console.log('[search] 最终星点位置:', finalStar.sprite.position);
-        gsap.to(finalStar.sprite.material, {
-          opacity: 1,
-          duration: 0.3,
-          yoyo: true,
-          repeat: 3,
-          ease: 'sine.inOut'
-        });
 
-        await new Promise(resolve => setTimeout(resolve, 600));
-
-        // 飞向最终结果
-        console.log('[search] 开始飞向星点...');
-        await flyToStar(finalStar.sprite.position, 1.5);
-        console.log('[search] 搜索动画完成');
-      } else {
-        console.warn('[search] Reranker 结果不在 starDataMap 中！');
+      if (!finalStar) {
+        console.warn('[search] reranker result not in starDataMap!');
+        return;
       }
+
+      // Dim other stars
+      highlightedSprites.forEach((original, sprite) => {
+        if (sprite !== finalStar.sprite) {
+          gsap.to(sprite.material, { opacity: 0.15, duration: 0.4 });
+          gsap.to(sprite.scale, {
+            x: original.originalScale.x * 1.2,
+            y: original.originalScale.y * 1.2,
+            z: original.originalScale.z * 1.2,
+            duration: 0.4
+          });
+        }
+      });
+
+      gsap.killTweensOf(finalStar.sprite.scale);
+      gsap.killTweensOf(finalStar.sprite.material);
+
+      createGlow(finalStar.sprite.position, 0x34D399, 30);
+
+      // Everything starts together
+      const flightDuration = 1.8;
+
+      // Ray
+      const from = getSafePosition();
+      const targetPos = finalStar.sprite.position;
+      if (isVectorValid(targetPos)) {
+        const geo = new THREE.BufferGeometry();
+        const posArr = new Float32Array([
+          from.x, from.y, from.z,
+          targetPos.x, targetPos.y, targetPos.z
+        ]);
+        geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+        const mat = new THREE.LineBasicMaterial({
+          color: 0x34D399,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending
+        });
+        const line = new THREE.Line(geo, mat);
+        scene.add(line);
+        lines.push(line);
+        lineMaterials.push(mat);
+
+        gsap.to(mat, { opacity: 0.9, duration: 0.3, ease: 'power2.out' });
+      }
+
+      // Star grows
+      gsap.to(finalStar.sprite.scale, {
+        x: finalStar.sprite.scale.x * 5,
+        y: finalStar.sprite.scale.y * 5,
+        z: finalStar.sprite.scale.z * 5,
+        duration: flightDuration,
+        ease: 'power3.out'
+      });
+
+      // Pulsing glow
+      gsap.to(finalStar.sprite.material, {
+        opacity: 0.7,
+        duration: 0.8,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: Math.floor(flightDuration / 0.8)
+      });
+
+      await flyToStar(targetPos, flightDuration);
     }
   }
 
-  return {
-    animateSearch,
-    cleanup
-  };
+  return { animateSearch, cleanup };
 }
