@@ -1,0 +1,62 @@
+{
+  "domains": {
+    "medical": {
+      "name": "医疗",
+      "color": "#4A9AF5",
+      "sources": ["kuake_qtr", "kuake_qic", "kuake_qic_full"]
+    },
+    "law": {
+      "name": "法律",
+      "color": "#E74C3C",
+      "sources": ["cail2018"]
+    },
+    "general": {
+      "name": "百科",
+      "color": "#2ECC71",
+      "sources": ["cmrc2018"]
+    },
+    "game": {
+      "name": "游戏攻略",
+      "color": "#F5A623",
+      "sources": ["game_strategy"]
+    }
+  },
+  "visual": {
+    "size": {
+      "min": 2,
+      "max": 12,
+      "logBase": 10
+    },
+    "brightness": {
+      "min": 0.3,
+      "max": 1.0
+    },
+    "sprite": {
+      "textureSize": 32,
+      "segments": 32
+    }
+  },
+  "umap": {
+    "n_components": 3,
+    "n_neighbors": 15,
+    "min_dist": 0.1,
+    "random_state": 42
+  },
+  "embedding": {
+    "model_path": "E:/ai/models/bge-large-zh-v1.5",
+    "batch_size": 500,
+    "dimension": 1024
+  },
+  "reranker": {
+    "model_path": "E:/ai/models/bge-reranker-large",
+    "batch_size": 32
+  },
+  "elasticsearch": {
+    "host": "http://localhost:9200",
+    "index": "unified_rag",
+    "scroll_size": 2000
+  },
+  "rrf": {
+    "k": 60
+  }
+}
