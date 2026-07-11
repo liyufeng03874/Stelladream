@@ -1,36 +1,31 @@
 <template>
   <div id="app">
-    <div class="container">
-      <header class="header">
-        <h1 class="title">✨ Stelladream</h1>
-        <p class="subtitle">AI语义空间 3D 可视化</p>
-      </header>
+    <StarField
+      v-if="starData.length > 0"
+      :stars="starData"
+      :config="config"
+      @star-click="handleStarClick"
+      @star-hover="handleStarHover"
+    />
 
-      <div class="main-content">
-        <StarField
-          v-if="starData.length > 0"
-          :stars="starData"
-          :config="config"
-          @star-click="handleStarClick"
-          @star-hover="handleStarHover"
-        />
+    <div v-else class="loading">
+      <div class="spinner"></div>
+      <p>加载星图数据中...</p>
+    </div>
 
-        <div v-else class="loading">
-          <div class="spinner"></div>
-          <p>加载星图数据中...</p>
-        </div>
-
-        <SearchBar
-          v-if="starData.length > 0"
-          @search="handleSearch"
-        />
-
-        <InfoPanel
-          v-if="selectedStar"
-          :star="selectedStar"
-          @close="selectedStar = null"
-        />
+    <div v-if="starData.length > 0" class="ui-overlay">
+      <div class="header">
+        <h1 class="title">Stelladream</h1>
+        <p class="subtitle">{{ starData.length }} 个星点</p>
       </div>
+
+      <SearchBar @search="handleSearch" />
+
+      <InfoPanel
+        v-if="selectedStar"
+        :star="selectedStar"
+        @close="selectedStar = null"
+      />
     </div>
   </div>
 </template>
@@ -79,56 +74,27 @@ onMounted(async () => {
 #app {
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
-  color: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #ffffff;
 }
 
-.container {
+.loading {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.header {
-  padding: 1.5rem 2rem;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 100;
-}
-
-.title {
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-  background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.subtitle {
-  margin: 0.5rem 0 0 0;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.main-content {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
-
-.loading {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  background: #0a0e27;
   gap: 1rem;
+  z-index: 1000;
 }
 
 .spinner {
@@ -142,5 +108,46 @@ onMounted(async () => {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+.ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ui-overlay > * {
+  pointer-events: auto;
+}
+
+.header {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  margin: 0.3rem 0 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
 }
 </style>

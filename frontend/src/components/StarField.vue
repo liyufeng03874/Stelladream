@@ -30,27 +30,36 @@ let mouse: THREE.Vector2;
 let starSprites: THREE.Sprite[] = [];
 let animationId: number;
 
-// 创建星点纹理
+// 创建星点纹理（高质量）
 const createStarTexture = (color: string, size: number): THREE.CanvasTexture => {
   const canvas = document.createElement('canvas');
-  const textureSize = 32;
+  const textureSize = 64; // 提高纹理分辨率
   canvas.width = textureSize;
   canvas.height = textureSize;
 
   const ctx = canvas.getContext('2d')!;
   const center = textureSize / 2;
 
-  // 创建径向渐变
-  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+  // 创建更清晰的径向渐变
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center * 0.8);
   gradient.addColorStop(0, color);
-  gradient.addColorStop(0.3, color + 'cc');
-  gradient.addColorStop(0.6, color + '44');
+  gradient.addColorStop(0.2, color);
+  gradient.addColorStop(0.5, color + 'dd');
+  gradient.addColorStop(0.8, color + '66');
   gradient.addColorStop(1, 'transparent');
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, textureSize, textureSize);
 
-  return new THREE.CanvasTexture(canvas);
+  // 添加中心亮点
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.beginPath();
+  ctx.arc(center, center, 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
 };
 
 // 初始化场景
@@ -59,40 +68,42 @@ const initScene = () => {
 
   // Scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0a0e27);
-  scene.fog = new THREE.Fog(0x0a0e27, 100, 500);
+  scene.background = new THREE.Color(0x000510); // 更深的太空色
+  scene.fog = new THREE.Fog(0x000510, 200, 800); // 更远的雾效
 
-  // Camera
+  // Camera - 调整位置让星点分布更均匀
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-  camera.position.set(50, 50, 100);
+  camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
+  // 从更远的位置观察，让星点分散开
+  camera.position.set(0, 0, 250);
+  camera.lookAt(0, 0, 0);
 
-  // Renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true });
+  // Renderer - 高质量渲染
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true,
+    precision: 'highp'
+  });
   renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(window.devicePixelRatio); // 使用完整像素比
+
   containerRef.value.appendChild(renderer.domElement);
 
   // Controls
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
-  controls.minDistance = 20;
-  controls.maxDistance = 300;
+  controls.minDistance = 50;  // 最近距离
+  controls.maxDistance = 600; // 最远距离
+  controls.target.set(0, 0, 0); // 围绕中心旋转
 
   // Raycaster
   raycaster = new THREE.Raycaster();
-  raycaster.params.Sprite = { threshold: 2 };
+  raycaster.params.Sprite = { threshold: 3 };
   mouse = new THREE.Vector2();
 
-  // Lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-  scene.add(ambientLight);
-
-  const pointLight = new THREE.PointLight(0xffffff, 1, 500);
-  pointLight.position.set(50, 50, 50);
-  scene.add(pointLight);
+  // 不需要灯光，星点自发光
 };
 
 // 渲染星点
@@ -112,13 +123,17 @@ const renderStars = () => {
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: star.brightness,
-      blending: THREE.AdditiveBlending
+      opacity: Math.min(star.brightness * 1.2, 1.0), // 提高亮度
+      blending: THREE.AdditiveBlending,
+      depthTest: true,
+      depthWrite: false
     });
 
     const sprite = new THREE.Sprite(material);
     sprite.position.set(star.x, star.y, star.z);
-    sprite.scale.set(star.size, star.size, 1);
+    // 放大星点尺寸，让它们更明显
+    const scale = star.size * 2.5;
+    sprite.scale.set(scale, scale, 1);
 
     // 保存星点数据到 userData
     sprite.userData = star;
@@ -128,6 +143,12 @@ const renderStars = () => {
   });
 
   console.log(`渲染 ${starSprites.length} 个星点`);
+
+  // 调整相机看向星点中心
+  if (starSprites.length > 0) {
+    controls.target.set(0, 0, 0);
+    controls.update();
+  }
 };
 
 // 动画循环
