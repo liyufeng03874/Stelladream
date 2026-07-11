@@ -5,7 +5,15 @@
       "Bash(git commit -m 'Initial commit: Project structure and documentation *)",
       "Bash(npm create *)",
       "Bash(npm install *)",
-      "Bash(git commit -m 'Phase 0: Environment setup complete *)"
+      "Bash(git commit -m 'Phase 0: Environment setup complete *)",
+      "Bash(curl -s http://localhost:9200/_cat/indices/unified_rag?v)",
+      "Bash(D:/miniconda3/envs/aivenv/python.exe export_from_es.py)",
+      "Bash(D:/miniconda3/envs/aivenv/python.exe *)",
+      "Bash(wmic OS get FreePhysicalMemory,TotalVisibleMemorySize /value)",
+      "Bash(curl -s \"http://localhost:9200/unified_rag/_mapping\")",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s \"http://localhost:9200/unified_rag/_search?size=1\")",
+      "Bash(git commit -m 'Phase 1: Data preparation in progress *)"
     ]
   }
 }

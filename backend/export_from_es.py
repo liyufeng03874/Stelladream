@@ -88,17 +88,34 @@ def encode_embeddings(docs: List[Dict[str, Any]]) -> List[List[float]]:
         raise
 
     texts = [doc["content"] for doc in docs]
-    batch_size = EMBEDDING_CONFIG["batch_size"]
+    # 使用更小的批次大小以避免 GPU OOM
+    batch_size = 64  # 从 500 降低到 64
 
     print(f"开始编码 {len(texts):,} 条文档，批次大小: {batch_size}")
+    print("⚠️  使用小批次以避免 GPU 内存溢出")
 
     all_embeddings = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
-        embeddings = embedder.encode(batch).numpy()
-        all_embeddings.extend(embeddings.tolist())
 
-        print(f"已编码 {min(i + batch_size, len(texts)):,} / {len(texts):,}")
+        try:
+            embeddings = embedder.encode(batch).numpy()
+            all_embeddings.extend(embeddings.tolist())
+        except Exception as e:
+            print(f"\n错误：批次 {i//batch_size + 1} 编码失败: {e}")
+            print("尝试使用更小的批次...")
+            # 如果失败，尝试逐个编码该批次
+            for j, text in enumerate(batch):
+                try:
+                    embedding = embedder.encode([text]).numpy()
+                    all_embeddings.extend(embedding.tolist())
+                except Exception as e2:
+                    print(f"跳过文档 {i+j}: {e2}")
+                    # 添加零向量占位
+                    all_embeddings.append([0.0] * EMBEDDING_CONFIG["dimension"])
+
+        if (i + batch_size) % 1000 == 0 or i + batch_size >= len(texts):
+            print(f"已编码 {min(i + batch_size, len(texts)):,} / {len(texts):,}")
 
     print("编码完成")
     return all_embeddings
