@@ -73,15 +73,17 @@ const initScene = () => {
   // Scene
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000510);
-  scene.fog = new THREE.Fog(0x000510, 80, 300); // 雾效更远，让远处星点渐隐
+  scene.fog = new THREE.Fog(0x000510, 60, 150); // 雾效范围适应新距离
 
-  // Camera - 相机在数据中心，环顾四周
+  // Camera - 相机在数据中心，但要远离星点
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 500); // 更大的FOV
-  // 相机位于星云中心
-  camera.position.set(2.5, 2.25, 5.8);
-  camera.lookAt(20, 10, 15); // 初始看向某个方向
+  camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 500); // 降低FOV让星点看起来更小
+
+  // 相机位于星云中心，但距离拉远
+  // 星点平均距中心6.47，最远20，所以相机应该在40-50的距离
+  camera.position.set(0.92, 1.03, 50); // Z轴拉远到50
+  camera.lookAt(0.92, 1.03, 3.56); // 看向星云中心
 
   // Renderer - 性能优化
   renderer = new THREE.WebGLRenderer({
@@ -98,10 +100,10 @@ const initScene = () => {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = 1;  // 可以在星云中自由移动
-  controls.maxDistance = 80; // 不要飞太远
-  controls.target.set(20, 10, 15); // 初始目标点
-  controls.enablePan = true; // 允许平移
+  controls.minDistance = 10;  // 最近可以到10
+  controls.maxDistance = 100; // 最远100
+  controls.target.set(0.92, 1.03, 3.56); // 看向星云中心
+  controls.enablePan = true;
   controls.panSpeed = 0.5;
 
   // Raycaster
@@ -138,7 +140,7 @@ const renderStars = () => {
 
     const sprite = new THREE.Sprite(material);
     sprite.position.set(star.x, star.y, star.z);
-    const scale = star.size * 0.6; // 大幅减小星点
+    const scale = star.size * 0.3; // 更小，因为距离更远了
     sprite.scale.set(scale, scale, 1);
 
     sprite.userData = star;
