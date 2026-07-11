@@ -30,10 +30,18 @@ let mouse: THREE.Vector2;
 let starSprites: THREE.Sprite[] = [];
 let animationId: number;
 
-// 创建星点纹理（优化性能）
-const createStarTexture = (color: string, size: number): THREE.CanvasTexture => {
+// 纹理缓存 - 避免重复创建
+const textureCache = new Map<string, THREE.CanvasTexture>();
+
+// 创建星点纹理（优化性能 + 缓存）
+const createStarTexture = (color: string): THREE.CanvasTexture => {
+  // 检查缓存
+  if (textureCache.has(color)) {
+    return textureCache.get(color)!;
+  }
+
   const canvas = document.createElement('canvas');
-  const textureSize = 32; // 降低到32px提升性能
+  const textureSize = 32;
   canvas.width = textureSize;
   canvas.height = textureSize;
 
@@ -52,6 +60,9 @@ const createStarTexture = (color: string, size: number): THREE.CanvasTexture => 
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
+
+  // 缓存纹理
+  textureCache.set(color, texture);
   return texture;
 };
 
@@ -112,11 +123,11 @@ const renderStars = () => {
     const domainConfig = props.config.domains[star.domain];
     const color = domainConfig?.color || '#ffffff';
 
-    const texture = createStarTexture(color, star.size);
+    const texture = createStarTexture(color); // 使用缓存的纹理
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: Math.min(star.brightness * 0.9, 0.95), // 降低亮度避免过亮
+      opacity: Math.min(star.brightness * 0.85, 0.9),
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false
@@ -124,20 +135,17 @@ const renderStars = () => {
 
     const sprite = new THREE.Sprite(material);
     sprite.position.set(star.x, star.y, star.z);
-    // 适中的星点大小
-    const scale = star.size * 1.5;
+    const scale = star.size * 1.2; // 进一步减小
     sprite.scale.set(scale, scale, 1);
 
-    // 保存星点数据到 userData
     sprite.userData = star;
 
     scene.add(sprite);
     starSprites.push(sprite);
   });
 
-  console.log(`渲染 ${starSprites.length} 个星点`);
+  console.log(`渲染 ${starSprites.length} 个星点 (${textureCache.size} 个纹理)`);
 
-  // 不需要调整target，因为相机已经在中心了
   controls.update();
 };
 
@@ -162,13 +170,21 @@ const handleResize = () => {
   renderer.setSize(width, height);
 };
 
-// 处理鼠标移动
+// 处理鼠标移动 - 节流优化
+let lastRaycastTime = 0;
+const RAYCAST_THROTTLE = 100; // 每100ms最多一次射线检测
+
 const handleMouseMove = (event: MouseEvent) => {
   if (!containerRef.value) return;
 
   const rect = containerRef.value.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  // 节流射线检测
+  const now = Date.now();
+  if (now - lastRaycastTime < RAYCAST_THROTTLE) return;
+  lastRaycastTime = now;
 
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(starSprites);
@@ -216,6 +232,16 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
   containerRef.value?.removeEventListener('mousemove', handleMouseMove);
   containerRef.value?.removeEventListener('click', handleClick);
+
+  // 清理资源
+  starSprites.forEach(sprite => {
+    sprite.material.dispose();
+    scene.remove(sprite);
+  });
+
+  // 清理纹理缓存
+  textureCache.forEach(texture => texture.dispose());
+  textureCache.clear();
 
   renderer.dispose();
   controls.dispose();
