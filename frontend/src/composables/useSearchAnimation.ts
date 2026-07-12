@@ -257,7 +257,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
   function clearAllGlows() {
     const allGlows = [...glowSprites, ...finalStarGlowSprites];
-    console.log(`[clearAllGlows] 清理 ${allGlows.length} 个光晕`);
+
 
     allGlows.forEach(glow => {
       scene.remove(glow);
@@ -282,7 +282,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     });
 
     if (toRemove.length > 0) {
-      console.log(`[clearAllGlows] 场景清扫找到 ${toRemove.length} 个遗漏的大光晕`);
+
       toRemove.forEach(obj => {
         scene.remove(obj);
         if (obj instanceof THREE.Sprite) {
@@ -485,6 +485,19 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const flightDuration = 1.8;
 
       const targetPos = finalSprite.position;
+      console.log('[search-final] trueOriginalScale:', trueOriginalScale.x.toFixed(3), trueOriginalScale.y.toFixed(3), trueOriginalScale.z.toFixed(3));
+      console.log('[search-final] finalSprite BEFORE:', finalSprite.scale.x.toFixed(3), finalSprite.scale.y.toFixed(3), finalSprite.scale.z.toFixed(3));
+      // 列出所有光晕
+      console.log('[search-final] glows on finalStar:');
+      for (let i = 0; i < finalStarGlowSprites.length; i++) {
+        const g = finalStarGlowSprites[i];
+        console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, pos=(${g.position.x.toFixed(1)},${g.position.y.toFixed(1)},${g.position.z.toFixed(1)})`);
+      }
+      console.log('[search-final] finalSprite material:', {
+        color: '#' + finalSprite.material.color.getHexString(),
+        opacity: finalSprite.material.opacity,
+        blending: finalSprite.material.blending
+      });
       if (isVectorValid(targetPos)) {
         shootMeteors([targetPos], 0x34D399, 0);
       }
@@ -494,7 +507,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         y: trueOriginalScale.y * 5,
         z: trueOriginalScale.z * 5,
         duration: flightDuration,
-        ease: 'power3.out'
+        ease: 'power3.out',
+        onComplete: () => {
+          console.log('[search-final] finalSprite AFTER tween:', finalSprite.scale.x.toFixed(3), finalSprite.scale.y.toFixed(3), finalSprite.scale.z.toFixed(3));
+        }
       });
 
       gsap.to(finalSprite.material, {
@@ -531,22 +547,34 @@ export function useSearchAnimation(context: SearchAnimationContext) {
    * 星跃：旧最终星恢复原样，新星星继承最终星样式，相机飞过去
    */
   function jumpToStar(targetSprite: THREE.Sprite) {
-    console.log('[jumpToStar] called, targetSprite exists:', !!targetSprite);
-    console.log('[jumpToStar] finalStarInfo exists:', !!finalStarInfo, 'has sprite:', !!finalStarInfo?.sprite);
+    // 打印搜索动画中最终星的光晕信息
+    function printFinalGlowInfo() {
+      if (!finalStarInfo) return;
+      const { sprite } = finalStarInfo;
+      console.log('[query-visual] finalSprite scale:', sprite.scale.x.toFixed(3), sprite.scale.y.toFixed(3), sprite.scale.z.toFixed(3));
+      console.log('[query-visual] finalSprite material:', {
+        color: '#' + sprite.material.color.getHexString(),
+        opacity: sprite.material.opacity,
+        blending: sprite.material.blending
+      });
+      console.log('[query-visual] glows:', finalStarGlowSprites.length);
+      finalStarGlowSprites.forEach((g, i) => {
+        console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
+      });
+    }
 
     // 从 sprite.userData 获取原始数据（StarField 创建时已存）
     const targetOrig = targetSprite.userData.trueOriginals;
-    console.log('[jumpToStar] targetOrig found:', !!targetOrig);
+
     if (!targetOrig) return;
     const targetOrigScale = targetOrig.scale.clone();
     const targetOrigMat = targetOrig.material;
 
     // 情况1：没有最终星（还没搜索过），使用默认样式
     if (!finalStarInfo || !finalStarInfo.sprite) {
-      const glowColor = 0x34D399;
       const targetPos = targetSprite.position;
 
-      // 先 highlightAndGrow（白核心 + 2.2x 放大），和搜索动画一致
+      // 立即换材质（白核心）
       gsap.killTweensOf(targetSprite.scale);
       gsap.killTweensOf(targetSprite.material);
 
@@ -558,65 +586,77 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       newMat.needsUpdate = true;
       targetSprite.material = newMat;
 
-      // 第一步：先放大到 2.2x（白核心）
-      gsap.to(targetSprite.scale, {
-        x: targetOrigScale.x * 2.2,
-        y: targetOrigScale.y * 2.2,
-        z: targetOrigScale.z * 2.2,
-        duration: 0.6,
-        ease: 'power2.out',
+      // 辉光：和 query 完全一致，固定 30
+      const glow = createGlow(targetPos, 0x34D399, 30);
+      if (glow) finalStarGlowSprites.push(glow);
+      console.log('[jumpToStar-情况1] glow created, size=30, material color:', '0x' + glow.material.color.getHexString().toUpperCase());
+
+      // 放大动画 — 和 query 一致，用相同的最终尺寸
+      const uniformFinalScale = 0.6; // query 的最终 x/y 尺寸
+      console.log('[jumpToStar-情况1] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
+      console.log('[jumpToStar-情况1] target BEFORE:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
+      // 等动画完成打印
+      // 先等流星飞完再移动相机（和搜索动画一致）
+      (isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0) : Promise.resolve()).then(() => {
+        flyToStar(targetPos, 1.5);
       });
 
-      // 第二步：流星特效
-      if (isVectorValid(targetPos)) {
-        shootMeteors([targetPos], 0x34D399, 0);
-      }
+      // 打印辉光信息
+      gsap.to(targetSprite.scale, {
+        x: uniformFinalScale,
+        y: uniformFinalScale,
+        z: 5,
+        duration: 1.8,
+        ease: 'power3.out',
+        onComplete: () => {
+          console.log('[jumpToStar-情况1] target AFTER tween:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
+          console.log('[jumpToStar-情况1] target material:', {
+            color: '#' + targetSprite.material.color.getHexString(),
+            opacity: targetSprite.material.opacity,
+            blending: targetSprite.material.blending
+          });
+          console.log('[jumpToStar-情况1] glows:', finalStarGlowSprites.length);
+          finalStarGlowSprites.forEach((g, i) => {
+            console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
+          });
+        },
+      });
 
-      // 第三步：再 GSAP 到 5x（和搜索动画一致）
-      setTimeout(() => {
-        gsap.to(targetSprite.scale, {
-          x: targetOrigScale.x * 5,
-          y: targetOrigScale.y * 5,
-          z: targetOrigScale.z * 5,
-          duration: 1.8,
-          ease: 'power3.out',
-        });
+      gsap.to(newMat, {
+        opacity: 0.7,
+        duration: 0.8,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      });
 
-        gsap.to(newMat, {
+      finalStarInfo = {
+        sprite: targetSprite,
+        data: null,
+        trueOriginalScale: targetOrigScale,
+        trueOriginalMaterial: targetOrigMat,
+        domainColor: '#34D399',
+        appliedStyle: {
+          coreColor: '#ffffff',
           opacity: 0.7,
-          duration: 0.8,
-          ease: 'sine.inOut',
-          yoyo: true,
-          repeat: -1,
-        });
+          blending: THREE.AdditiveBlending,
+          scaleMultiplier: 5,
+          glowColor: 0x34D399,
+          glowSize: 30,
+          breathingActive: true,
+        },
+      };
 
-        const glow = createGlow(targetPos, glowColor, 30);
-        if (glow) finalStarGlowSprites.push(glow);
-
-        finalStarInfo = {
-          sprite: targetSprite,
-          data: null,
-          trueOriginalScale: targetOrigScale,
-          trueOriginalMaterial: targetOrigMat,
-          domainColor: '#34D399',
-          appliedStyle: {
-            coreColor: '#ffffff',
-            opacity: 0.7,
-            blending: THREE.AdditiveBlending,
-            scaleMultiplier: 5,
-            glowColor: 0x34D399,
-            glowSize: 30,
-            breathingActive: true,
-          },
-        };
-
+      // 先等流星飞完再移动相机（和搜索动画一致）
+      const meteorPromise = isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0) : Promise.resolve();
+      meteorPromise.then(() => {
         flyToStar(targetPos, 1.5);
-      }, 600);
-
+      });
       return;
     }
 
     // 情况2：有最终星，转移样式
+    console.log('[jumpToStar-情况2] 开始星跃，有旧最终星');
     // 1. 清除最终星的辉光
     clearAllGlows();
 
@@ -625,6 +665,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // 3. 目标星：和搜索动画完全一致的两步扩散
     const targetPos = targetSprite.position;
+
+    console.log('[jumpToStar-情况2] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
+    console.log('[jumpToStar-情况2] target BEFORE:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
 
     // 第一步：白核心 + 2.2x 放大（和 highlightAndGrow 一致）
     gsap.killTweensOf(targetSprite.scale);
@@ -649,14 +692,37 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // 第二步：0.8s 后再 GSAP 到 5x
     setTimeout(() => {
+      // 统一最终尺寸：和 query 完全一致 0.6×0.6×5
+      const uniformFinalX = 0.6;
+      const uniformFinalY = 0.6;
+      const uniformFinalZ = 5;
+
       gsap.to(targetSprite.scale, {
-        x: targetOrigScale.x * 5,
-        y: targetOrigScale.y * 5,
-        z: targetOrigScale.z * 5,
+        x: uniformFinalX,
+        y: uniformFinalY,
+        z: uniformFinalZ,
         duration: 1.8,
         ease: 'power3.out',
+        onComplete: () => {
+          console.log('[jumpToStar-情况2] target AFTER tween:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
+          console.log('[jumpToStar-情况2] target material:', {
+            color: '#' + targetSprite.material.color.getHexString(),
+            opacity: targetSprite.material.opacity,
+            blending: targetSprite.material.blending
+          });
+          console.log('[jumpToStar-情况2] glows:', finalStarGlowSprites.length);
+          finalStarGlowSprites.forEach((g, i) => {
+            console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
+          });
+        },
       });
 
+      // 两层辉光：模拟 query 的 highlightAndGrow 小辉光 + reranker 大辉光
+      // 第一层：小辉光（紧贴核心，白色，让核心区域饱满）
+      const innerGlow = createGlow(targetSprite.position, 0xFFFFFF, 1);
+      if (innerGlow) finalStarGlowSprites.push(innerGlow);
+
+      // 第二层：大辉光（外层包裹，绿色，和 query 一致）
       const glow = createGlow(targetSprite.position, 0x34D399, 30);
       if (glow) finalStarGlowSprites.push(glow);
 
@@ -685,7 +751,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       };
 
-      flyToStar(targetPos, 1.5);
+      // 等流星飞完再移动相机
+      (isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0) : Promise.resolve()).then(() => {
+        flyToStar(targetPos, 1.5);
+      });
     }, 1100);
   }
 
