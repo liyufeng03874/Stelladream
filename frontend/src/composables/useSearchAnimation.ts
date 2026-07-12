@@ -336,21 +336,18 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // 自适应距离：根据相机到目标的实际距离计算
     const directDist = startPos.distanceTo(targetPos);
-    // 停在离目标 25~60 单位处，确保星星在 25° FOV 下清晰可见
     const flightDist = THREE.MathUtils.clamp(directDist * 0.8, 25, 60);
     const finalCamPos = targetPos.clone().add(dir.clone().multiplyScalar(-flightDist));
 
-    // 中间点：稍微向上偏移，不要偏离直线太多
+    // 中间点：稍微向上偏移
     const midPoint = new THREE.Vector3().lerpVectors(startPos, finalCamPos, 0.5);
     midPoint.y += Math.min(8, directDist * 0.05);
 
     const curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, finalCamPos);
 
-    // 飞行期间：先设置 controls.target 指向目标，然后禁用 controls
-    // 防止 damping 插值覆盖相机位置
-    const prevEnabled = controls.enabled;
-    controls.target.copy(targetPos);
-    controls.enabled = false;
+    // 关键：不禁用 controls，让 OrbitControls 全程处理相机朝向
+    // 只动画 camera.position + controls.target，朝向由 controls.update() 自动计算
+    const startTarget = controls.target.clone();
 
     return new Promise<void>(resolve => {
       const startTime = Date.now();
@@ -360,13 +357,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         const t = Math.min((Date.now() - startTime) / durationMs, 1);
         const point = curve.getPoint(t);
 
-        // 完全手动控制：位置和朝向
+        // 相机位置沿曲线移动
         camera.position.copy(point);
-        camera.lookAt(targetPos);
+
+        // controls.target 从起点平滑过渡到目标星
+        controls.target.lerpVectors(startTarget, targetPos, t);
 
         if (t >= 1) {
-          controls.enabled = prevEnabled;
-          controls.update();
           resolve();
           return;
         }
