@@ -22,7 +22,12 @@ const emit = defineEmits<{
     camera: THREE.Camera;
     controls: any;
     starSprites: THREE.Sprite[];
-    starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }>;
+    starDataMap: Map<string, {
+      sprite: THREE.Sprite;
+      data: StarPoint;
+      originalMaterial: THREE.SpriteMaterial;
+      originalScale: THREE.Vector3;
+    }>;
   }];
 }>();
 
@@ -41,7 +46,12 @@ let animationId: number;
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
 // chunk_id to star mapping (includes ALL stars, not just rendered ones)
-const starDataMap = new Map<string, { sprite: THREE.Sprite; data: StarPoint }>();
+const starDataMap = new Map<string, {
+  sprite: THREE.Sprite;
+  data: StarPoint;
+  originalMaterial: THREE.SpriteMaterial;
+  originalScale: THREE.Vector3;
+}>();
 
 // Create star texture with caching
 const createStarTexture = (color: string): THREE.CanvasTexture => {
@@ -146,13 +156,15 @@ const renderStars = () => {
     sprite.scale.set(scale, scale, 1);
     sprite.userData = star;
 
+    // 保存真正的原始材质和 scale（在 highlightAndGrow 修改之前）
+    const originalMat = material.clone();
+    const originalScale = new THREE.Vector3(scale, scale, 1);
+
     scene.add(sprite);
     starSprites.push(sprite);
 
-    starDataMap.set(star.chunk_id, { sprite, data: star });
+    starDataMap.set(star.chunk_id, { sprite, data: star, originalMaterial: originalMat, originalScale });
   });
-
-  console.log(`Rendered ${starSprites.length} / ${props.stars.length} stars, map size: ${starDataMap.size}`);
 
   controls.update();
 

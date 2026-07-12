@@ -15,10 +15,34 @@ interface SearchAnimationContext {
   camera: THREE.Camera;
   controls: any;
   starSprites: THREE.Sprite[];
-  starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }>;
+  starDataMap: Map<string, {
+    sprite: THREE.Sprite;
+    data: StarPoint;
+    originalMaterial: THREE.SpriteMaterial;
+    originalScale: THREE.Vector3;
+  }>;
 }
 
 const FALLBACK_ORIGIN = new THREE.Vector3(0, 100, 300);
+
+export interface FinalStarAppliedStyle {
+  coreColor: string;
+  opacity: number;
+  blending: number; // THREE blending constant
+  scaleMultiplier: number;
+  glowColor: number | null;
+  glowSize: number | null;
+  breathingActive: boolean;
+}
+
+export interface FinalStarInfo {
+  sprite: THREE.Sprite;
+  data: StarPoint;
+  trueOriginalScale: THREE.Vector3;     // 在 highlightAndGrow 之前的真实原始 scale
+  trueOriginalMaterial: THREE.SpriteMaterial; // 在 highlightAndGrow 之前的真实原始 material
+  domainColor: string;
+  appliedStyle: FinalStarAppliedStyle;
+}
 
 export function useSearchAnimation(context: SearchAnimationContext) {
   const { scene, camera, controls, starSprites, starDataMap } = context;
@@ -28,20 +52,20 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     originalScale: THREE.Vector3;
     originalMaterial: THREE.SpriteMaterial;
   }>();
+  let finalStarInfo: FinalStarInfo | null = null;
+  let finalStarGlowSprites: THREE.Sprite[] = [];
+  let trueOriginals = new Map<THREE.Sprite, {
+    scale: THREE.Vector3;
+    material: THREE.SpriteMaterial;
+  }>();
 
   function isVectorValid(v: THREE.Vector3): boolean {
     return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
   }
 
-  /**
-   * Get the origin point for meteors.
-   * Uses controls.target (scene center) + offset toward camera, NOT camera.position directly.
-   * This avoids the issue where camera.position is unstable on first render.
-   */
   function getMeteorOrigin(): THREE.Vector3 {
     if (isVectorValid(controls.target)) {
       const center = controls.target.clone();
-      // Offset toward camera direction
       if (isVectorValid(camera.position)) {
         const dir = new THREE.Vector3().subVectors(camera.position, center).normalize();
         return center.add(dir.multiplyScalar(20));
@@ -79,9 +103,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return glow;
   }
 
-  /**
-   * Create a meteor effect: bright head + trailing tail along a curve
-   */
   function createMeteor(from: THREE.Vector3, to: THREE.Vector3, color: number, delayMs: number = 0): Promise<void> {
     if (!isVectorValid(from) || !isVectorValid(to)) {
       return Promise.resolve();
@@ -100,7 +121,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     }
     const curve = new THREE.CatmullRomCurve3(curvePoints);
 
-    // Head: small bright sprite
     const headCanvas = document.createElement('canvas');
     headCanvas.width = 16;
     headCanvas.height = 16;
@@ -124,7 +144,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     head.position.copy(from);
     scene.add(head);
 
-    // Trail: growing line behind the head
     const trailMat = new THREE.LineBasicMaterial({
       color,
       transparent: true,
@@ -150,7 +169,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
             head.material.opacity = 1;
           }
 
-          // Trail: all points from 0 to t
           const trailSegments = Math.floor(t * segments);
           if (trailSegments > 0) {
             const positions: number[] = [];
@@ -197,6 +215,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const sprite = starInfo.sprite;
       if (!sprite || !isVectorValid(sprite.position)) return;
 
+      if (!trueOriginals.has(sprite)) {
+        trueOriginals.set(sprite, {
+          scale: starInfo.originalScale.clone(),
+          material: starInfo.originalMaterial,
+        });
+      }
+
       if (!highlightedSprites.has(sprite)) {
         highlightedSprites.set(sprite, {
           originalScale: sprite.scale.clone(),
@@ -220,13 +245,54 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       });
 
       setTimeout(() => {
-        createGlow(sprite.position, color, sprite.scale.x * scale * 3);
+        const glow = createGlow(sprite.position, color, sprite.scale.x * scale * 3);
+        glowSprites.push(glow); // 关键修复：添加到数组以便后续清理
       }, 400);
 
       sprites.push(sprite);
     });
 
     return sprites;
+  }
+
+  function clearAllGlows() {
+    const allGlows = [...glowSprites, ...finalStarGlowSprites];
+    console.log(`[clearAllGlows] 清理 ${allGlows.length} 个光晕`);
+
+    allGlows.forEach(glow => {
+      scene.remove(glow);
+      (glow.material as THREE.Material).dispose();
+      if (glow.material instanceof THREE.SpriteMaterial && glow.material.map) {
+        glow.material.map.dispose();
+      }
+    });
+    glowSprites = [];
+    finalStarGlowSprites = [];
+
+    // 额外的场景级清扫：移除所有可能遗漏的大光晕
+    const toRemove: THREE.Object3D[] = [];
+    scene.children.forEach(child => {
+      if (child instanceof THREE.Sprite) {
+        const maxDim = Math.max(child.scale.x, child.scale.y);
+        // 大于20的sprite很可能是光晕（正常星点最大约1.5）
+        if (maxDim > 20) {
+          toRemove.push(child);
+        }
+      }
+    });
+
+    if (toRemove.length > 0) {
+      console.log(`[clearAllGlows] 场景清扫找到 ${toRemove.length} 个遗漏的大光晕`);
+      toRemove.forEach(obj => {
+        scene.remove(obj);
+        if (obj instanceof THREE.Sprite) {
+          (obj.material as THREE.Material).dispose();
+          if (obj.material instanceof THREE.SpriteMaterial && obj.material.map) {
+            obj.material.map.dispose();
+          }
+        }
+      });
+    }
   }
 
   function cleanup() {
@@ -240,24 +306,29 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     glowSprites = [];
 
     highlightedSprites.forEach((original, sprite) => {
-      sprite.material = original.originalMaterial;
+      const trueOrig = trueOriginals.get(sprite);
+      if (trueOrig) {
+        sprite.material = trueOrig.material;
+        sprite.scale.copy(trueOrig.scale);
+      } else {
+        sprite.material = original.originalMaterial;
+        gsap.to(sprite.scale, {
+          x: original.originalScale.x,
+          y: original.originalScale.y,
+          z: original.originalScale.z,
+          duration: 0.3
+        });
+      }
       gsap.killTweensOf(sprite.scale);
-      gsap.to(sprite.scale, {
-        x: original.originalScale.x,
-        y: original.originalScale.y,
-        z: original.originalScale.z,
-        duration: 0.3
-      });
     });
     highlightedSprites.clear();
+    trueOriginals.clear();
   }
 
   function flyToStar(targetPos: THREE.Vector3, duration: number = 2.0) {
-    // Use actual camera position - this is where the user is looking from
     const startPos = camera.position.clone();
 
     if (!isVectorValid(targetPos)) {
-      console.warn('[search] flyToStar: invalid targetPos', targetPos);
       return Promise.resolve();
     }
 
@@ -291,33 +362,21 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     });
   }
 
-  /**
-   * Get a stable emission point for meteors and camera flight.
-   * This is between the camera and scene center, at a comfortable viewing angle.
-   * The key: use this SAME point for both meteor origin AND flight start.
-   */
   function getEmissionPoint(): THREE.Vector3 {
     const sceneCenter = isVectorValid(controls.target)
       ? controls.target.clone()
       : new THREE.Vector3(67.1, 96.2, 30.9);
 
-    // Between camera and scene center, but lowered to scene height
-    // This gives a side-angle view, not overhead
     const fromCamera = camera.position.clone();
     const fromSceneCenter = sceneCenter.clone();
 
-    // X/Z: midpoint between camera and scene
     const x = (fromCamera.x + fromSceneCenter.x) / 2;
     const z = (fromCamera.z + fromSceneCenter.z) / 2;
-    // Y: scene height (not camera height)
     const y = sceneCenter.y + 10;
 
     return new THREE.Vector3(x, y, z);
   }
 
-  /**
-   * Shoot meteors from a consistent emission point.
-   */
   function shootMeteors(positions: THREE.Vector3[], color: number, staggerMs: number = 0): Promise<void[]> {
     const origin = getEmissionPoint();
     const promises = positions.map((pos, i) => createMeteor(origin, pos, color, i * staggerMs));
@@ -330,26 +389,15 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     rrf_top5: Array<{ chunk_id: string }>;
     reranker_final: { chunk_id: string } | null;
   }) {
-    console.log('[search] animateSearch start', {
-      bm25: results.bm25.length,
-      knn: results.knn.length,
-      rrf: results.rrf_top5.length,
-      reranker: results.reranker_final?.chunk_id || null
-    });
-
     cleanup();
 
     await new Promise(resolve => setTimeout(resolve, 200));
-
-    // Wait a beat for camera to be in a stable position
     await new Promise(resolve => setTimeout(resolve, 400));
 
-    // Collect all targets and colors
     const bm25Ids = results.bm25.map(r => r.chunk_id);
     const knnIds = results.knn.map(r => r.chunk_id);
     const rrfIds = results.rrf_top5.map(r => r.chunk_id);
 
-    // Highlight all stars first
     const bm25Sprites = highlightAndGrow(bm25Ids.slice(0, 10), 0xFFD700, 2.2);
     const knnSprites = highlightAndGrow(knnIds.slice(0, 10), 0x60A5FA, 2.2);
     const rrfSprites = highlightAndGrow(rrfIds, 0xA78BFA, 2.8);
@@ -358,29 +406,24 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const knnPositions = knnSprites.map(s => s.position);
     const rrfPositions = rrfSprites.map(s => s.position);
 
-    // ALL meteors fire at once
     shootMeteors(bm25Positions, 0xFFD700, 50);
     shootMeteors(knnPositions, 0x60A5FA, 50);
     shootMeteors(rrfPositions, 0xA78BFA, 50);
 
-    // Wait for all meteors to complete
     await Promise.all([
       Promise.all(bm25Positions.map((_, i) => new Promise<void>(r => setTimeout(r, 800 + i * 50)))),
       Promise.all(knnPositions.map((_, i) => new Promise<void>(r => setTimeout(r, 800 + i * 50)))),
       Promise.all(rrfPositions.map((_, i) => new Promise<void>(r => setTimeout(r, 800 + i * 50)))),
     ]);
 
-    // Final: meteor + grow + fly seamless
     if (results.reranker_final) {
       const finalId = results.reranker_final.chunk_id;
       const finalStar = starDataMap.get(finalId);
 
       if (!finalStar) {
-        console.warn('[search] reranker result not in starDataMap!');
         return;
       }
 
-      // Dim other stars
       highlightedSprites.forEach((original, sprite) => {
         if (sprite !== finalStar.sprite) {
           gsap.to(sprite.material, { opacity: 0.15, duration: 0.4 });
@@ -393,37 +436,137 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         }
       });
 
-      gsap.killTweensOf(finalStar.sprite.scale);
-      gsap.killTweensOf(finalStar.sprite.material);
+      const original = highlightedSprites.get(finalStar.sprite);
+      if (!original) {
+        return;
+      }
 
-      createGlow(finalStar.sprite.position, 0x34D399, 30);
+      const trueOrig = trueOriginals.get(finalStar.sprite);
+      if (!trueOrig) {
+        return;
+      }
+      const trueOriginalScale = trueOrig.scale.clone();
+      const trueOriginalMaterial = trueOrig.material;
+
+      const finalSprite = finalStar.sprite;
+
+      // 关键修复：克隆当前材质，不要直接修改（避免污染原始材质）
+      const oldMat = finalSprite.material as THREE.SpriteMaterial;
+      const finalMat = oldMat.clone();
+
+      // 在新克隆的材质上修改
+      finalMat.color.setHex(0xFFFFFF);
+      finalMat.opacity = 1;
+      finalMat.blending = THREE.AdditiveBlending;
+      finalMat.needsUpdate = true;
+
+      // 应用新材质
+      finalSprite.material = finalMat;
+
+      gsap.killTweensOf(finalSprite.scale);
+      gsap.killTweensOf(finalMat);
+
+      const finalGlow = createGlow(finalSprite.position, 0x34D399, 30);
+      finalStarGlowSprites.push(finalGlow);
 
       const flightDuration = 1.8;
 
-      const targetPos = finalStar.sprite.position;
+      const targetPos = finalSprite.position;
       if (isVectorValid(targetPos)) {
         shootMeteors([targetPos], 0x34D399, 0);
       }
 
-      gsap.to(finalStar.sprite.scale, {
-        x: finalStar.sprite.scale.x * 5,
-        y: finalStar.sprite.scale.y * 5,
-        z: finalStar.sprite.scale.z * 5,
+      gsap.to(finalSprite.scale, {
+        x: trueOriginalScale.x * 5,
+        y: trueOriginalScale.y * 5,
+        z: trueOriginalScale.z * 5,
         duration: flightDuration,
         ease: 'power3.out'
       });
 
-      gsap.to(finalStar.sprite.material, {
+      gsap.to(finalSprite.material, {
         opacity: 0.7,
         duration: 0.8,
         ease: 'sine.inOut',
         yoyo: true,
-        repeat: Math.floor(flightDuration / 0.8)
+        repeat: -1
       });
+
+      const domainColor = '#' + trueOriginalMaterial.color.getHexString();
+      finalStarInfo = {
+        sprite: finalSprite,
+        data: finalStar.data,
+        trueOriginalScale,
+        trueOriginalMaterial,
+        domainColor,
+        appliedStyle: {
+          coreColor: '#ffffff',
+          opacity: 0.7,
+          blending: THREE.AdditiveBlending,
+          scaleMultiplier: 5,
+          glowColor: 0x34D399,
+          glowSize: 30,
+          breathingActive: true,
+        },
+      };
 
       await flyToStar(targetPos, flightDuration);
     }
   }
 
-  return { animateSearch, cleanup };
+  function resetFinalStar() {
+    if (!finalStarInfo) return;
+    const { sprite, trueOriginalScale, trueOriginalMaterial } = finalStarInfo;
+
+    const oldMat = sprite.material as THREE.SpriteMaterial;
+
+    // 先杀死旧材质上的所有tween（特别是无限循环的呼吸动画）
+    gsap.killTweensOf(oldMat);
+    gsap.killTweensOf(oldMat.color);
+    gsap.killTweensOf(sprite.scale);
+    gsap.killTweensOf(sprite);
+
+    // 强制重置scale
+    sprite.scale.set(trueOriginalScale.x, trueOriginalScale.y, trueOriginalScale.z);
+
+    // 清理所有已知光晕
+    clearAllGlows();
+
+    // 场景级清扫：移除所有大尺寸sprite（光晕）
+    scene.children.forEach(child => {
+      if (child instanceof THREE.Sprite && child !== sprite) {
+        const maxDim = Math.max(child.scale.x, child.scale.y);
+        if (maxDim > 10) {
+          scene.remove(child);
+          (child.material as THREE.Material).dispose();
+          if (child.material instanceof THREE.SpriteMaterial && child.material.map) {
+            child.material.map.dispose();
+          }
+        }
+      }
+    });
+
+    // 替换为原始材质
+    sprite.material = trueOriginalMaterial;
+
+    // 确保原始材质的属性正确
+    trueOriginalMaterial.opacity = trueOriginalMaterial.opacity; // 触发setter
+    trueOriginalMaterial.needsUpdate = true;
+
+    // 销毁旧材质（防止内存泄漏和tween残留）
+    if (oldMat !== trueOriginalMaterial) {
+      // 不dispose map，因为可能被缓存共享
+      oldMat.dispose();
+    }
+
+    finalStarInfo = null;
+
+    console.log('[reset] 最终星已恢复到原始状态');
+  }
+
+  function getFinalStar(): FinalStarInfo | null {
+    return finalStarInfo;
+  }
+
+  return { animateSearch, cleanup, getFinalStar, resetFinalStar };
 }

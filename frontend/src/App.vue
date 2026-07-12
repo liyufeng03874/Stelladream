@@ -23,59 +23,123 @@
       <SearchBar @search="handleSearch" />
 
       <InfoPanel
-        v-if="selectedStar"
+        v-if="selectedStar && !showDebugPanel"
         :star="selectedStar"
         @close="selectedStar = null"
       />
+
+      <!-- 调试面板：搜索后自动弹出 或 手动切换 -->
+      <DebugPanel
+        v-if="showDebugPanel && debugFinalStar"
+        :final-star="debugFinalStar"
+        @close="showDebugPanel = false"
+        @reset="handleDebugReset"
+      />
+
+      <!-- 手动调试开关 -->
+      <button class="debug-toggle" @click="toggleDebugPanel" :class="{ active: showDebugPanel }">
+        {{ showDebugPanel ? '关闭调试' : '🔬 调试' }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import * as THREE from 'three';
 import StarField from './components/StarField.vue';
 import SearchBar from './components/SearchBar.vue';
 import InfoPanel from './components/InfoPanel.vue';
+import DebugPanel from './components/DebugPanel.vue';
+import type { FinalStarInfo } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
 import { useSearchAnimation } from './composables/useSearchAnimation';
+
+// 星场上下文（用于构建调试信息）
+let starSprites: THREE.Sprite[] = [];
+let starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }> = new Map();
+let animContext: ReturnType<typeof useSearchAnimation> | null = null;
 
 const starData = ref<StarPoint[]>([]);
 const config = ref<any>({});
 const selectedStar = ref<StarPoint | null>(null);
 const isSearching = ref(false);
 
-// 搜索动画上下文
-let searchAnimation: ReturnType<typeof useSearchAnimation> | null = null;
+// 调试面板
+const showDebugPanel = ref(false);
+const debugFinalStar = ref<FinalStarInfo | null>(null);
 
 const handleStarClick = (star: StarPoint) => {
   selectedStar.value = star;
 };
+
+const handleDebugReset = () => {
+  animContext?.resetFinalStar();
+  debugFinalStar.value = null;
+  showDebugPanel.value = false;
+};
+
+const toggleDebugPanel = () => {
+  if (!showDebugPanel.value) {
+    // 打开调试面板：使用当前选中星或最后一颗搜索星
+    const finalFromSearch = animContext?.getFinalStar?.();
+    if (finalFromSearch) {
+      debugFinalStar.value = finalFromSearch;
+      showDebugPanel.value = true;
+      return;
+    }
+    // 回退：用当前选中的星手动构建
+    if (selectedStar.value) {
+      debugFinalStar.value = buildFinalStarInfo(selectedStar.value);
+      showDebugPanel.value = true;
+    }
+  } else {
+    showDebugPanel.value = false;
+  }
+};
+
+function buildFinalStarInfo(star: StarPoint): FinalStarInfo | null {
+  const info = starDataMap.get(star.chunk_id);
+  if (!info) return null;
+
+  const origMat = info.sprite.material.clone() as THREE.SpriteMaterial;
+  // 获取默认颜色（从领域配置）
+  const domainColor = config.value.domains?.[star.domain]?.color || '#ffffff';
+
+  return {
+    sprite: info.sprite,
+    data: info.data,
+    originalScale: new THREE.Vector3(star.size * 0.06, star.size * 0.06, 1),
+    originalMaterial: origMat,
+    domainColor,
+  };
+}
 
 const handleStarHover = (star: StarPoint | null) => {
   // TODO: 显示 tooltip
 };
 
 const handleSearch = async (query: string) => {
-  if (isSearching.value || !searchAnimation) return;
+  if (isSearching.value || !animContext) return;
 
   try {
     isSearching.value = true;
-    console.log('搜索:', query);
-
-    // 调用后端检索
     const results = await search(query);
-    console.log('检索结果:', results);
 
-    // 执行搜索动画
-    await searchAnimation.animateSearch(results);
+    await animContext.animateSearch(results);
 
-    // 显示最终结果详情
     if (results.reranker_final) {
       const finalStar = starData.value.find(
         s => s.chunk_id === results.reranker_final!.chunk_id
       );
       if (finalStar) {
         selectedStar.value = finalStar;
+        // 自动打开调试面板
+        const finalInfo = animContext.getFinalStar();
+        if (finalInfo) {
+          debugFinalStar.value = finalInfo;
+          showDebugPanel.value = true;
+        }
       }
     }
   } catch (error) {
@@ -87,8 +151,9 @@ const handleSearch = async (query: string) => {
 };
 
 const handleStarFieldReady = (context: any) => {
-  console.log('StarField 就绪，初始化搜索动画');
-  searchAnimation = useSearchAnimation(context);
+  starSprites = context.starSprites;
+  starDataMap = context.starDataMap;
+  animContext = useSearchAnimation(context);
 };
 
 onMounted(async () => {
@@ -99,8 +164,6 @@ onMounted(async () => {
     // 加载星图数据
     const result = await getStarData();
     starData.value = result.data;
-
-    console.log(`加载 ${result.count} 个星点`);
   } catch (error) {
     console.error('Failed to load data:', error);
   }
@@ -186,5 +249,31 @@ onMounted(async () => {
   margin: 0.3rem 0 0 0;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.debug-toggle {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  color: #aaa;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.debug-toggle:hover {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}
+
+.debug-toggle.active {
+  background: rgba(52, 211, 153, 0.2);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #34d399;
 }
 </style>
