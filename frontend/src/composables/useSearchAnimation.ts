@@ -727,12 +727,16 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       });
 
-      // 两层辉光：模拟 query 的 highlightAndGrow 小辉光 + reranker 大辉光
-      // 第一层：小辉光（紧贴核心，白色，让核心区域饱满）
-      const innerGlow = createGlow(targetSprite.position, 0xFFFFFF, 1);
+      // 三层辉光：和情况1完全一致
+      // 第一层：白色核心辉光（紧贴核心，让核心区域饱满）
+      const coreGlow = createGlow(targetSprite.position, 0xFFFFFF, 5);
+      if (coreGlow) finalStarGlowSprites.push(coreGlow);
+
+      // 第二层：绿色小辉光（模拟 highlightAndGrow）
+      const innerGlow = createGlow(targetSprite.position, 0x34D399, 3);
       if (innerGlow) finalStarGlowSprites.push(innerGlow);
 
-      // 第二层：大辉光（外层包裹，绿色，和 query 一致）
+      // 第三层：绿色大辉光（和 query reranker 一致）
       const glow = createGlow(targetSprite.position, 0x34D399, 30);
       if (glow) finalStarGlowSprites.push(glow);
 
