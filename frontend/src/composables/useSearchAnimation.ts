@@ -586,16 +586,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       newMat.needsUpdate = true;
       targetSprite.material = newMat;
 
-      // 辉光：和 query 完全一致，多层辉光叠加
+      // 辉光：和 query 完全一致
       // 第一层：白色核心辉光（紧贴核心，让核心区域饱满）
       const coreGlow = createGlow(targetPos, 0xFFFFFF, 5);
       if (coreGlow) finalStarGlowSprites.push(coreGlow);
 
-      // 第二层：小辉光（模拟 highlightAndGrow 阶段）
-      const innerGlow = createGlow(targetPos, 0x34D399, 3);
-      if (innerGlow) finalStarGlowSprites.push(innerGlow);
-
-      // 第三层：大辉光（和 query reranker 阶段一致）
+      // 第二层：大辉光（和 query reranker 阶段一致）
       const glow = createGlow(targetPos, 0x34D399, 30);
       if (glow) finalStarGlowSprites.push(glow);
 
@@ -727,16 +723,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       });
 
-      // 三层辉光：和情况1完全一致
+      // 两层辉光：和情况1完全一致
       // 第一层：白色核心辉光（紧贴核心，让核心区域饱满）
       const coreGlow = createGlow(targetSprite.position, 0xFFFFFF, 5);
       if (coreGlow) finalStarGlowSprites.push(coreGlow);
 
-      // 第二层：绿色小辉光（模拟 highlightAndGrow）
-      const innerGlow = createGlow(targetSprite.position, 0x34D399, 3);
-      if (innerGlow) finalStarGlowSprites.push(innerGlow);
-
-      // 第三层：绿色大辉光（和 query reranker 一致）
+      // 第二层：绿色大辉光（和 query reranker 一致）
       const glow = createGlow(targetSprite.position, 0x34D399, 30);
       if (glow) finalStarGlowSprites.push(glow);
 
