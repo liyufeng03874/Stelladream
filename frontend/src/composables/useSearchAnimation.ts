@@ -543,10 +543,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // 情况1：没有最终星（还没搜索过），使用默认样式
     if (!finalStarInfo || !finalStarInfo.sprite) {
-      const defaultColor = '#ffffff';
       const glowColor = 0x34D399;
+      const targetPos = targetSprite.position;
 
-      // 克隆材质（白核心）
+      // 先 highlightAndGrow（白核心 + 2.2x 放大），和搜索动画一致
+      gsap.killTweensOf(targetSprite.scale);
+      gsap.killTweensOf(targetSprite.material);
+
       const oldMat = targetSprite.material as THREE.SpriteMaterial;
       const newMat = oldMat.clone();
       newMat.color.setHex(0xFFFFFF);
@@ -555,15 +558,97 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       newMat.needsUpdate = true;
       targetSprite.material = newMat;
 
-      gsap.killTweensOf(targetSprite.scale);
-      gsap.killTweensOf(newMat);
+      // 第一步：先放大到 2.2x（白核心）
+      gsap.to(targetSprite.scale, {
+        x: targetOrigScale.x * 2.2,
+        y: targetOrigScale.y * 2.2,
+        z: targetOrigScale.z * 2.2,
+        duration: 0.6,
+        ease: 'power2.out',
+      });
 
-      // 加辉光球
-      const glow = createGlow(targetSprite.position, glowColor, 30);
-      if (glow) finalStarGlowSprites.push(glow);
+      // 第二步：流星特效
+      if (isVectorValid(targetPos)) {
+        shootMeteors([targetPos], 0x34D399, 0);
+      }
 
-      // 放大动画
-      const targetPos = targetSprite.position;
+      // 第三步：再 GSAP 到 5x（和搜索动画一致）
+      setTimeout(() => {
+        gsap.to(targetSprite.scale, {
+          x: targetOrigScale.x * 5,
+          y: targetOrigScale.y * 5,
+          z: targetOrigScale.z * 5,
+          duration: 1.8,
+          ease: 'power3.out',
+        });
+
+        gsap.to(newMat, {
+          opacity: 0.7,
+          duration: 0.8,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+        });
+
+        const glow = createGlow(targetPos, glowColor, 30);
+        if (glow) finalStarGlowSprites.push(glow);
+
+        finalStarInfo = {
+          sprite: targetSprite,
+          data: null,
+          trueOriginalScale: targetOrigScale,
+          trueOriginalMaterial: targetOrigMat,
+          domainColor: '#34D399',
+          appliedStyle: {
+            coreColor: '#ffffff',
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending,
+            scaleMultiplier: 5,
+            glowColor: 0x34D399,
+            glowSize: 30,
+            breathingActive: true,
+          },
+        };
+
+        flyToStar(targetPos, 1.5);
+      }, 600);
+
+      return;
+    }
+
+    // 情况2：有最终星，转移样式
+    // 1. 清除最终星的辉光
+    clearAllGlows();
+
+    // 2. 恢复最终星
+    resetFinalStar();
+
+    // 3. 目标星：和搜索动画完全一致的两步扩散
+    const targetPos = targetSprite.position;
+
+    // 第一步：白核心 + 2.2x 放大（和 highlightAndGrow 一致）
+    gsap.killTweensOf(targetSprite.scale);
+    gsap.killTweensOf(targetSprite.material);
+
+    const oldMat = targetSprite.material as THREE.SpriteMaterial;
+    const newMat = oldMat.clone();
+    newMat.color.setHex(0xFFFFFF);
+    newMat.opacity = 1;
+    newMat.blending = THREE.AdditiveBlending;
+    newMat.needsUpdate = true;
+    targetSprite.material = newMat;
+
+    gsap.to(targetSprite.scale, {
+      x: targetOrigScale.x * 2.2,
+      y: targetOrigScale.y * 2.2,
+      z: targetOrigScale.z * 2.2,
+      duration: 0.8,
+      ease: 'power2.out',
+      delay: 0.3,
+    });
+
+    // 第二步：0.8s 后再 GSAP 到 5x
+    setTimeout(() => {
       gsap.to(targetSprite.scale, {
         x: targetOrigScale.x * 5,
         y: targetOrigScale.y * 5,
@@ -571,6 +656,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         duration: 1.8,
         ease: 'power3.out',
       });
+
+      const glow = createGlow(targetSprite.position, 0x34D399, 30);
+      if (glow) finalStarGlowSprites.push(glow);
 
       gsap.to(newMat, {
         opacity: 0.7,
@@ -580,13 +668,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         repeat: -1,
       });
 
-      // 更新 finalStarInfo
       finalStarInfo = {
         sprite: targetSprite,
         data: null,
         trueOriginalScale: targetOrigScale,
         trueOriginalMaterial: targetOrigMat,
-        domainColor: '#34D399',
+        domainColor: domainColorFromSprite(targetOrigMat),
         appliedStyle: {
           coreColor: '#ffffff',
           opacity: 0.7,
@@ -598,74 +685,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       };
 
-      // 相机飞行
       flyToStar(targetPos, 1.5);
-      return;
-    }
-
-    // 情况2：有最终星，转移样式
-    console.log('[jumpToStar] 1. clearAllGlows');
-    clearAllGlows();
-
-    console.log('[jumpToStar] 2. resetFinalStar');
-    resetFinalStar();
-
-    console.log('[jumpToStar] 4. cloning material');
-    const oldMat = targetSprite.material as THREE.SpriteMaterial;
-    const newMat = oldMat.clone();
-    newMat.color.setHex(0xFFFFFF);
-    newMat.opacity = 1;
-    newMat.blending = THREE.AdditiveBlending;
-    newMat.needsUpdate = true;
-    targetSprite.material = newMat;
-
-    gsap.killTweensOf(targetSprite.scale);
-    gsap.killTweensOf(newMat);
-
-    console.log('[jumpToStar] 5. createGlow');
-    const glow = createGlow(targetSprite.position, 0x34D399, 30);
-    if (glow) finalStarGlowSprites.push(glow);
-
-    console.log('[jumpToStar] 6. scale animation');
-    const targetPos = targetSprite.position;
-    console.log('[jumpToStar] targetPos:', targetPos.x.toFixed(2), targetPos.y.toFixed(2), targetPos.z.toFixed(2));
-    gsap.to(targetSprite.scale, {
-      x: targetOrigScale.x * 5,
-      y: targetOrigScale.y * 5,
-      z: targetOrigScale.z * 5,
-      duration: 1.8,
-      ease: 'power3.out',
-    });
-
-    gsap.to(newMat, {
-      opacity: 0.7,
-      duration: 0.8,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-    });
-
-    console.log('[jumpToStar] 7. update finalStarInfo');
-    finalStarInfo = {
-      sprite: targetSprite,
-      data: null,
-      trueOriginalScale: targetOrigScale,
-      trueOriginalMaterial: targetOrigMat,
-      domainColor: domainColorFromSprite(targetOrigMat),
-      appliedStyle: {
-        coreColor: '#ffffff',
-        opacity: 0.7,
-        blending: THREE.AdditiveBlending,
-        scaleMultiplier: 5,
-        glowColor: 0x34D399,
-        glowSize: 30,
-        breathingActive: true,
-      },
-    };
-
-    console.log('[jumpToStar] 8. flyToStar');
-    flyToStar(targetPos, 1.5);
-    console.log('[jumpToStar] done');
+    }, 1100);
   }
 
   function domainColorFromSprite(mat: THREE.SpriteMaterial): string {
