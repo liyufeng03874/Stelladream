@@ -586,13 +586,23 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       newMat.needsUpdate = true;
       targetSprite.material = newMat;
 
-      // 辉光：和 query 完全一致，固定 30
+      // 辉光：和 query 完全一致，多层辉光叠加
+      // 第一层：白色核心辉光（紧贴核心，让核心区域饱满）
+      const coreGlow = createGlow(targetPos, 0xFFFFFF, 5);
+      if (coreGlow) finalStarGlowSprites.push(coreGlow);
+
+      // 第二层：小辉光（模拟 highlightAndGrow 阶段）
+      const innerGlow = createGlow(targetPos, 0x34D399, 3);
+      if (innerGlow) finalStarGlowSprites.push(innerGlow);
+
+      // 第三层：大辉光（和 query reranker 阶段一致）
       const glow = createGlow(targetPos, 0x34D399, 30);
       if (glow) finalStarGlowSprites.push(glow);
-      console.log('[jumpToStar-情况1] glow created, size=30, material color:', '0x' + glow.material.color.getHexString().toUpperCase());
 
-      // 放大动画 — 和 query 一致，用相同的最终尺寸
-      const uniformFinalScale = 0.6; // query 的最终 x/y 尺寸
+      console.log('[jumpToStar-情况1] glows created: 3 layers (white5, green3, green30)');
+
+      // 放大动画 — 和 query 完全一致 0.6，让辉光完全包裹核心
+      const uniformFinalScale = 0.6;
       console.log('[jumpToStar-情况1] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
       console.log('[jumpToStar-情况1] target BEFORE:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
       // 等动画完成打印
