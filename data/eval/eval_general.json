@@ -1,0 +1,2114 @@
+{
+  "domain": "general",
+  "summary": {
+    "hr@1": 0.858,
+    "hr@3": 0.896,
+    "hr@5": 0.908,
+    "recall@5": 0.908,
+    "precision@5": 0.1816,
+    "mrr@5": 0.8777,
+    "ndcg@5": 0.908
+  },
+  "samples": [
+    {
+      "id": "cmrc_q_10476",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001002",
+        "cmrc_000981",
+        "cmrc_002493",
+        "cmrc_002549",
+        "cmrc_002558"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01824",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000490",
+        "cmrc_002704",
+        "cmrc_003388",
+        "cmrc_001423",
+        "cmrc_001496"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_00409",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000113",
+        "cmrc_002705",
+        "cmrc_000755",
+        "cmrc_001459",
+        "cmrc_002842"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_12149",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002949",
+        "cmrc_000315",
+        "cmrc_001350",
+        "cmrc_000136",
+        "cmrc_000362"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04506",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001108",
+        "cmrc_001105",
+        "cmrc_001725",
+        "cmrc_000520",
+        "cmrc_001110"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04012",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000983",
+        "cmrc_000607",
+        "cmrc_000783",
+        "cmrc_002489",
+        "cmrc_001205"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03657",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000910",
+        "cmrc_000530",
+        "cmrc_001968",
+        "cmrc_003077",
+        "cmrc_003133"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_02286",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000612",
+        "cmrc_001988",
+        "cmrc_001965",
+        "cmrc_001972",
+        "cmrc_000340"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_12066",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002930",
+        "cmrc_000061",
+        "cmrc_002872",
+        "cmrc_002771",
+        "cmrc_001806"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01679",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000448",
+        "cmrc_003421",
+        "cmrc_002093",
+        "cmrc_003403",
+        "cmrc_002906"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_11087",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002673",
+        "cmrc_002656",
+        "cmrc_002659",
+        "cmrc_002775",
+        "cmrc_001488"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_12135",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002946",
+        "cmrc_000970",
+        "cmrc_000968",
+        "cmrc_002872",
+        "cmrc_003491"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_08935",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000697",
+        "cmrc_002113",
+        "cmrc_001565",
+        "cmrc_000953",
+        "cmrc_001679"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01424",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000378",
+        "cmrc_001834",
+        "cmrc_001818",
+        "cmrc_001942",
+        "cmrc_001429"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_09674",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000637",
+        "cmrc_003493",
+        "cmrc_002291",
+        "cmrc_000906",
+        "cmrc_002211"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_06912",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001614",
+        "cmrc_002614",
+        "cmrc_000382",
+        "cmrc_003042",
+        "cmrc_002943"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_00520",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000143",
+        "cmrc_001497",
+        "cmrc_002893",
+        "cmrc_001571",
+        "cmrc_000001"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_00488",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000134",
+        "cmrc_002429",
+        "cmrc_002459",
+        "cmrc_002441",
+        "cmrc_001026"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01535",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000907",
+        "cmrc_000411",
+        "cmrc_002026",
+        "cmrc_001084",
+        "cmrc_000466"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cmrc_q_03582",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002800",
+        "cmrc_000894",
+        "cmrc_002214",
+        "cmrc_003495",
+        "cmrc_000787"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03811",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000942",
+        "cmrc_000918",
+        "cmrc_002293",
+        "cmrc_001973",
+        "cmrc_002952"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_08279",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001920",
+        "cmrc_001402",
+        "cmrc_002641",
+        "cmrc_000561",
+        "cmrc_001585"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_09863",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002335",
+        "cmrc_000108",
+        "cmrc_000366",
+        "cmrc_001902",
+        "cmrc_000729"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_00434",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000119",
+        "cmrc_001430",
+        "cmrc_000924",
+        "cmrc_001960",
+        "cmrc_002068"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_09195",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002173",
+        "cmrc_002165",
+        "cmrc_001335",
+        "cmrc_001316",
+        "cmrc_002172"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03257",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000827",
+        "cmrc_003281",
+        "cmrc_000321",
+        "cmrc_002976",
+        "cmrc_001473"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_11731",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002854",
+        "cmrc_001706",
+        "cmrc_003325",
+        "cmrc_000427",
+        "cmrc_003301"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_10647",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002541",
+        "cmrc_003061",
+        "cmrc_002010",
+        "cmrc_000675",
+        "cmrc_002321"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_11490",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002784",
+        "cmrc_002936",
+        "cmrc_000993",
+        "cmrc_000834",
+        "cmrc_002063"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_08928",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002112",
+        "cmrc_002970",
+        "cmrc_002448",
+        "cmrc_000219",
+        "cmrc_000115"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_06873",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001621",
+        "cmrc_001481",
+        "cmrc_001606",
+        "cmrc_001472",
+        "cmrc_002377"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03611",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003216",
+        "cmrc_000900",
+        "cmrc_003057",
+        "cmrc_001951",
+        "cmrc_003061"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_07359",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001707",
+        "cmrc_000281",
+        "cmrc_000611",
+        "cmrc_003457",
+        "cmrc_000794"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_09654",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002389",
+        "cmrc_003496",
+        "cmrc_002287",
+        "cmrc_001174",
+        "cmrc_000544"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04557",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001118",
+        "cmrc_001734",
+        "cmrc_001677",
+        "cmrc_002293",
+        "cmrc_001932"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_13261",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003228",
+        "cmrc_000775",
+        "cmrc_002725",
+        "cmrc_003144",
+        "cmrc_001122"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_14242",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003475",
+        "cmrc_003239",
+        "cmrc_003238",
+        "cmrc_002865",
+        "cmrc_002151"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_00106",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000026",
+        "cmrc_001000",
+        "cmrc_000573",
+        "cmrc_000392",
+        "cmrc_003260"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_12432",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003015",
+        "cmrc_002053",
+        "cmrc_000117",
+        "cmrc_000267",
+        "cmrc_001483"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_13202",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003220",
+        "cmrc_000259",
+        "cmrc_002456",
+        "cmrc_002361",
+        "cmrc_002702"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cmrc_q_02615",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000693",
+        "cmrc_001835",
+        "cmrc_001633",
+        "cmrc_000029",
+        "cmrc_002377"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_11438",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002769",
+        "cmrc_000290",
+        "cmrc_002675",
+        "cmrc_002576",
+        "cmrc_002754"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_06924",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001616",
+        "cmrc_002007",
+        "cmrc_001414",
+        "cmrc_002865",
+        "cmrc_000579"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_05574",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001336",
+        "cmrc_000376",
+        "cmrc_000240",
+        "cmrc_001933",
+        "cmrc_001899"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04552",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001117",
+        "cmrc_001345",
+        "cmrc_002645",
+        "cmrc_000767",
+        "cmrc_001071"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_02547",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000678",
+        "cmrc_002898",
+        "cmrc_003309",
+        "cmrc_002268",
+        "cmrc_001197"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03527",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000882",
+        "cmrc_000687",
+        "cmrc_000027",
+        "cmrc_003400",
+        "cmrc_001680"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_12509",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003036",
+        "cmrc_003122",
+        "cmrc_000146",
+        "cmrc_003427",
+        "cmrc_002571"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_05514",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001323",
+        "cmrc_001960",
+        "cmrc_000353",
+        "cmrc_003444",
+        "cmrc_000989"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01674",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002386",
+        "cmrc_000447",
+        "cmrc_001875",
+        "cmrc_003370",
+        "cmrc_001155"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01519",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000404",
+        "cmrc_000245",
+        "cmrc_002951",
+        "cmrc_000501",
+        "cmrc_002033"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_06224",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001470",
+        "cmrc_002184",
+        "cmrc_001521",
+        "cmrc_002090",
+        "cmrc_002623"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01584",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000151",
+        "cmrc_001937",
+        "cmrc_003343",
+        "cmrc_001267",
+        "cmrc_001167"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cmrc_q_05881",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001398",
+        "cmrc_002071",
+        "cmrc_002910",
+        "cmrc_003040",
+        "cmrc_003118"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_13885",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003385",
+        "cmrc_003490",
+        "cmrc_000096",
+        "cmrc_002636",
+        "cmrc_003352"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_05635",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001348",
+        "cmrc_001557",
+        "cmrc_002833",
+        "cmrc_002239",
+        "cmrc_001330"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_09891",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002342",
+        "cmrc_003360",
+        "cmrc_001995",
+        "cmrc_001124",
+        "cmrc_000240"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04333",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001067",
+        "cmrc_001619",
+        "cmrc_000779",
+        "cmrc_003418",
+        "cmrc_001038"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_13223",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003220",
+        "cmrc_002330",
+        "cmrc_002622",
+        "cmrc_000586",
+        "cmrc_000150"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_00711",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000193",
+        "cmrc_002624",
+        "cmrc_000854",
+        "cmrc_002098",
+        "cmrc_003419"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_11955",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002904",
+        "cmrc_000759",
+        "cmrc_000405",
+        "cmrc_002105",
+        "cmrc_001982"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_07527",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001742",
+        "cmrc_000523",
+        "cmrc_000283",
+        "cmrc_000471",
+        "cmrc_002879"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_08785",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002078",
+        "cmrc_000065",
+        "cmrc_003030",
+        "cmrc_002907",
+        "cmrc_000374"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_02045",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000549",
+        "cmrc_001220",
+        "cmrc_000117",
+        "cmrc_000834",
+        "cmrc_001565"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_06201",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001465",
+        "cmrc_001454",
+        "cmrc_001491",
+        "cmrc_001504",
+        "cmrc_001477"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01291",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000346",
+        "cmrc_001481",
+        "cmrc_001311",
+        "cmrc_002315",
+        "cmrc_002548"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_09044",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002138",
+        "cmrc_002136",
+        "cmrc_002134",
+        "cmrc_001376",
+        "cmrc_002137"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04803",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001172",
+        "cmrc_003212",
+        "cmrc_003084",
+        "cmrc_002336",
+        "cmrc_001458"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_13588",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003309",
+        "cmrc_001432",
+        "cmrc_001480",
+        "cmrc_001433",
+        "cmrc_001996"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_10299",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002444",
+        "cmrc_001810",
+        "cmrc_001238",
+        "cmrc_000385",
+        "cmrc_003388"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_10133",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002400",
+        "cmrc_002402",
+        "cmrc_002907",
+        "cmrc_002763",
+        "cmrc_000129"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_14118",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003444",
+        "cmrc_000936",
+        "cmrc_001509",
+        "cmrc_000368",
+        "cmrc_000723"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_05925",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001407",
+        "cmrc_001405",
+        "cmrc_001516",
+        "cmrc_000048",
+        "cmrc_000272"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_09459",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002240",
+        "cmrc_002218",
+        "cmrc_002297",
+        "cmrc_001989",
+        "cmrc_002761"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03150",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000884",
+        "cmrc_000803",
+        "cmrc_000901",
+        "cmrc_001679",
+        "cmrc_003070"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_11543",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002798",
+        "cmrc_002806",
+        "cmrc_002373",
+        "cmrc_000982",
+        "cmrc_001809"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01139",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000308",
+        "cmrc_001600",
+        "cmrc_001478",
+        "cmrc_003124",
+        "cmrc_001199"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_00750",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000205",
+        "cmrc_003067",
+        "cmrc_003437",
+        "cmrc_001173",
+        "cmrc_003476"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_10834",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002590",
+        "cmrc_002578",
+        "cmrc_000312",
+        "cmrc_002575",
+        "cmrc_001380"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03733",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000926",
+        "cmrc_000788",
+        "cmrc_001711",
+        "cmrc_000302",
+        "cmrc_000938"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_12665",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003083",
+        "cmrc_000717",
+        "cmrc_003118",
+        "cmrc_001398",
+        "cmrc_002976"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04741",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001158",
+        "cmrc_001536",
+        "cmrc_001660",
+        "cmrc_002757",
+        "cmrc_000023"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01307",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000350",
+        "cmrc_000223",
+        "cmrc_001358",
+        "cmrc_001617",
+        "cmrc_001067"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_14013",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002994",
+        "cmrc_000272",
+        "cmrc_000900",
+        "cmrc_001945",
+        "cmrc_001642"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cmrc_q_03814",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000942",
+        "cmrc_002952",
+        "cmrc_002293",
+        "cmrc_000918",
+        "cmrc_002367"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_14196",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_003464",
+        "cmrc_001785",
+        "cmrc_001169",
+        "cmrc_000499",
+        "cmrc_001960"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_01654",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000442",
+        "cmrc_002859",
+        "cmrc_000401",
+        "cmrc_002438",
+        "cmrc_002002"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_06227",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001471",
+        "cmrc_000424",
+        "cmrc_002584",
+        "cmrc_002629",
+        "cmrc_000214"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04554",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001118",
+        "cmrc_001255",
+        "cmrc_000918",
+        "cmrc_000874",
+        "cmrc_002791"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_07428",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001721",
+        "cmrc_000076",
+        "cmrc_002606",
+        "cmrc_000034",
+        "cmrc_003418"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_10415",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002473",
+        "cmrc_003302",
+        "cmrc_002549",
+        "cmrc_003200",
+        "cmrc_003362"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_13666",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001564",
+        "cmrc_001940",
+        "cmrc_001006",
+        "cmrc_001347",
+        "cmrc_003455"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cmrc_q_05977",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000901",
+        "cmrc_001572",
+        "cmrc_001418",
+        "cmrc_000774",
+        "cmrc_001279"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_02664",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000703",
+        "cmrc_002795",
+        "cmrc_002092",
+        "cmrc_000234",
+        "cmrc_000411"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_06065",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001436",
+        "cmrc_002701",
+        "cmrc_003220",
+        "cmrc_002702",
+        "cmrc_002760"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_05820",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001386",
+        "cmrc_002172",
+        "cmrc_000312",
+        "cmrc_001277",
+        "cmrc_002147"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_03432",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_000863",
+        "cmrc_003327",
+        "cmrc_000779",
+        "cmrc_003088",
+        "cmrc_001995"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_10980",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002639",
+        "cmrc_001657",
+        "cmrc_002618",
+        "cmrc_002811",
+        "cmrc_000207"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_04374",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_001078",
+        "cmrc_001895",
+        "cmrc_001191",
+        "cmrc_001064",
+        "cmrc_001697"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    },
+    {
+      "id": "cmrc_q_11498",
+      "query": "",
+      "retrieved_ids": [
+        "cmrc_002786",
+        "cmrc_002910",
+        "cmrc_002976",
+        "cmrc_002051",
+        "cmrc_000321"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 1.0
+      },
+      "ndcg@5": 1.0
+    }
+  ]
+}

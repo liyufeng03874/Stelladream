@@ -104,27 +104,37 @@ async def search(request: SearchRequest) -> SearchResponse:
 
 
 @app.get("/api/eval/{domain}")
-async def get_eval_data(domain: str, step: int):
-    """评估回放数据接口"""
-    # TODO: 实现评估数据加载
-    # 这将在 Phase 5 实现
+async def get_eval_data(domain: str):
+    """获取评估数据用于回放"""
+    eval_path = Path(__file__).parent.parent / "data" / "eval" / f"eval_{domain}.json"
 
-    if domain not in ["medical", "law", "general"]:
-        raise HTTPException(status_code=400, detail="Invalid domain")
+    if not eval_path.exists():
+        raise HTTPException(status_code=404, detail=f"评估数据不存在: {domain}")
 
-    return {
-        "query": "",
-        "results": [],
-        "is_correct": False,
-        "ndcg_at_5": 0.0,
-        "cumulative_ndcg": 0.0
-    }
+    with open(eval_path, "r", encoding="utf-8") as f:
+        eval_data = json.load(f)
+
+    return eval_data
 
 
 @app.get("/api/config")
 async def get_config():
     """获取配置信息"""
     return config
+
+
+@app.get("/api/eval/{domain}")
+async def get_eval_data(domain: str):
+    """获取评估数据用于回放"""
+    eval_path = Path(__file__).parent.parent / "data" / "eval" / f"eval_{domain}.json"
+
+    if not eval_path.exists():
+        raise HTTPException(status_code=404, detail=f"评估数据不存在: {domain}")
+
+    with open(eval_path, "r", encoding="utf-8") as f:
+        eval_data = json.load(f)
+
+    return eval_data
 
 
 if __name__ == "__main__":

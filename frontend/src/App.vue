@@ -40,6 +40,13 @@
       <button class="debug-toggle" @click="toggleDebugPanel" :class="{ active: showDebugPanel }">
         {{ showDebugPanel ? '关闭调试' : '🔬 调试' }}
       </button>
+
+      <!-- 评估回放面板 -->
+      <button class="eval-toggle" @click="showEvalPanel = !showEvalPanel" :class="{ active: showEvalPanel }">
+        {{ showEvalPanel ? '关闭回放' : '📊 评估回放' }}
+      </button>
+
+      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" />
     </div>
   </div>
 </template>
