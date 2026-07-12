@@ -533,21 +533,82 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   function jumpToStar(targetSprite: THREE.Sprite) {
     console.log('[jumpToStar] called, targetSprite exists:', !!targetSprite);
     console.log('[jumpToStar] finalStarInfo exists:', !!finalStarInfo, 'has sprite:', !!finalStarInfo?.sprite);
-    if (!finalStarInfo?.sprite) return;
 
-    console.log('[jumpToStar] 1. clearAllGlows');
-    clearAllGlows();
-
-    console.log('[jumpToStar] 2. resetFinalStar');
-    resetFinalStar();
-
-    // 3. 从 sprite.userData 获取原始数据（StarField 创建时已存）
-    console.log('[jumpToStar] 3. getting targetOrig from userData');
+    // 从 sprite.userData 获取原始数据（StarField 创建时已存）
     const targetOrig = targetSprite.userData.trueOriginals;
     console.log('[jumpToStar] targetOrig found:', !!targetOrig);
     if (!targetOrig) return;
     const targetOrigScale = targetOrig.scale.clone();
     const targetOrigMat = targetOrig.material;
+
+    // 情况1：没有最终星（还没搜索过），使用默认样式
+    if (!finalStarInfo || !finalStarInfo.sprite) {
+      const defaultColor = '#ffffff';
+      const glowColor = 0x34D399;
+
+      // 克隆材质（白核心）
+      const oldMat = targetSprite.material as THREE.SpriteMaterial;
+      const newMat = oldMat.clone();
+      newMat.color.setHex(0xFFFFFF);
+      newMat.opacity = 1;
+      newMat.blending = THREE.AdditiveBlending;
+      newMat.needsUpdate = true;
+      targetSprite.material = newMat;
+
+      gsap.killTweensOf(targetSprite.scale);
+      gsap.killTweensOf(newMat);
+
+      // 加辉光球
+      const glow = createGlow(targetSprite.position, glowColor, 30);
+      if (glow) finalStarGlowSprites.push(glow);
+
+      // 放大动画
+      const targetPos = targetSprite.position;
+      gsap.to(targetSprite.scale, {
+        x: targetOrigScale.x * 5,
+        y: targetOrigScale.y * 5,
+        z: targetOrigScale.z * 5,
+        duration: 1.8,
+        ease: 'power3.out',
+      });
+
+      gsap.to(newMat, {
+        opacity: 0.7,
+        duration: 0.8,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      });
+
+      // 更新 finalStarInfo
+      finalStarInfo = {
+        sprite: targetSprite,
+        data: null,
+        trueOriginalScale: targetOrigScale,
+        trueOriginalMaterial: targetOrigMat,
+        domainColor: '#34D399',
+        appliedStyle: {
+          coreColor: '#ffffff',
+          opacity: 0.7,
+          blending: THREE.AdditiveBlending,
+          scaleMultiplier: 5,
+          glowColor: 0x34D399,
+          glowSize: 30,
+          breathingActive: true,
+        },
+      };
+
+      // 相机飞行
+      flyToStar(targetPos, 1.5);
+      return;
+    }
+
+    // 情况2：有最终星，转移样式
+    console.log('[jumpToStar] 1. clearAllGlows');
+    clearAllGlows();
+
+    console.log('[jumpToStar] 2. resetFinalStar');
+    resetFinalStar();
 
     console.log('[jumpToStar] 4. cloning material');
     const oldMat = targetSprite.material as THREE.SpriteMaterial;
