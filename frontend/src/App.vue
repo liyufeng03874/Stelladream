@@ -26,6 +26,7 @@
         v-if="selectedStar && !showDebugPanel"
         :star="selectedStar"
         @close="selectedStar = null"
+        @jump="handleStarJump"
       />
 
       <!-- 调试面板：搜索后自动弹出 或 手动切换 -->
@@ -92,6 +93,17 @@ const handleDebugReset = () => {
   animContext?.resetFinalStar();
   debugFinalStar.value = null;
   showDebugPanel.value = false;
+};
+
+const handleStarJump = () => {
+  console.log('[handleStarJump] called, selectedStar:', selectedStar.value);
+  if (!selectedStar.value || !animContext) return;
+  const targetInfo = starDataMap.get(selectedStar.value.chunk_id);
+  console.log('[handleStarJump] targetInfo found:', !!targetInfo, 'chunk_id:', selectedStar.value.chunk_id);
+  if (!targetInfo) return;
+  console.log('[handleStarJump] targetSprite:', !!targetInfo.sprite);
+  animContext.jumpToStar(targetInfo.sprite);
+  selectedStar.value = null;
 };
 
 const toggleDebugPanel = () => {

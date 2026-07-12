@@ -527,6 +527,90 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     }
   }
 
+  /**
+   * 星跃：旧最终星恢复原样，新星星继承最终星样式，相机飞过去
+   */
+  function jumpToStar(targetSprite: THREE.Sprite) {
+    console.log('[jumpToStar] called, targetSprite exists:', !!targetSprite);
+    console.log('[jumpToStar] finalStarInfo exists:', !!finalStarInfo, 'has sprite:', !!finalStarInfo?.sprite);
+    if (!finalStarInfo?.sprite) return;
+
+    console.log('[jumpToStar] 1. clearAllGlows');
+    clearAllGlows();
+
+    console.log('[jumpToStar] 2. resetFinalStar');
+    resetFinalStar();
+
+    // 3. 从 sprite.userData 获取原始数据（StarField 创建时已存）
+    console.log('[jumpToStar] 3. getting targetOrig from userData');
+    const targetOrig = targetSprite.userData.trueOriginals;
+    console.log('[jumpToStar] targetOrig found:', !!targetOrig);
+    if (!targetOrig) return;
+    const targetOrigScale = targetOrig.scale.clone();
+    const targetOrigMat = targetOrig.material;
+
+    console.log('[jumpToStar] 4. cloning material');
+    const oldMat = targetSprite.material as THREE.SpriteMaterial;
+    const newMat = oldMat.clone();
+    newMat.color.setHex(0xFFFFFF);
+    newMat.opacity = 1;
+    newMat.blending = THREE.AdditiveBlending;
+    newMat.needsUpdate = true;
+    targetSprite.material = newMat;
+
+    gsap.killTweensOf(targetSprite.scale);
+    gsap.killTweensOf(newMat);
+
+    console.log('[jumpToStar] 5. createGlow');
+    const glow = createGlow(targetSprite.position, 0x34D399, 30);
+    if (glow) finalStarGlowSprites.push(glow);
+
+    console.log('[jumpToStar] 6. scale animation');
+    const targetPos = targetSprite.position;
+    console.log('[jumpToStar] targetPos:', targetPos.x.toFixed(2), targetPos.y.toFixed(2), targetPos.z.toFixed(2));
+    gsap.to(targetSprite.scale, {
+      x: targetOrigScale.x * 5,
+      y: targetOrigScale.y * 5,
+      z: targetOrigScale.z * 5,
+      duration: 1.8,
+      ease: 'power3.out',
+    });
+
+    gsap.to(newMat, {
+      opacity: 0.7,
+      duration: 0.8,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    });
+
+    console.log('[jumpToStar] 7. update finalStarInfo');
+    finalStarInfo = {
+      sprite: targetSprite,
+      data: null,
+      trueOriginalScale: targetOrigScale,
+      trueOriginalMaterial: targetOrigMat,
+      domainColor: domainColorFromSprite(targetOrigMat),
+      appliedStyle: {
+        coreColor: '#ffffff',
+        opacity: 0.7,
+        blending: THREE.AdditiveBlending,
+        scaleMultiplier: 5,
+        glowColor: 0x34D399,
+        glowSize: 30,
+        breathingActive: true,
+      },
+    };
+
+    console.log('[jumpToStar] 8. flyToStar');
+    flyToStar(targetPos, 1.5);
+    console.log('[jumpToStar] done');
+  }
+
+  function domainColorFromSprite(mat: THREE.SpriteMaterial): string {
+    return '#' + mat.color.getHexString();
+  }
+
   function resetFinalStar() {
     if (!finalStarInfo) return;
     const { sprite, trueOriginalScale, trueOriginalMaterial } = finalStarInfo;
@@ -581,5 +665,5 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return finalStarInfo;
   }
 
-  return { animateSearch, cleanup, getFinalStar, resetFinalStar };
+  return { animateSearch, cleanup, getFinalStar, resetFinalStar, jumpToStar };
 }

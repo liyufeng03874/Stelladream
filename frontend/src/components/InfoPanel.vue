@@ -34,6 +34,10 @@
         <span class="label">内容:</span>
         <div class="content-text">{{ star.content }}</div>
       </div>
+
+      <button @click="emit('jump')" class="jump-button">
+        ⚡ 星跃
+      </button>
     </div>
   </div>
 </template>
@@ -48,6 +52,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{
   'close': [];
+  'jump': [];
 }>();
 
 // 这些将从配置加载，现在先硬编码
@@ -174,5 +179,24 @@ const getDomainName = (domain: string) => domainNames[domain] || domain;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
+}
+
+.jump-button {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.75rem 0;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6, #A855F7);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.jump-button:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
 }
 </style>

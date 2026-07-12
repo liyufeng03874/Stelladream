@@ -154,11 +154,18 @@ const renderStars = () => {
     sprite.position.set(star.x, star.y, star.z);
     const scale = star.size * 0.06;
     sprite.scale.set(scale, scale, 1);
-    sprite.userData = star;
 
     // 保存真正的原始材质和 scale（在 highlightAndGrow 修改之前）
     const originalMat = material.clone();
     const originalScale = new THREE.Vector3(scale, scale, 1);
+
+    sprite.userData = {
+      ...star,
+      trueOriginals: {
+        scale: originalScale.clone(),
+        material: originalMat,
+      },
+    };
 
     scene.add(sprite);
     starSprites.push(sprite);
