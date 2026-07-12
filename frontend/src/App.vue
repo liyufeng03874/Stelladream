@@ -58,6 +58,7 @@ import StarField from './components/StarField.vue';
 import SearchBar from './components/SearchBar.vue';
 import InfoPanel from './components/InfoPanel.vue';
 import DebugPanel from './components/DebugPanel.vue';
+import EvalReplay from './components/EvalReplay.vue';
 import type { FinalStarInfo } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
 import { useSearchAnimation } from './composables/useSearchAnimation';
@@ -75,6 +76,13 @@ const isSearching = ref(false);
 // 调试面板
 const showDebugPanel = ref(false);
 const debugFinalStar = ref<FinalStarInfo | null>(null);
+
+// 评估回放面板
+const showEvalPanel = ref(false);
+
+const handleEvalHighlight = (_payload: any) => {
+  // 评估回放的高亮事件，后续可对接星场动画
+};
 
 const handleStarClick = (star: StarPoint) => {
   selectedStar.value = star;

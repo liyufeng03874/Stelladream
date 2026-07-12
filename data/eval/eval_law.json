@@ -2109,6 +2109,8406 @@
         "ndcg@5": 0.0
       },
       "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_017395",
+      "query": "",
+      "retrieved_ids": [
+        "law_017395",
+        "law_119589",
+        "law_080745",
+        "law_140031",
+        "law_020268"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_071628",
+      "query": "",
+      "retrieved_ids": [
+        "law_071628",
+        "law_058782",
+        "law_150307",
+        "law_149742",
+        "law_118049"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_100265",
+      "query": "",
+      "retrieved_ids": [
+        "law_126690",
+        "law_100265",
+        "law_133597",
+        "law_021331",
+        "law_011171"
+      ],
+      "metrics": {
+        "hr@1": 1.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 1.0,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_073375",
+      "query": "",
+      "retrieved_ids": [
+        "law_073375",
+        "law_125860",
+        "law_079534",
+        "law_087815",
+        "law_125705"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_133577",
+      "query": "",
+      "retrieved_ids": [
+        "law_133577",
+        "law_113987",
+        "law_054721",
+        "law_081283",
+        "law_073092"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_009962",
+      "query": "",
+      "retrieved_ids": [
+        "law_009962",
+        "law_040258",
+        "law_134420",
+        "law_124064",
+        "law_075222"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_116932",
+      "query": "",
+      "retrieved_ids": [
+        "law_107339",
+        "law_116932",
+        "law_139882",
+        "law_103400",
+        "law_070837"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_102524",
+      "query": "",
+      "retrieved_ids": [
+        "law_125679",
+        "law_103241",
+        "law_133177",
+        "law_121911",
+        "law_106847"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_128355",
+      "query": "",
+      "retrieved_ids": [
+        "law_128355",
+        "law_097439",
+        "law_154154",
+        "law_103460",
+        "law_138274"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_117554",
+      "query": "",
+      "retrieved_ids": [
+        "law_117554",
+        "law_111312",
+        "law_134109",
+        "law_138256",
+        "law_090593"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_072743",
+      "query": "",
+      "retrieved_ids": [
+        "law_072743",
+        "law_080986",
+        "law_094497",
+        "law_131955",
+        "law_154010"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_128108",
+      "query": "",
+      "retrieved_ids": [
+        "law_128108",
+        "law_138291",
+        "law_151832",
+        "law_146707",
+        "law_113352"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.2,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_013766",
+      "query": "",
+      "retrieved_ids": [
+        "law_013766",
+        "law_015163",
+        "law_011798",
+        "law_018734",
+        "law_018911"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_119461",
+      "query": "",
+      "retrieved_ids": [
+        "law_119461",
+        "law_144136",
+        "law_134432",
+        "law_129722",
+        "law_105957"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_138638",
+      "query": "",
+      "retrieved_ids": [
+        "law_138638",
+        "law_012054",
+        "law_077898",
+        "law_004905",
+        "law_146311"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_098178",
+      "query": "",
+      "retrieved_ids": [
+        "law_098178",
+        "law_029559",
+        "law_032776",
+        "law_027619",
+        "law_026697"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_076993",
+      "query": "",
+      "retrieved_ids": [
+        "law_076993",
+        "law_133202",
+        "law_117242",
+        "law_113207",
+        "law_135578"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124775",
+      "query": "",
+      "retrieved_ids": [
+        "law_124775",
+        "law_077657",
+        "law_095567",
+        "law_148001",
+        "law_140823"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_136293",
+      "query": "",
+      "retrieved_ids": [
+        "law_136293",
+        "law_066738",
+        "law_050674",
+        "law_044653",
+        "law_056574"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_129022",
+      "query": "",
+      "retrieved_ids": [
+        "law_129022",
+        "law_071067",
+        "law_122139",
+        "law_089207",
+        "law_105802"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_130067",
+      "query": "",
+      "retrieved_ids": [
+        "law_130067",
+        "law_138426",
+        "law_132252",
+        "law_118388",
+        "law_115472"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_113915",
+      "query": "",
+      "retrieved_ids": [
+        "law_113915",
+        "law_026537",
+        "law_085888",
+        "law_075030",
+        "law_039398"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_108656",
+      "query": "",
+      "retrieved_ids": [
+        "law_108656",
+        "law_058854",
+        "law_076997",
+        "law_059610",
+        "law_122547"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_137526",
+      "query": "",
+      "retrieved_ids": [
+        "law_137526",
+        "law_065192",
+        "law_066891",
+        "law_121575",
+        "law_141154"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_153979",
+      "query": "",
+      "retrieved_ids": [
+        "law_153979",
+        "law_008946",
+        "law_108326",
+        "law_088068",
+        "law_017001"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_009908",
+      "query": "",
+      "retrieved_ids": [
+        "law_002011",
+        "law_078114",
+        "law_053362",
+        "law_069626",
+        "law_070350"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_118947",
+      "query": "",
+      "retrieved_ids": [
+        "law_118947",
+        "law_126211",
+        "law_080857",
+        "law_119529",
+        "law_130995"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_092448",
+      "query": "",
+      "retrieved_ids": [
+        "law_013169",
+        "law_021499",
+        "law_035931",
+        "law_059379",
+        "law_100648"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147753",
+      "query": "",
+      "retrieved_ids": [
+        "law_147753",
+        "law_110076",
+        "law_080651",
+        "law_113406",
+        "law_067179"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_086419",
+      "query": "",
+      "retrieved_ids": [
+        "law_086419",
+        "law_081101",
+        "law_063450",
+        "law_075703",
+        "law_055137"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_152546",
+      "query": "",
+      "retrieved_ids": [
+        "law_152546",
+        "law_126212",
+        "law_112831",
+        "law_121436",
+        "law_039176"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_139358",
+      "query": "",
+      "retrieved_ids": [
+        "law_139358",
+        "law_089306",
+        "law_110825",
+        "law_074048",
+        "law_125689"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_072478",
+      "query": "",
+      "retrieved_ids": [
+        "law_072478",
+        "law_108419",
+        "law_078548",
+        "law_150647",
+        "law_063614"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_026199",
+      "query": "",
+      "retrieved_ids": [
+        "law_026199",
+        "law_026051",
+        "law_039482",
+        "law_026398",
+        "law_029341"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_011494",
+      "query": "",
+      "retrieved_ids": [
+        "law_020611",
+        "law_018735",
+        "law_011494",
+        "law_005397",
+        "law_147583"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.25,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_101332",
+      "query": "",
+      "retrieved_ids": [
+        "law_101332",
+        "law_108884",
+        "law_061801",
+        "law_081593",
+        "law_107827"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_128950",
+      "query": "",
+      "retrieved_ids": [
+        "law_128950",
+        "law_119225",
+        "law_122354",
+        "law_056034",
+        "law_151865"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_041670",
+      "query": "",
+      "retrieved_ids": [
+        "law_041670",
+        "law_031911",
+        "law_027361",
+        "law_040950",
+        "law_038031"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_143709",
+      "query": "",
+      "retrieved_ids": [
+        "law_143709",
+        "law_114853",
+        "law_104696",
+        "law_084604",
+        "law_072517"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_121911",
+      "query": "",
+      "retrieved_ids": [
+        "law_133177",
+        "law_121911",
+        "law_103241",
+        "law_125679",
+        "law_106847"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_142735",
+      "query": "",
+      "retrieved_ids": [
+        "law_142735",
+        "law_056944",
+        "law_076662",
+        "law_128624",
+        "law_145379"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147680",
+      "query": "",
+      "retrieved_ids": [
+        "law_147680",
+        "law_096980",
+        "law_144511",
+        "law_134252",
+        "law_117903"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_134238",
+      "query": "",
+      "retrieved_ids": [
+        "law_134238",
+        "law_100251",
+        "law_077635",
+        "law_145029",
+        "law_150058"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_056866",
+      "query": "",
+      "retrieved_ids": [
+        "law_056866",
+        "law_110768",
+        "law_146791",
+        "law_102601",
+        "law_097463"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_088873",
+      "query": "",
+      "retrieved_ids": [
+        "law_064539",
+        "law_088873",
+        "law_065213",
+        "law_098489",
+        "law_004891"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_043173",
+      "query": "",
+      "retrieved_ids": [
+        "law_043173",
+        "law_055660",
+        "law_017414",
+        "law_075161",
+        "law_072969"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147804",
+      "query": "",
+      "retrieved_ids": [
+        "law_147804",
+        "law_055687",
+        "law_052697",
+        "law_062400",
+        "law_062016"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_106911",
+      "query": "",
+      "retrieved_ids": [
+        "law_106911",
+        "law_129992",
+        "law_124508",
+        "law_097964",
+        "law_110297"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_107368",
+      "query": "",
+      "retrieved_ids": [
+        "law_107368",
+        "law_061394",
+        "law_130492",
+        "law_103356",
+        "law_055687"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_129058",
+      "query": "",
+      "retrieved_ids": [
+        "law_129058",
+        "law_133309",
+        "law_103851",
+        "law_126520",
+        "law_117982"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.3,
+        "precision@5": 0.6,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.3
+      },
+      "ndcg@5": 0.3
+    },
+    {
+      "id": "cail_law_123755",
+      "query": "",
+      "retrieved_ids": [
+        "law_123755",
+        "law_108369",
+        "law_090116",
+        "law_142085",
+        "law_111255"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_053078",
+      "query": "",
+      "retrieved_ids": [
+        "law_133272",
+        "law_123779",
+        "law_044108",
+        "law_072772",
+        "law_066676"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_082306",
+      "query": "",
+      "retrieved_ids": [
+        "law_082306",
+        "law_108419",
+        "law_015117",
+        "law_146981",
+        "law_127027"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_115513",
+      "query": "",
+      "retrieved_ids": [
+        "law_115513",
+        "law_144674",
+        "law_116370",
+        "law_119720",
+        "law_145727"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_145640",
+      "query": "",
+      "retrieved_ids": [
+        "law_145640",
+        "law_107302",
+        "law_135133",
+        "law_097003",
+        "law_080714"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_134136",
+      "query": "",
+      "retrieved_ids": [
+        "law_134136",
+        "law_116370",
+        "law_127674",
+        "law_130549",
+        "law_139253"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_092404",
+      "query": "",
+      "retrieved_ids": [
+        "law_092404",
+        "law_152207",
+        "law_119855",
+        "law_140851",
+        "law_140927"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_102944",
+      "query": "",
+      "retrieved_ids": [
+        "law_102944",
+        "law_148331",
+        "law_148366",
+        "law_122918",
+        "law_038058"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_149571",
+      "query": "",
+      "retrieved_ids": [
+        "law_149571",
+        "law_142484",
+        "law_145095",
+        "law_145341",
+        "law_146086"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_049656",
+      "query": "",
+      "retrieved_ids": [
+        "law_049656",
+        "law_051552",
+        "law_065295",
+        "law_054329",
+        "law_057630"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_048247",
+      "query": "",
+      "retrieved_ids": [
+        "law_048247",
+        "law_103108",
+        "law_083791",
+        "law_068338",
+        "law_116491"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_140513",
+      "query": "",
+      "retrieved_ids": [
+        "law_140513",
+        "law_118086",
+        "law_134225",
+        "law_135760",
+        "law_137375"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_061638",
+      "query": "",
+      "retrieved_ids": [
+        "law_061638",
+        "law_096319",
+        "law_113667",
+        "law_079228",
+        "law_078089"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_039421",
+      "query": "",
+      "retrieved_ids": [
+        "law_032506",
+        "law_039421",
+        "law_039158",
+        "law_038607",
+        "law_038923"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_145562",
+      "query": "",
+      "retrieved_ids": [
+        "law_145562",
+        "law_010038",
+        "law_031638",
+        "law_123739",
+        "law_087127"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_002402",
+      "query": "",
+      "retrieved_ids": [
+        "law_002402",
+        "law_072680",
+        "law_001195",
+        "law_001521",
+        "law_142439"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_019878",
+      "query": "",
+      "retrieved_ids": [
+        "law_019878",
+        "law_010493",
+        "law_048668",
+        "law_008118",
+        "law_014084"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_126591",
+      "query": "",
+      "retrieved_ids": [
+        "law_126591",
+        "law_121483",
+        "law_150483",
+        "law_120359",
+        "law_120060"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_103668",
+      "query": "",
+      "retrieved_ids": [
+        "law_103668",
+        "law_085875",
+        "law_137032",
+        "law_113617",
+        "law_082051"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.2,
+        "precision@5": 0.4,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.2
+      },
+      "ndcg@5": 0.2
+    },
+    {
+      "id": "cail_law_122210",
+      "query": "",
+      "retrieved_ids": [
+        "law_140442",
+        "law_122210",
+        "law_088037",
+        "law_076069",
+        "law_120979"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_064997",
+      "query": "",
+      "retrieved_ids": [
+        "law_064997",
+        "law_079841",
+        "law_099283",
+        "law_065222",
+        "law_106349"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_142439",
+      "query": "",
+      "retrieved_ids": [
+        "law_142439",
+        "law_099349",
+        "law_115840",
+        "law_145634",
+        "law_084827"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_097704",
+      "query": "",
+      "retrieved_ids": [
+        "law_097704",
+        "law_085578",
+        "law_111128",
+        "law_047711",
+        "law_053566"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_030927",
+      "query": "",
+      "retrieved_ids": [
+        "law_085948",
+        "law_030927",
+        "law_079900",
+        "law_076252",
+        "law_090086"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_136465",
+      "query": "",
+      "retrieved_ids": [
+        "law_136465",
+        "law_131151",
+        "law_117863",
+        "law_094346",
+        "law_149091"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_115475",
+      "query": "",
+      "retrieved_ids": [
+        "law_131534",
+        "law_130811",
+        "law_078418",
+        "law_097661",
+        "law_095223"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_086507",
+      "query": "",
+      "retrieved_ids": [
+        "law_086507",
+        "law_055490",
+        "law_081504",
+        "law_061270",
+        "law_071126"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_106018",
+      "query": "",
+      "retrieved_ids": [
+        "law_106018",
+        "law_102219",
+        "law_007657",
+        "law_124034",
+        "law_153601"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_112110",
+      "query": "",
+      "retrieved_ids": [
+        "law_112110",
+        "law_090679",
+        "law_140389",
+        "law_113619",
+        "law_071624"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.2,
+        "precision@5": 0.4,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.2
+      },
+      "ndcg@5": 0.2
+    },
+    {
+      "id": "cail_law_108630",
+      "query": "",
+      "retrieved_ids": [
+        "law_108630",
+        "law_009099",
+        "law_032134",
+        "law_085436",
+        "law_117114"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_070858",
+      "query": "",
+      "retrieved_ids": [
+        "law_070858",
+        "law_113217",
+        "law_133723",
+        "law_109112",
+        "law_070983"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.2,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_020520",
+      "query": "",
+      "retrieved_ids": [
+        "law_020520",
+        "law_109858",
+        "law_125853",
+        "law_022440",
+        "law_022874"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_120639",
+      "query": "",
+      "retrieved_ids": [
+        "law_120639",
+        "law_080034",
+        "law_065652",
+        "law_147196",
+        "law_119122"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_149309",
+      "query": "",
+      "retrieved_ids": [
+        "law_149309",
+        "law_076652",
+        "law_135870",
+        "law_149643",
+        "law_057423"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_034553",
+      "query": "",
+      "retrieved_ids": [
+        "law_034553",
+        "law_024126",
+        "law_024243",
+        "law_109316",
+        "law_024597"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_064288",
+      "query": "",
+      "retrieved_ids": [
+        "law_064288",
+        "law_125268",
+        "law_113966",
+        "law_101097",
+        "law_101710"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_109099",
+      "query": "",
+      "retrieved_ids": [
+        "law_121527",
+        "law_142264",
+        "law_070102",
+        "law_118123",
+        "law_070635"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_137380",
+      "query": "",
+      "retrieved_ids": [
+        "law_137380",
+        "law_092439",
+        "law_112173",
+        "law_100976",
+        "law_053155"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_078352",
+      "query": "",
+      "retrieved_ids": [
+        "law_078352",
+        "law_055646",
+        "law_111409",
+        "law_130120",
+        "law_103829"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_105901",
+      "query": "",
+      "retrieved_ids": [
+        "law_105901",
+        "law_124268",
+        "law_110571",
+        "law_146707",
+        "law_020260"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124042",
+      "query": "",
+      "retrieved_ids": [
+        "law_124042",
+        "law_146108",
+        "law_109849",
+        "law_127329",
+        "law_123769"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_146979",
+      "query": "",
+      "retrieved_ids": [
+        "law_146979",
+        "law_090358",
+        "law_146248",
+        "law_110300",
+        "law_135898"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_153661",
+      "query": "",
+      "retrieved_ids": [
+        "law_153661",
+        "law_090188",
+        "law_154483",
+        "law_149867",
+        "law_081290"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_091620",
+      "query": "",
+      "retrieved_ids": [
+        "law_091620",
+        "law_142141",
+        "law_112287",
+        "law_135234",
+        "law_093423"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_148435",
+      "query": "",
+      "retrieved_ids": [
+        "law_148435",
+        "law_137003",
+        "law_109307",
+        "law_145494",
+        "law_127735"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_153790",
+      "query": "",
+      "retrieved_ids": [
+        "law_153790",
+        "law_097593",
+        "law_146995",
+        "law_142041",
+        "law_105859"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_132577",
+      "query": "",
+      "retrieved_ids": [
+        "law_105553",
+        "law_110303",
+        "law_112619",
+        "law_126376",
+        "law_081989"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_019565",
+      "query": "",
+      "retrieved_ids": [
+        "law_019565",
+        "law_070345",
+        "law_069307",
+        "law_137390",
+        "law_006091"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124443",
+      "query": "",
+      "retrieved_ids": [
+        "law_124443",
+        "law_078072",
+        "law_078605",
+        "law_066560",
+        "law_074921"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_138516",
+      "query": "",
+      "retrieved_ids": [
+        "law_138516",
+        "law_099252",
+        "law_140192",
+        "law_095164",
+        "law_136576"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_127264",
+      "query": "",
+      "retrieved_ids": [
+        "law_127264",
+        "law_129773",
+        "law_093247",
+        "law_067046",
+        "law_097180"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_126865",
+      "query": "",
+      "retrieved_ids": [
+        "law_126865",
+        "law_117733",
+        "law_106501",
+        "law_118166",
+        "law_073066"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_126423",
+      "query": "",
+      "retrieved_ids": [
+        "law_126423",
+        "law_037924",
+        "law_103638",
+        "law_103420",
+        "law_096376"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.2,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_113709",
+      "query": "",
+      "retrieved_ids": [
+        "law_113709",
+        "law_060292",
+        "law_087118",
+        "law_106945",
+        "law_051361"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_143197",
+      "query": "",
+      "retrieved_ids": [
+        "law_143197",
+        "law_120989",
+        "law_086732",
+        "law_130302",
+        "law_122663"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_028993",
+      "query": "",
+      "retrieved_ids": [
+        "law_028993",
+        "law_007930",
+        "law_006958",
+        "law_008261",
+        "law_056894"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_145430",
+      "query": "",
+      "retrieved_ids": [
+        "law_145430",
+        "law_114749",
+        "law_138494",
+        "law_078732",
+        "law_124597"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_143737",
+      "query": "",
+      "retrieved_ids": [
+        "law_143737",
+        "law_115222",
+        "law_062056",
+        "law_135559",
+        "law_070362"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_154421",
+      "query": "",
+      "retrieved_ids": [
+        "law_154421",
+        "law_117162",
+        "law_152062",
+        "law_131011",
+        "law_154307"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_150053",
+      "query": "",
+      "retrieved_ids": [
+        "law_150053",
+        "law_142458",
+        "law_151615",
+        "law_119757",
+        "law_147640"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147711",
+      "query": "",
+      "retrieved_ids": [
+        "law_147711",
+        "law_095066",
+        "law_151093",
+        "law_131352",
+        "law_149710"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_133309",
+      "query": "",
+      "retrieved_ids": [
+        "law_133309",
+        "law_129058",
+        "law_103851",
+        "law_126520",
+        "law_117982"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.4,
+        "precision@5": 0.8,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.4
+      },
+      "ndcg@5": 0.4
+    },
+    {
+      "id": "cail_law_134276",
+      "query": "",
+      "retrieved_ids": [
+        "law_134276",
+        "law_126019",
+        "law_090389",
+        "law_090987",
+        "law_102700"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_132231",
+      "query": "",
+      "retrieved_ids": [
+        "law_017427",
+        "law_006862",
+        "law_132231",
+        "law_141237",
+        "law_049056"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124811",
+      "query": "",
+      "retrieved_ids": [
+        "law_124811",
+        "law_132772",
+        "law_147640",
+        "law_113768",
+        "law_064218"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.2,
+        "precision@5": 0.4,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.2
+      },
+      "ndcg@5": 0.2
+    },
+    {
+      "id": "cail_law_007518",
+      "query": "",
+      "retrieved_ids": [
+        "law_007518",
+        "law_019563",
+        "law_020988",
+        "law_009662",
+        "law_017001"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_119569",
+      "query": "",
+      "retrieved_ids": [
+        "law_119569",
+        "law_139289",
+        "law_093290",
+        "law_088730",
+        "law_152724"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124962",
+      "query": "",
+      "retrieved_ids": [
+        "law_124962",
+        "law_055801",
+        "law_148238",
+        "law_060120",
+        "law_113812"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_003542",
+      "query": "",
+      "retrieved_ids": [
+        "law_068076",
+        "law_147371",
+        "law_137951",
+        "law_072460",
+        "law_003542"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_067500",
+      "query": "",
+      "retrieved_ids": [
+        "law_144857",
+        "law_092350",
+        "law_092764",
+        "law_067500",
+        "law_090198"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_144767",
+      "query": "",
+      "retrieved_ids": [
+        "law_144767",
+        "law_096360",
+        "law_119234",
+        "law_110662",
+        "law_132518"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_080578",
+      "query": "",
+      "retrieved_ids": [
+        "law_080578",
+        "law_146905",
+        "law_054765",
+        "law_069310",
+        "law_087199"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_041774",
+      "query": "",
+      "retrieved_ids": [
+        "law_041774",
+        "law_034399",
+        "law_038227",
+        "law_026662",
+        "law_035302"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_062793",
+      "query": "",
+      "retrieved_ids": [
+        "law_062793",
+        "law_113854",
+        "law_038503",
+        "law_038866",
+        "law_041906"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_075456",
+      "query": "",
+      "retrieved_ids": [
+        "law_075456",
+        "law_085818",
+        "law_092861",
+        "law_023554",
+        "law_143980"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_068440",
+      "query": "",
+      "retrieved_ids": [
+        "law_068440",
+        "law_105056",
+        "law_107173",
+        "law_078912",
+        "law_093893"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_133754",
+      "query": "",
+      "retrieved_ids": [
+        "law_133754",
+        "law_092580",
+        "law_099880",
+        "law_136630",
+        "law_122580"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_069769",
+      "query": "",
+      "retrieved_ids": [
+        "law_069769",
+        "law_138503",
+        "law_101576",
+        "law_148669",
+        "law_097097"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_093113",
+      "query": "",
+      "retrieved_ids": [
+        "law_093113",
+        "law_093171",
+        "law_114929",
+        "law_121973",
+        "law_091935"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_118825",
+      "query": "",
+      "retrieved_ids": [
+        "law_118825",
+        "law_138326",
+        "law_133425",
+        "law_109096",
+        "law_105582"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_116845",
+      "query": "",
+      "retrieved_ids": [
+        "law_116845",
+        "law_105286",
+        "law_090562",
+        "law_107998",
+        "law_145594"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.2,
+        "precision@5": 0.4,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.2
+      },
+      "ndcg@5": 0.2
+    },
+    {
+      "id": "cail_law_112525",
+      "query": "",
+      "retrieved_ids": [
+        "law_112525",
+        "law_117537",
+        "law_112411",
+        "law_140903",
+        "law_142831"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_109515",
+      "query": "",
+      "retrieved_ids": [
+        "law_109515",
+        "law_023192",
+        "law_098272",
+        "law_059294",
+        "law_041442"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_127851",
+      "query": "",
+      "retrieved_ids": [
+        "law_127851",
+        "law_135687",
+        "law_033143",
+        "law_110675",
+        "law_033317"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_006771",
+      "query": "",
+      "retrieved_ids": [
+        "law_022041",
+        "law_006771",
+        "law_009081",
+        "law_005844",
+        "law_005441"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_128479",
+      "query": "",
+      "retrieved_ids": [
+        "law_055502",
+        "law_090165",
+        "law_138256",
+        "law_032703",
+        "law_133367"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_079510",
+      "query": "",
+      "retrieved_ids": [
+        "law_065100",
+        "law_006675",
+        "law_002165",
+        "law_017597",
+        "law_051116"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_094953",
+      "query": "",
+      "retrieved_ids": [
+        "law_094953",
+        "law_069462",
+        "law_057687",
+        "law_058285",
+        "law_053622"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_094855",
+      "query": "",
+      "retrieved_ids": [
+        "law_094855",
+        "law_115656",
+        "law_082247",
+        "law_066030",
+        "law_053691"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_005774",
+      "query": "",
+      "retrieved_ids": [
+        "law_005774",
+        "law_146292",
+        "law_142561",
+        "law_083935",
+        "law_118055"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_091483",
+      "query": "",
+      "retrieved_ids": [
+        "law_139779",
+        "law_105669",
+        "law_135559",
+        "law_111534",
+        "law_131081"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_153742",
+      "query": "",
+      "retrieved_ids": [
+        "law_153742",
+        "law_147164",
+        "law_008946",
+        "law_110893",
+        "law_152431"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_108937",
+      "query": "",
+      "retrieved_ids": [
+        "law_108937",
+        "law_063893",
+        "law_097777",
+        "law_062718",
+        "law_065588"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.25,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_008174",
+      "query": "",
+      "retrieved_ids": [
+        "law_008174",
+        "law_075668",
+        "law_140389",
+        "law_037713",
+        "law_032007"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_097320",
+      "query": "",
+      "retrieved_ids": [
+        "law_097320",
+        "law_088507",
+        "law_129485",
+        "law_045209",
+        "law_133369"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_109382",
+      "query": "",
+      "retrieved_ids": [
+        "law_109382",
+        "law_078796",
+        "law_140614",
+        "law_147057",
+        "law_149831"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_135683",
+      "query": "",
+      "retrieved_ids": [
+        "law_135683",
+        "law_109656",
+        "law_084389",
+        "law_108360",
+        "law_112227"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_112099",
+      "query": "",
+      "retrieved_ids": [
+        "law_112099",
+        "law_130345",
+        "law_152226",
+        "law_117068",
+        "law_153642"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124829",
+      "query": "",
+      "retrieved_ids": [
+        "law_124829",
+        "law_110359",
+        "law_124287",
+        "law_148820",
+        "law_133369"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_131477",
+      "query": "",
+      "retrieved_ids": [
+        "law_131477",
+        "law_147045",
+        "law_152849",
+        "law_123786",
+        "law_109342"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_144392",
+      "query": "",
+      "retrieved_ids": [
+        "law_144392",
+        "law_149555",
+        "law_131880",
+        "law_145149",
+        "law_106160"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_081977",
+      "query": "",
+      "retrieved_ids": [
+        "law_081977",
+        "law_101234",
+        "law_134950",
+        "law_098678",
+        "law_138482"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147542",
+      "query": "",
+      "retrieved_ids": [
+        "law_147542",
+        "law_141178",
+        "law_146151",
+        "law_101851",
+        "law_132623"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_066169",
+      "query": "",
+      "retrieved_ids": [
+        "law_066169",
+        "law_138190",
+        "law_127844",
+        "law_097834",
+        "law_123609"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_149609",
+      "query": "",
+      "retrieved_ids": [
+        "law_149609",
+        "law_033686",
+        "law_028046",
+        "law_028517",
+        "law_031431"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_103851",
+      "query": "",
+      "retrieved_ids": [
+        "law_103851",
+        "law_126520",
+        "law_129058",
+        "law_133309",
+        "law_142099"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.2,
+        "precision@5": 0.4,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.2
+      },
+      "ndcg@5": 0.2
+    },
+    {
+      "id": "cail_law_093815",
+      "query": "",
+      "retrieved_ids": [
+        "law_093815",
+        "law_112509",
+        "law_084290",
+        "law_122486",
+        "law_081432"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_146072",
+      "query": "",
+      "retrieved_ids": [
+        "law_146072",
+        "law_087631",
+        "law_148029",
+        "law_080319",
+        "law_122222"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_121381",
+      "query": "",
+      "retrieved_ids": [
+        "law_121381",
+        "law_116853",
+        "law_146989",
+        "law_109016",
+        "law_107163"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_045608",
+      "query": "",
+      "retrieved_ids": [
+        "law_045608",
+        "law_148693",
+        "law_111627",
+        "law_102867",
+        "law_134120"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_008647",
+      "query": "",
+      "retrieved_ids": [
+        "law_008647",
+        "law_003540",
+        "law_011171",
+        "law_110546",
+        "law_114880"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_116665",
+      "query": "",
+      "retrieved_ids": [
+        "law_116665",
+        "law_130025",
+        "law_137252",
+        "law_074330",
+        "law_149555"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_068335",
+      "query": "",
+      "retrieved_ids": [
+        "law_068335",
+        "law_108075",
+        "law_122069",
+        "law_133198",
+        "law_141603"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_117765",
+      "query": "",
+      "retrieved_ids": [
+        "law_117765",
+        "law_101776",
+        "law_119881",
+        "law_134240",
+        "law_135527"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_059883",
+      "query": "",
+      "retrieved_ids": [
+        "law_059883",
+        "law_066559",
+        "law_057031",
+        "law_102682",
+        "law_064351"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_024374",
+      "query": "",
+      "retrieved_ids": [
+        "law_024374",
+        "law_047376",
+        "law_051837",
+        "law_088977",
+        "law_023519"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_103994",
+      "query": "",
+      "retrieved_ids": [
+        "law_103994",
+        "law_074237",
+        "law_058321",
+        "law_085658",
+        "law_061466"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_152419",
+      "query": "",
+      "retrieved_ids": [
+        "law_152419",
+        "law_033569",
+        "law_004092",
+        "law_011617",
+        "law_005021"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_125825",
+      "query": "",
+      "retrieved_ids": [
+        "law_125825",
+        "law_098619",
+        "law_148449",
+        "law_153294",
+        "law_138802"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_084841",
+      "query": "",
+      "retrieved_ids": [
+        "law_084841",
+        "law_097289",
+        "law_066075",
+        "law_093045",
+        "law_140288"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_142917",
+      "query": "",
+      "retrieved_ids": [
+        "law_142917",
+        "law_104147",
+        "law_149252",
+        "law_082880",
+        "law_141995"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.25,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_007543",
+      "query": "",
+      "retrieved_ids": [
+        "law_014331",
+        "law_007543",
+        "law_042033",
+        "law_002903",
+        "law_006886"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_009154",
+      "query": "",
+      "retrieved_ids": [
+        "law_009154",
+        "law_037654",
+        "law_019268",
+        "law_040951",
+        "law_037951"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_106057",
+      "query": "",
+      "retrieved_ids": [
+        "law_106057",
+        "law_122555",
+        "law_122808",
+        "law_087391",
+        "law_064376"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_134277",
+      "query": "",
+      "retrieved_ids": [
+        "law_134277",
+        "law_107545",
+        "law_115413",
+        "law_133839",
+        "law_122783"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_065758",
+      "query": "",
+      "retrieved_ids": [
+        "law_065758",
+        "law_148885",
+        "law_133362",
+        "law_133456",
+        "law_048873"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_136239",
+      "query": "",
+      "retrieved_ids": [
+        "law_136239",
+        "law_149853",
+        "law_124397",
+        "law_124948",
+        "law_110616"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_037670",
+      "query": "",
+      "retrieved_ids": [
+        "law_037670",
+        "law_037328",
+        "law_040889",
+        "law_041084",
+        "law_038621"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_117265",
+      "query": "",
+      "retrieved_ids": [
+        "law_117265",
+        "law_090680",
+        "law_129031",
+        "law_119727",
+        "law_118784"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_042899",
+      "query": "",
+      "retrieved_ids": [
+        "law_042899",
+        "law_045927",
+        "law_133753",
+        "law_107128",
+        "law_047591"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_140538",
+      "query": "",
+      "retrieved_ids": [
+        "law_140538",
+        "law_059610",
+        "law_073734",
+        "law_011641",
+        "law_080210"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_121044",
+      "query": "",
+      "retrieved_ids": [
+        "law_121044",
+        "law_146637",
+        "law_103056",
+        "law_118528",
+        "law_114141"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_042181",
+      "query": "",
+      "retrieved_ids": [
+        "law_042181",
+        "law_038829",
+        "law_026316",
+        "law_042195",
+        "law_042427"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_063043",
+      "query": "",
+      "retrieved_ids": [
+        "law_063043",
+        "law_067718",
+        "law_130069",
+        "law_150085",
+        "law_075020"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_140031",
+      "query": "",
+      "retrieved_ids": [
+        "law_140031",
+        "law_000220",
+        "law_058255",
+        "law_009101",
+        "law_057302"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_122708",
+      "query": "",
+      "retrieved_ids": [
+        "law_122708",
+        "law_001385",
+        "law_086491",
+        "law_115263",
+        "law_140858"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_014245",
+      "query": "",
+      "retrieved_ids": [
+        "law_014245",
+        "law_093234",
+        "law_121500",
+        "law_032505",
+        "law_086737"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_056521",
+      "query": "",
+      "retrieved_ids": [
+        "law_056521",
+        "law_088149",
+        "law_104068",
+        "law_110108",
+        "law_080197"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_091380",
+      "query": "",
+      "retrieved_ids": [
+        "law_091380",
+        "law_094708",
+        "law_079372",
+        "law_080073",
+        "law_092270"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_087348",
+      "query": "",
+      "retrieved_ids": [
+        "law_087348",
+        "law_147712",
+        "law_049106",
+        "law_055868",
+        "law_054844"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_087582",
+      "query": "",
+      "retrieved_ids": [
+        "law_087582",
+        "law_149858",
+        "law_062056",
+        "law_100634",
+        "law_111736"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_149795",
+      "query": "",
+      "retrieved_ids": [
+        "law_149795",
+        "law_097379",
+        "law_062074",
+        "law_089396",
+        "law_058332"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_097384",
+      "query": "",
+      "retrieved_ids": [
+        "law_097384",
+        "law_091935",
+        "law_126453",
+        "law_124751",
+        "law_143041"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_088528",
+      "query": "",
+      "retrieved_ids": [
+        "law_088528",
+        "law_100782",
+        "law_078251",
+        "law_137471",
+        "law_084536"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124226",
+      "query": "",
+      "retrieved_ids": [
+        "law_124226",
+        "law_144894",
+        "law_131234",
+        "law_102972",
+        "law_089823"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_132087",
+      "query": "",
+      "retrieved_ids": [
+        "law_132087",
+        "law_132294",
+        "law_138717",
+        "law_130309",
+        "law_111278"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_011045",
+      "query": "",
+      "retrieved_ids": [
+        "law_025071",
+        "law_016273",
+        "law_011045",
+        "law_005190",
+        "law_001074"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_117489",
+      "query": "",
+      "retrieved_ids": [
+        "law_117489",
+        "law_137817",
+        "law_114578",
+        "law_083381",
+        "law_139762"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.25,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_121876",
+      "query": "",
+      "retrieved_ids": [
+        "law_121876",
+        "law_093850",
+        "law_122456",
+        "law_128859",
+        "law_113321"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147958",
+      "query": "",
+      "retrieved_ids": [
+        "law_147958",
+        "law_122220",
+        "law_057070",
+        "law_143967",
+        "law_143279"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_120668",
+      "query": "",
+      "retrieved_ids": [
+        "law_120668",
+        "law_054222",
+        "law_034146",
+        "law_034453",
+        "law_030665"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_148302",
+      "query": "",
+      "retrieved_ids": [
+        "law_148302",
+        "law_116266",
+        "law_057411",
+        "law_101911",
+        "law_095748"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_097832",
+      "query": "",
+      "retrieved_ids": [
+        "law_097832",
+        "law_146359",
+        "law_041843",
+        "law_008670",
+        "law_010959"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_142732",
+      "query": "",
+      "retrieved_ids": [
+        "law_142732",
+        "law_006694",
+        "law_052197",
+        "law_153628",
+        "law_042600"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_039975",
+      "query": "",
+      "retrieved_ids": [
+        "law_039975",
+        "law_072860",
+        "law_065851",
+        "law_033854",
+        "law_025226"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_112281",
+      "query": "",
+      "retrieved_ids": [
+        "law_112281",
+        "law_044216",
+        "law_043494",
+        "law_030606",
+        "law_029546"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_148196",
+      "query": "",
+      "retrieved_ids": [
+        "law_148196",
+        "law_131785",
+        "law_052019",
+        "law_095592",
+        "law_083450"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_139307",
+      "query": "",
+      "retrieved_ids": [
+        "law_139307",
+        "law_032314",
+        "law_150147",
+        "law_011143",
+        "law_006862"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_040436",
+      "query": "",
+      "retrieved_ids": [
+        "law_040436",
+        "law_117510",
+        "law_125155",
+        "law_149796",
+        "law_150141"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_013265",
+      "query": "",
+      "retrieved_ids": [
+        "law_013265",
+        "law_002529",
+        "law_049400",
+        "law_053430",
+        "law_058013"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_108530",
+      "query": "",
+      "retrieved_ids": [
+        "law_108530",
+        "law_113734",
+        "law_106258",
+        "law_139885",
+        "law_127808"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_065970",
+      "query": "",
+      "retrieved_ids": [
+        "law_065970",
+        "law_153861",
+        "law_096064",
+        "law_116104",
+        "law_146211"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_014318",
+      "query": "",
+      "retrieved_ids": [
+        "law_049485",
+        "law_007957",
+        "law_017363",
+        "law_018955",
+        "law_054757"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_131578",
+      "query": "",
+      "retrieved_ids": [
+        "law_131578",
+        "law_132658",
+        "law_144873",
+        "law_131233",
+        "law_117862"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_099747",
+      "query": "",
+      "retrieved_ids": [
+        "law_099747",
+        "law_149775",
+        "law_121487",
+        "law_107343",
+        "law_080120"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_143759",
+      "query": "",
+      "retrieved_ids": [
+        "law_143759",
+        "law_136500",
+        "law_128038",
+        "law_091620",
+        "law_141447"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_066970",
+      "query": "",
+      "retrieved_ids": [
+        "law_066970",
+        "law_089460",
+        "law_053271",
+        "law_073506",
+        "law_074581"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_148597",
+      "query": "",
+      "retrieved_ids": [
+        "law_148597",
+        "law_130725",
+        "law_145660",
+        "law_123266",
+        "law_115205"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_052915",
+      "query": "",
+      "retrieved_ids": [
+        "law_067580",
+        "law_052915",
+        "law_068703",
+        "law_046344",
+        "law_043924"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_120345",
+      "query": "",
+      "retrieved_ids": [
+        "law_120345",
+        "law_081795",
+        "law_080034",
+        "law_147196",
+        "law_124000"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.2,
+        "precision@5": 0.4,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.2
+      },
+      "ndcg@5": 0.2
+    },
+    {
+      "id": "cail_law_086491",
+      "query": "",
+      "retrieved_ids": [
+        "law_086491",
+        "law_107477",
+        "law_152608",
+        "law_145163",
+        "law_094977"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_098001",
+      "query": "",
+      "retrieved_ids": [
+        "law_098001",
+        "law_109238",
+        "law_129393",
+        "law_114479",
+        "law_047443"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.2,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_081950",
+      "query": "",
+      "retrieved_ids": [
+        "law_081950",
+        "law_143717",
+        "law_144845",
+        "law_147353",
+        "law_128399"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_126331",
+      "query": "",
+      "retrieved_ids": [
+        "law_126331",
+        "law_017077",
+        "law_144610",
+        "law_135607",
+        "law_108126"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_074166",
+      "query": "",
+      "retrieved_ids": [
+        "law_074166",
+        "law_078086",
+        "law_145203",
+        "law_060612",
+        "law_137509"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_011880",
+      "query": "",
+      "retrieved_ids": [
+        "law_011880",
+        "law_090493",
+        "law_070374",
+        "law_063493",
+        "law_038382"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_144297",
+      "query": "",
+      "retrieved_ids": [
+        "law_144297",
+        "law_111042",
+        "law_103908",
+        "law_147517",
+        "law_104394"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_144448",
+      "query": "",
+      "retrieved_ids": [
+        "law_144448",
+        "law_109981",
+        "law_115788",
+        "law_065887",
+        "law_134197"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_060958",
+      "query": "",
+      "retrieved_ids": [
+        "law_060958",
+        "law_065044",
+        "law_060971",
+        "law_053664",
+        "law_068753"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_108623",
+      "query": "",
+      "retrieved_ids": [
+        "law_108623",
+        "law_001345",
+        "law_087128",
+        "law_133260",
+        "law_109685"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_090810",
+      "query": "",
+      "retrieved_ids": [
+        "law_090810",
+        "law_145474",
+        "law_087510",
+        "law_068073",
+        "law_042751"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_045244",
+      "query": "",
+      "retrieved_ids": [
+        "law_045244",
+        "law_046398",
+        "law_063416",
+        "law_049722",
+        "law_048899"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_123510",
+      "query": "",
+      "retrieved_ids": [
+        "law_123510",
+        "law_052762",
+        "law_055240",
+        "law_056440",
+        "law_061558"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_040806",
+      "query": "",
+      "retrieved_ids": [
+        "law_040806",
+        "law_041329",
+        "law_033891",
+        "law_031230",
+        "law_043840"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_106072",
+      "query": "",
+      "retrieved_ids": [
+        "law_106072",
+        "law_092615",
+        "law_007936",
+        "law_134398",
+        "law_122173"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_137512",
+      "query": "",
+      "retrieved_ids": [
+        "law_091267",
+        "law_119638",
+        "law_148760",
+        "law_081186",
+        "law_137512"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_133069",
+      "query": "",
+      "retrieved_ids": [
+        "law_133069",
+        "law_072916",
+        "law_001420",
+        "law_042589",
+        "law_069777"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_080623",
+      "query": "",
+      "retrieved_ids": [
+        "law_080623",
+        "law_072372",
+        "law_087383",
+        "law_067596",
+        "law_103739"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_004875",
+      "query": "",
+      "retrieved_ids": [
+        "law_004875",
+        "law_046028",
+        "law_075152",
+        "law_014056",
+        "law_040744"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_094657",
+      "query": "",
+      "retrieved_ids": [
+        "law_110532",
+        "law_130466",
+        "law_094657",
+        "law_119246",
+        "law_002401"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_111937",
+      "query": "",
+      "retrieved_ids": [
+        "law_111937",
+        "law_090457",
+        "law_051692",
+        "law_119707",
+        "law_142766"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_088608",
+      "query": "",
+      "retrieved_ids": [
+        "law_088608",
+        "law_120485",
+        "law_140568",
+        "law_046767",
+        "law_129074"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_143684",
+      "query": "",
+      "retrieved_ids": [
+        "law_143684",
+        "law_144276",
+        "law_145289",
+        "law_127066",
+        "law_111309"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_018233",
+      "query": "",
+      "retrieved_ids": [
+        "law_037057",
+        "law_090308",
+        "law_028358",
+        "law_033002",
+        "law_039644"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_104039",
+      "query": "",
+      "retrieved_ids": [
+        "law_104039",
+        "law_129073",
+        "law_139779",
+        "law_097045",
+        "law_130396"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124539",
+      "query": "",
+      "retrieved_ids": [
+        "law_124539",
+        "law_096561",
+        "law_098281",
+        "law_128002",
+        "law_117551"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_120009",
+      "query": "",
+      "retrieved_ids": [
+        "law_120009",
+        "law_051999",
+        "law_136708",
+        "law_130335",
+        "law_087233"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_128651",
+      "query": "",
+      "retrieved_ids": [
+        "law_128651",
+        "law_112215",
+        "law_129156",
+        "law_118971",
+        "law_103028"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_108514",
+      "query": "",
+      "retrieved_ids": [
+        "law_108514",
+        "law_145596",
+        "law_139563",
+        "law_134488",
+        "law_068261"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_084126",
+      "query": "",
+      "retrieved_ids": [
+        "law_084126",
+        "law_114301",
+        "law_070858",
+        "law_100878",
+        "law_119260"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_139550",
+      "query": "",
+      "retrieved_ids": [
+        "law_139550",
+        "law_105078",
+        "law_081395",
+        "law_104711",
+        "law_083060"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_096782",
+      "query": "",
+      "retrieved_ids": [
+        "law_103479",
+        "law_143437",
+        "law_143431",
+        "law_105592",
+        "law_007336"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124040",
+      "query": "",
+      "retrieved_ids": [
+        "law_124040",
+        "law_141444",
+        "law_141239",
+        "law_154119",
+        "law_125821"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_135418",
+      "query": "",
+      "retrieved_ids": [
+        "law_135418",
+        "law_111812",
+        "law_113828",
+        "law_130125",
+        "law_046225"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_031647",
+      "query": "",
+      "retrieved_ids": [
+        "law_031647",
+        "law_023489",
+        "law_073814",
+        "law_022700",
+        "law_022150"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_121940",
+      "query": "",
+      "retrieved_ids": [
+        "law_125615",
+        "law_121940",
+        "law_082669",
+        "law_110021",
+        "law_073940"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_133295",
+      "query": "",
+      "retrieved_ids": [
+        "law_133295",
+        "law_002363",
+        "law_076898",
+        "law_134938",
+        "law_002348"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_112294",
+      "query": "",
+      "retrieved_ids": [
+        "law_112294",
+        "law_087335",
+        "law_127130",
+        "law_130302",
+        "law_084560"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_130048",
+      "query": "",
+      "retrieved_ids": [
+        "law_130048",
+        "law_099691",
+        "law_035821",
+        "law_124739",
+        "law_036516"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_142526",
+      "query": "",
+      "retrieved_ids": [
+        "law_142526",
+        "law_033995",
+        "law_037385",
+        "law_032853",
+        "law_029326"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_048816",
+      "query": "",
+      "retrieved_ids": [
+        "law_048816",
+        "law_039671",
+        "law_043191",
+        "law_088670",
+        "law_072910"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_026012",
+      "query": "",
+      "retrieved_ids": [
+        "law_032062",
+        "law_034617",
+        "law_032461",
+        "law_033855",
+        "law_029975"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_132267",
+      "query": "",
+      "retrieved_ids": [
+        "law_132267",
+        "law_130771",
+        "law_073837",
+        "law_146258",
+        "law_095093"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_149129",
+      "query": "",
+      "retrieved_ids": [
+        "law_149129",
+        "law_140419",
+        "law_119638",
+        "law_077595",
+        "law_088297"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_135820",
+      "query": "",
+      "retrieved_ids": [
+        "law_135820",
+        "law_072070",
+        "law_132795",
+        "law_095041",
+        "law_078175"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_150989",
+      "query": "",
+      "retrieved_ids": [
+        "law_150989",
+        "law_141219",
+        "law_133339",
+        "law_146413",
+        "law_101487"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_138810",
+      "query": "",
+      "retrieved_ids": [
+        "law_138810",
+        "law_040258",
+        "law_072772",
+        "law_068076",
+        "law_095108"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_075689",
+      "query": "",
+      "retrieved_ids": [
+        "law_075689",
+        "law_127706",
+        "law_008832",
+        "law_087869",
+        "law_005646"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_081368",
+      "query": "",
+      "retrieved_ids": [
+        "law_081368",
+        "law_046602",
+        "law_099975",
+        "law_099974",
+        "law_042281"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_133061",
+      "query": "",
+      "retrieved_ids": [
+        "law_133061",
+        "law_048474",
+        "law_013872",
+        "law_007920",
+        "law_145019"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_123924",
+      "query": "",
+      "retrieved_ids": [
+        "law_123924",
+        "law_059732",
+        "law_139804",
+        "law_118448",
+        "law_055173"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_109970",
+      "query": "",
+      "retrieved_ids": [
+        "law_109970",
+        "law_064064",
+        "law_074343",
+        "law_067497",
+        "law_085233"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_117402",
+      "query": "",
+      "retrieved_ids": [
+        "law_117402",
+        "law_094583",
+        "law_131343",
+        "law_050682",
+        "law_057469"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_120107",
+      "query": "",
+      "retrieved_ids": [
+        "law_064273",
+        "law_062854",
+        "law_000901",
+        "law_114515",
+        "law_116670"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_039090",
+      "query": "",
+      "retrieved_ids": [
+        "law_039090",
+        "law_026268",
+        "law_026454",
+        "law_030430",
+        "law_028430"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_141048",
+      "query": "",
+      "retrieved_ids": [
+        "law_141048",
+        "law_074041",
+        "law_060175",
+        "law_072553",
+        "law_054734"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_115192",
+      "query": "",
+      "retrieved_ids": [
+        "law_115192",
+        "law_127172",
+        "law_107856",
+        "law_099336",
+        "law_074537"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_118518",
+      "query": "",
+      "retrieved_ids": [
+        "law_118518",
+        "law_089675",
+        "law_112855",
+        "law_106291",
+        "law_120074"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_084097",
+      "query": "",
+      "retrieved_ids": [
+        "law_084097",
+        "law_065189",
+        "law_106964",
+        "law_057927",
+        "law_078855"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_115385",
+      "query": "",
+      "retrieved_ids": [
+        "law_115385",
+        "law_094920",
+        "law_105634",
+        "law_130677",
+        "law_081773"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_143441",
+      "query": "",
+      "retrieved_ids": [
+        "law_143441",
+        "law_048895",
+        "law_145812",
+        "law_114821",
+        "law_087860"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_060411",
+      "query": "",
+      "retrieved_ids": [
+        "law_060411",
+        "law_016940",
+        "law_025264",
+        "law_060604",
+        "law_055746"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_084102",
+      "query": "",
+      "retrieved_ids": [
+        "law_084102",
+        "law_047106",
+        "law_050876",
+        "law_044665",
+        "law_045037"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_125748",
+      "query": "",
+      "retrieved_ids": [
+        "law_125748",
+        "law_143521",
+        "law_151576",
+        "law_145059",
+        "law_130380"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_118547",
+      "query": "",
+      "retrieved_ids": [
+        "law_118547",
+        "law_087723",
+        "law_076510",
+        "law_132897",
+        "law_133087"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_114031",
+      "query": "",
+      "retrieved_ids": [
+        "law_114031",
+        "law_139081",
+        "law_021513",
+        "law_013131",
+        "law_068084"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_134538",
+      "query": "",
+      "retrieved_ids": [
+        "law_134538",
+        "law_106013",
+        "law_132925",
+        "law_086668",
+        "law_120016"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_134758",
+      "query": "",
+      "retrieved_ids": [
+        "law_134758",
+        "law_047579",
+        "law_012960",
+        "law_132132",
+        "law_017321"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_062652",
+      "query": "",
+      "retrieved_ids": [
+        "law_066242",
+        "law_062652",
+        "law_126277",
+        "law_070277",
+        "law_108353"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_108735",
+      "query": "",
+      "retrieved_ids": [
+        "law_108735",
+        "law_093685",
+        "law_118216",
+        "law_085876",
+        "law_089893"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_141705",
+      "query": "",
+      "retrieved_ids": [
+        "law_141705",
+        "law_031660",
+        "law_133081",
+        "law_032914",
+        "law_031748"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_043627",
+      "query": "",
+      "retrieved_ids": [
+        "law_043627",
+        "law_042171",
+        "law_041970",
+        "law_027167",
+        "law_035801"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_121619",
+      "query": "",
+      "retrieved_ids": [
+        "law_121619",
+        "law_012971",
+        "law_041585",
+        "law_124641",
+        "law_075974"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_124439",
+      "query": "",
+      "retrieved_ids": [
+        "law_124439",
+        "law_023005",
+        "law_045519",
+        "law_074039",
+        "law_143607"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_071508",
+      "query": "",
+      "retrieved_ids": [
+        "law_071508",
+        "law_057533",
+        "law_086661",
+        "law_089114",
+        "law_093266"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_143636",
+      "query": "",
+      "retrieved_ids": [
+        "law_143636",
+        "law_113814",
+        "law_083655",
+        "law_001659",
+        "law_062562"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_138395",
+      "query": "",
+      "retrieved_ids": [
+        "law_138395",
+        "law_119365",
+        "law_146763",
+        "law_091456",
+        "law_123408"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_140069",
+      "query": "",
+      "retrieved_ids": [
+        "law_140069",
+        "law_139544",
+        "law_132432",
+        "law_090595",
+        "law_145950"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_003427",
+      "query": "",
+      "retrieved_ids": [
+        "law_003427",
+        "law_135373",
+        "law_090180",
+        "law_050791",
+        "law_011398"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_010004",
+      "query": "",
+      "retrieved_ids": [
+        "law_063235",
+        "law_062578",
+        "law_073306",
+        "law_010004",
+        "law_020832"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_125882",
+      "query": "",
+      "retrieved_ids": [
+        "law_125882",
+        "law_128670",
+        "law_098200",
+        "law_077399",
+        "law_119757"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_130560",
+      "query": "",
+      "retrieved_ids": [
+        "law_130560",
+        "law_111052",
+        "law_145041",
+        "law_133667",
+        "law_144290"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_139023",
+      "query": "",
+      "retrieved_ids": [
+        "law_139023",
+        "law_098528",
+        "law_110877",
+        "law_098880",
+        "law_089141"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_050120",
+      "query": "",
+      "retrieved_ids": [
+        "law_062733",
+        "law_050120",
+        "law_019009",
+        "law_088571",
+        "law_063964"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_100186",
+      "query": "",
+      "retrieved_ids": [
+        "law_054783",
+        "law_078430",
+        "law_140502",
+        "law_064994",
+        "law_147256"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_130881",
+      "query": "",
+      "retrieved_ids": [
+        "law_130881",
+        "law_064098",
+        "law_054563",
+        "law_075620",
+        "law_120444"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.25,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_107485",
+      "query": "",
+      "retrieved_ids": [
+        "law_107485",
+        "law_080359",
+        "law_141687",
+        "law_132424",
+        "law_130903"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_149282",
+      "query": "",
+      "retrieved_ids": [
+        "law_149282",
+        "law_122696",
+        "law_057979",
+        "law_142699",
+        "law_143565"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_121736",
+      "query": "",
+      "retrieved_ids": [
+        "law_121736",
+        "law_140172",
+        "law_138069",
+        "law_145157",
+        "law_119341"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_073825",
+      "query": "",
+      "retrieved_ids": [
+        "law_073825",
+        "law_044472",
+        "law_014284",
+        "law_020985",
+        "law_008364"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_109048",
+      "query": "",
+      "retrieved_ids": [
+        "law_109048",
+        "law_146094",
+        "law_020946",
+        "law_070961",
+        "law_052361"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_139798",
+      "query": "",
+      "retrieved_ids": [
+        "law_139798",
+        "law_098160",
+        "law_132625",
+        "law_120324",
+        "law_149875"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_119085",
+      "query": "",
+      "retrieved_ids": [
+        "law_018881",
+        "law_006819",
+        "law_117833",
+        "law_039331",
+        "law_049253"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_040708",
+      "query": "",
+      "retrieved_ids": [
+        "law_040708",
+        "law_101228",
+        "law_145952",
+        "law_113400",
+        "law_100537"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_076447",
+      "query": "",
+      "retrieved_ids": [
+        "law_076447",
+        "law_133158",
+        "law_105924",
+        "law_026214",
+        "law_027355"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_128772",
+      "query": "",
+      "retrieved_ids": [
+        "law_128772",
+        "law_128429",
+        "law_111312",
+        "law_113755",
+        "law_103648"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_043806",
+      "query": "",
+      "retrieved_ids": [
+        "law_043806",
+        "law_001873",
+        "law_124742",
+        "law_002016",
+        "law_092868"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_144955",
+      "query": "",
+      "retrieved_ids": [
+        "law_144955",
+        "law_136278",
+        "law_137935",
+        "law_114546",
+        "law_129591"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_141226",
+      "query": "",
+      "retrieved_ids": [
+        "law_141226",
+        "law_006466",
+        "law_148625",
+        "law_113313",
+        "law_148386"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_018845",
+      "query": "",
+      "retrieved_ids": [
+        "law_045170",
+        "law_052542",
+        "law_043560",
+        "law_051796",
+        "law_043824"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_140288",
+      "query": "",
+      "retrieved_ids": [
+        "law_140288",
+        "law_097289",
+        "law_066075",
+        "law_111264",
+        "law_077688"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_012887",
+      "query": "",
+      "retrieved_ids": [
+        "law_012887",
+        "law_062865",
+        "law_039548",
+        "law_093310",
+        "law_012125"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_034565",
+      "query": "",
+      "retrieved_ids": [
+        "law_034565",
+        "law_045827",
+        "law_037521",
+        "law_015940",
+        "law_132823"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_086874",
+      "query": "",
+      "retrieved_ids": [
+        "law_086874",
+        "law_093566",
+        "law_057544",
+        "law_078302",
+        "law_093158"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_127391",
+      "query": "",
+      "retrieved_ids": [
+        "law_116147",
+        "law_096767",
+        "law_135751",
+        "law_127391",
+        "law_142969"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_049404",
+      "query": "",
+      "retrieved_ids": [
+        "law_049404",
+        "law_082160",
+        "law_091627",
+        "law_066950",
+        "law_065194"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_029158",
+      "query": "",
+      "retrieved_ids": [
+        "law_007117",
+        "law_011499",
+        "law_079337",
+        "law_009786",
+        "law_114945"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_098119",
+      "query": "",
+      "retrieved_ids": [
+        "law_098119",
+        "law_122303",
+        "law_106890",
+        "law_132726",
+        "law_151469"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_101771",
+      "query": "",
+      "retrieved_ids": [
+        "law_110224",
+        "law_100614",
+        "law_101771",
+        "law_116474",
+        "law_139432"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_138367",
+      "query": "",
+      "retrieved_ids": [
+        "law_138367",
+        "law_115298",
+        "law_065388",
+        "law_146081",
+        "law_142729"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_089454",
+      "query": "",
+      "retrieved_ids": [
+        "law_089454",
+        "law_150553",
+        "law_096942",
+        "law_141742",
+        "law_142575"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_141294",
+      "query": "",
+      "retrieved_ids": [
+        "law_141294",
+        "law_081435",
+        "law_084065",
+        "law_041135",
+        "law_145796"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_040189",
+      "query": "",
+      "retrieved_ids": [
+        "law_040189",
+        "law_035933",
+        "law_035648",
+        "law_036364",
+        "law_036179"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_137268",
+      "query": "",
+      "retrieved_ids": [
+        "law_137268",
+        "law_135990",
+        "law_001959",
+        "law_128280",
+        "law_075267"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_102437",
+      "query": "",
+      "retrieved_ids": [
+        "law_102437",
+        "law_063498",
+        "law_068272",
+        "law_024990",
+        "law_014330"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_105247",
+      "query": "",
+      "retrieved_ids": [
+        "law_105247",
+        "law_064081",
+        "law_107728",
+        "law_063201",
+        "law_152252"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_107841",
+      "query": "",
+      "retrieved_ids": [
+        "law_107841",
+        "law_065120",
+        "law_121030",
+        "law_134806",
+        "law_096017"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_134127",
+      "query": "",
+      "retrieved_ids": [
+        "law_147990",
+        "law_009481",
+        "law_015988",
+        "law_033072",
+        "law_151932"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_068386",
+      "query": "",
+      "retrieved_ids": [
+        "law_068386",
+        "law_073306",
+        "law_066440",
+        "law_027994",
+        "law_080019"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147585",
+      "query": "",
+      "retrieved_ids": [
+        "law_147585",
+        "law_071575",
+        "law_080065",
+        "law_127005",
+        "law_113135"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_132252",
+      "query": "",
+      "retrieved_ids": [
+        "law_115472",
+        "law_118388",
+        "law_101662",
+        "law_138426",
+        "law_132252"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_069685",
+      "query": "",
+      "retrieved_ids": [
+        "law_069685",
+        "law_118705",
+        "law_063136",
+        "law_108069",
+        "law_096499"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_145337",
+      "query": "",
+      "retrieved_ids": [
+        "law_145337",
+        "law_146487",
+        "law_133973",
+        "law_117268",
+        "law_004627"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_100744",
+      "query": "",
+      "retrieved_ids": [
+        "law_058867",
+        "law_100744",
+        "law_008372",
+        "law_042395",
+        "law_064912"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_150448",
+      "query": "",
+      "retrieved_ids": [
+        "law_150448",
+        "law_111513",
+        "law_061809",
+        "law_063524",
+        "law_042274"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_064715",
+      "query": "",
+      "retrieved_ids": [
+        "law_087353",
+        "law_064715",
+        "law_124635",
+        "law_094078",
+        "law_034166"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_121930",
+      "query": "",
+      "retrieved_ids": [
+        "law_121930",
+        "law_123262",
+        "law_115456",
+        "law_074266",
+        "law_099086"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_136056",
+      "query": "",
+      "retrieved_ids": [
+        "law_136056",
+        "law_069853",
+        "law_060166",
+        "law_058181",
+        "law_001200"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147994",
+      "query": "",
+      "retrieved_ids": [
+        "law_147994",
+        "law_147783",
+        "law_147008",
+        "law_081978",
+        "law_148960"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_132050",
+      "query": "",
+      "retrieved_ids": [
+        "law_132050",
+        "law_132838",
+        "law_104997",
+        "law_079147",
+        "law_137346"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_142341",
+      "query": "",
+      "retrieved_ids": [
+        "law_142341",
+        "law_147875",
+        "law_095994",
+        "law_059534",
+        "law_120074"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_110577",
+      "query": "",
+      "retrieved_ids": [
+        "law_110577",
+        "law_066608",
+        "law_060034",
+        "law_050280",
+        "law_106954"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_020672",
+      "query": "",
+      "retrieved_ids": [
+        "law_020672",
+        "law_064043",
+        "law_060254",
+        "law_032808",
+        "law_047035"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_003754",
+      "query": "",
+      "retrieved_ids": [
+        "law_003754",
+        "law_010402",
+        "law_021554",
+        "law_014841",
+        "law_003218"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_038848",
+      "query": "",
+      "retrieved_ids": [
+        "law_006335",
+        "law_038848",
+        "law_029059",
+        "law_087433",
+        "law_130118"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_110562",
+      "query": "",
+      "retrieved_ids": [
+        "law_110562",
+        "law_065215",
+        "law_010348",
+        "law_024832",
+        "law_000051"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_042103",
+      "query": "",
+      "retrieved_ids": [
+        "law_048355",
+        "law_042103",
+        "law_047193",
+        "law_041957",
+        "law_035501"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_106088",
+      "query": "",
+      "retrieved_ids": [
+        "law_091309",
+        "law_059965",
+        "law_077733",
+        "law_093406",
+        "law_106088"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_125661",
+      "query": "",
+      "retrieved_ids": [
+        "law_125661",
+        "law_074582",
+        "law_098938",
+        "law_129884",
+        "law_091113"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_055537",
+      "query": "",
+      "retrieved_ids": [
+        "law_055537",
+        "law_025371",
+        "law_092718",
+        "law_048455",
+        "law_076161"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_100026",
+      "query": "",
+      "retrieved_ids": [
+        "law_100026",
+        "law_113262",
+        "law_094041",
+        "law_116323",
+        "law_107548"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_142377",
+      "query": "",
+      "retrieved_ids": [
+        "law_142377",
+        "law_134806",
+        "law_097053",
+        "law_102017",
+        "law_138313"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_122653",
+      "query": "",
+      "retrieved_ids": [
+        "law_122653",
+        "law_106267",
+        "law_073502",
+        "law_095175",
+        "law_091558"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_093350",
+      "query": "",
+      "retrieved_ids": [
+        "law_093350",
+        "law_094201",
+        "law_071207",
+        "law_069199",
+        "law_070955"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_146627",
+      "query": "",
+      "retrieved_ids": [
+        "law_146627",
+        "law_069559",
+        "law_085740",
+        "law_014509",
+        "law_015202"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_091526",
+      "query": "",
+      "retrieved_ids": [
+        "law_091526",
+        "law_070000",
+        "law_140285",
+        "law_071442",
+        "law_062420"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.3,
+        "precision@5": 0.6,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.3
+      },
+      "ndcg@5": 0.3
+    },
+    {
+      "id": "cail_law_031169",
+      "query": "",
+      "retrieved_ids": [
+        "law_134602",
+        "law_046767",
+        "law_030782",
+        "law_039489",
+        "law_028387"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_091116",
+      "query": "",
+      "retrieved_ids": [
+        "law_091116",
+        "law_126442",
+        "law_123794",
+        "law_108851",
+        "law_114809"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_102987",
+      "query": "",
+      "retrieved_ids": [
+        "law_102987",
+        "law_115974",
+        "law_134757",
+        "law_028316",
+        "law_065653"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_110302",
+      "query": "",
+      "retrieved_ids": [
+        "law_110302",
+        "law_131048",
+        "law_074759",
+        "law_137381",
+        "law_136850"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_114391",
+      "query": "",
+      "retrieved_ids": [
+        "law_114391",
+        "law_129974",
+        "law_136189",
+        "law_132499",
+        "law_073252"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_147621",
+      "query": "",
+      "retrieved_ids": [
+        "law_147621",
+        "law_121857",
+        "law_108580",
+        "law_135465",
+        "law_114395"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.1,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333,
+        "ndcg@5": 0.1
+      },
+      "ndcg@5": 0.1
+    },
+    {
+      "id": "cail_law_064891",
+      "query": "",
+      "retrieved_ids": [
+        "law_064891",
+        "law_076481",
+        "law_092394",
+        "law_110524",
+        "law_086628"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_120297",
+      "query": "",
+      "retrieved_ids": [
+        "law_060430",
+        "law_068004",
+        "law_105031",
+        "law_042264",
+        "law_112853"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_106706",
+      "query": "",
+      "retrieved_ids": [
+        "law_106706",
+        "law_099262",
+        "law_153974",
+        "law_153636",
+        "law_150097"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_089214",
+      "query": "",
+      "retrieved_ids": [
+        "law_100008",
+        "law_093592",
+        "law_089214",
+        "law_078529",
+        "law_073543"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_125415",
+      "query": "",
+      "retrieved_ids": [
+        "law_125415",
+        "law_124533",
+        "law_070619",
+        "law_118522",
+        "law_010398"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_044235",
+      "query": "",
+      "retrieved_ids": [
+        "law_060430",
+        "law_068004",
+        "law_105031",
+        "law_042264",
+        "law_112853"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_096751",
+      "query": "",
+      "retrieved_ids": [
+        "law_096751",
+        "law_119428",
+        "law_092025",
+        "law_149852",
+        "law_114734"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_052620",
+      "query": "",
+      "retrieved_ids": [
+        "law_052620",
+        "law_078737",
+        "law_088472",
+        "law_072829",
+        "law_088157"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_140627",
+      "query": "",
+      "retrieved_ids": [
+        "law_140627",
+        "law_114503",
+        "law_142145",
+        "law_146252",
+        "law_085708"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_001204",
+      "query": "",
+      "retrieved_ids": [
+        "law_001204",
+        "law_058296",
+        "law_067787",
+        "law_053814",
+        "law_062930"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_118671",
+      "query": "",
+      "retrieved_ids": [
+        "law_118671",
+        "law_007051",
+        "law_145982",
+        "law_007716",
+        "law_132259"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_029065",
+      "query": "",
+      "retrieved_ids": [
+        "law_029065",
+        "law_023455",
+        "law_040215",
+        "law_022700",
+        "law_023184"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_150085",
+      "query": "",
+      "retrieved_ids": [
+        "law_150085",
+        "law_065955",
+        "law_092027",
+        "law_058598",
+        "law_137059"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_100217",
+      "query": "",
+      "retrieved_ids": [
+        "law_100217",
+        "law_064382",
+        "law_059425",
+        "law_122210",
+        "law_140442"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_089076",
+      "query": "",
+      "retrieved_ids": [
+        "law_089076",
+        "law_142493",
+        "law_134613",
+        "law_087097",
+        "law_131357"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_120877",
+      "query": "",
+      "retrieved_ids": [
+        "law_120877",
+        "law_092731",
+        "law_108201",
+        "law_118026",
+        "law_071549"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_073892",
+      "query": "",
+      "retrieved_ids": [
+        "law_142090",
+        "law_073892",
+        "law_119938",
+        "law_077011",
+        "law_105105"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_018236",
+      "query": "",
+      "retrieved_ids": [
+        "law_018236",
+        "law_066004",
+        "law_044006",
+        "law_051720",
+        "law_013072"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_136637",
+      "query": "",
+      "retrieved_ids": [
+        "law_136637",
+        "law_127236",
+        "law_118989",
+        "law_107879",
+        "law_143092"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_094337",
+      "query": "",
+      "retrieved_ids": [
+        "law_094337",
+        "law_113352",
+        "law_151832",
+        "law_115218",
+        "law_138291"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 1.0,
+        "hr@5": 1.0,
+        "recall@5": 0.2,
+        "precision@5": 0.4,
+        "mrr@5": 0.5,
+        "ndcg@5": 0.2
+      },
+      "ndcg@5": 0.2
+    },
+    {
+      "id": "cail_law_038516",
+      "query": "",
+      "retrieved_ids": [
+        "law_038516",
+        "law_129409",
+        "law_023512",
+        "law_023145",
+        "law_081471"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_102360",
+      "query": "",
+      "retrieved_ids": [
+        "law_102360",
+        "law_074730",
+        "law_090555",
+        "law_150249",
+        "law_103732"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_106846",
+      "query": "",
+      "retrieved_ids": [
+        "law_106846",
+        "law_120276",
+        "law_116391",
+        "law_109334",
+        "law_094285"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_040464",
+      "query": "",
+      "retrieved_ids": [
+        "law_040464",
+        "law_028324",
+        "law_037743",
+        "law_023951",
+        "law_041162"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_105925",
+      "query": "",
+      "retrieved_ids": [
+        "law_105925",
+        "law_070131",
+        "law_120135",
+        "law_059080",
+        "law_055018"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_142499",
+      "query": "",
+      "retrieved_ids": [
+        "law_142499",
+        "law_123182",
+        "law_077592",
+        "law_134566",
+        "law_150880"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_115237",
+      "query": "",
+      "retrieved_ids": [
+        "law_115237",
+        "law_110813",
+        "law_072825",
+        "law_074192",
+        "law_066482"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
+    },
+    {
+      "id": "cail_law_153036",
+      "query": "",
+      "retrieved_ids": [
+        "law_153036",
+        "law_131694",
+        "law_140665",
+        "law_148287",
+        "law_153403"
+      ],
+      "metrics": {
+        "hr@1": 0.0,
+        "hr@3": 0.0,
+        "hr@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0,
+        "ndcg@5": 0.0
+      },
+      "ndcg@5": 0.0
     }
   ]
 }

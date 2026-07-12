@@ -81,7 +81,7 @@ async def get_star_data(limit: int = 0):
 @app.post("/api/search")
 async def search(request: SearchRequest) -> SearchResponse:
     """RAG 搜索接口"""
-    from backend.rag_search import get_search_engine
+    from rag_search import get_search_engine
 
     try:
         engine = get_search_engine()
@@ -104,8 +104,8 @@ async def search(request: SearchRequest) -> SearchResponse:
 
 
 @app.get("/api/eval/{domain}")
-async def get_eval_data(domain: str):
-    """获取评估数据用于回放"""
+async def get_eval_data(domain: str, step: int = 0):
+    """获取评估回放数据：按 step 返回前 step+1 个样本的累计指标"""
     eval_path = Path(__file__).parent.parent / "data" / "eval" / f"eval_{domain}.json"
 
     if not eval_path.exists():
@@ -114,27 +114,37 @@ async def get_eval_data(domain: str):
     with open(eval_path, "r", encoding="utf-8") as f:
         eval_data = json.load(f)
 
-    return eval_data
+    samples = eval_data.get("samples", [])
+    summary = eval_data.get("summary", {})
+
+    # step 为当前回放进度（从 0 开始），返回前 step+1 个样本的累计 NDCG 和当前 NDCG
+    step = min(max(step, 0), len(samples) - 1) if samples else 0
+    current_sample = samples[step] if samples else {}
+    current_ndcg = current_sample.get("ndcg@5", 0)
+
+    # 累计 NDCG：前 step+1 个样本的平均
+    if step + 1 > 0:
+        cumulative_ndcg = sum(s.get("ndcg@5", 0) for s in samples[: step + 1]) / (step + 1)
+    else:
+        cumulative_ndcg = current_ndcg
+
+    # 正确率：ndcg@5 > 0 视为正确
+    correct = sum(1 for s in samples[: step + 1] if s.get("ndcg@5", 0) > 0)
+    rate = (correct / (step + 1) * 100) if step + 1 > 0 else 0
+
+    return {
+        "ndcg_at_5": current_ndcg,
+        "cumulative_ndcg": cumulative_ndcg,
+        "correct_rate": round(rate, 2),
+        "total_samples": len(samples),
+        "current_step": step,
+    }
 
 
 @app.get("/api/config")
 async def get_config():
     """获取配置信息"""
     return config
-
-
-@app.get("/api/eval/{domain}")
-async def get_eval_data(domain: str):
-    """获取评估数据用于回放"""
-    eval_path = Path(__file__).parent.parent / "data" / "eval" / f"eval_{domain}.json"
-
-    if not eval_path.exists():
-        raise HTTPException(status_code=404, detail=f"评估数据不存在: {domain}")
-
-    with open(eval_path, "r", encoding="utf-8") as f:
-        eval_data = json.load(f)
-
-    return eval_data
 
 
 if __name__ == "__main__":

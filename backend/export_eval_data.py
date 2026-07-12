@@ -67,7 +67,7 @@ def export_domain(domain: str):
         "samples": []
     }
 
-    for sample in samples[:100]:  # 限制100个样本用于前端展示
+    for sample in samples:  # 导出全部样本
         query_id = sample["id"]
         query_info = query_map.get(query_id, {})
 

@@ -18,7 +18,7 @@
 
       <input
         type="range"
-        v-model="currentStep"
+        :value="currentStep"
         :min="0"
         :max="maxSteps - 1"
         class="progress-slider"
@@ -93,16 +93,27 @@ const togglePlay = () => {
   }
 };
 
-const handleStepChange = () => {
+const handleStepChange = (event: Event) => {
+  // 从 slider 获取最新值
+  const slider = event.target as HTMLInputElement;
+  currentStep.value = parseInt(slider.value, 10);
   loadEvalData();
 };
 
 const loadEvalData = async () => {
   try {
     const data = await getEvalData(currentDomain.value, currentStep.value);
-    currentNdcg.value = data.ndcg_at_5;
-    cumulativeNdcg.value = data.cumulative_ndcg;
-    // TODO: 计算正确率
+    currentNdcg.value = data.ndcg_at_5 ?? 0;
+    cumulativeNdcg.value = data.cumulative_ndcg ?? 0;
+    correctRate.value = data.correct_rate ?? 0;
+    // 同步 maxSteps 为后端返回的总样本数
+    if (data.total_samples) {
+      maxSteps.value = data.total_samples;
+      // clamp 当前步进，防止超出新范围
+      if (currentStep.value >= data.total_samples) {
+        currentStep.value = data.total_samples - 1;
+      }
+    }
   } catch (error) {
     console.error('Failed to load eval data:', error);
   }
