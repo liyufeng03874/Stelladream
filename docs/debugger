@@ -1,0 +1,14 @@
+注释createMeteor -> 最终白色核心不变 ——无影响
+注释createGlow -> 无变大与光晕 ——有关
+查看内部逻辑 -> 跟踪createGlowTexture
+问题出在createGlowTexture
+发现createGlowTexture是公用方法 -> 找调用处
+找createGlow调用处
+对比星跃和query打印参数发现一样 -> 问题出在createGlow本身
+console.log(position, color, size, targetId, source, phase)观察区别
+添加if(phase === 'finalStar' || phase === 'jumpToStar') -> 对比参数区别
+发现两者参数完全一样 -> 说明不是finalStar与jumpToStar造成的视觉差异
+添加代码：if(phase === 'finalStar' || phase === 'jumpToStar') return -> 发现query仍然变大！
+屏蔽finalStar与jumpToStar，观察剩余phase -> 还剩bm25 knn rrf
+确定视角效果受bm25 knn rrf三者影响 -> 放开if(phase === 'finalStar' || phase === 'jumpToStar') return的注释
+放开注释后，发现query与星跃效果完全一致 -> 进一步说明视觉效果，也就是白色核心，是这三者造成

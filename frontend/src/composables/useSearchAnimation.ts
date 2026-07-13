@@ -481,6 +481,14 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const source = 'jumpToStar';
       const phase = 'jumpToStar';
 
+      // 辉光铺垫：先对目标星调用 highlightAndGrow，让它获得白色核心和辉光
+      const chunkId = targetSprite.userData.chunk_id;
+      if (chunkId) {
+        const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
+        // 等一小段时间让辉光创建完成
+        await new Promise<void>(r => setTimeout(r, 200));
+      }
+
       // 立即换材质（白核心）
       gsap.killTweensOf(targetSprite.scale);
       gsap.killTweensOf(targetSprite.material);
@@ -580,7 +588,15 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     // 2. 恢复最终星
     resetFinalStar();
 
-    // 3. 目标星
+    // 3. 辉光铺垫：先对目标星调用 highlightAndGrow，让它获得白色核心和辉光
+    const chunkId = targetSprite.userData.chunk_id;
+    if (chunkId) {
+      const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
+      // 等一小段时间让辉光创建完成
+      await new Promise<void>(r => setTimeout(r, 200));
+    }
+
+    // 4. 目标星
     const targetPos = targetSprite.position;
 
     // 和 query 一致：先改材质 + 创建辉光 + 再启动 tween
