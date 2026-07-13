@@ -74,6 +74,8 @@ import { GUI } from 'lil-gui';
 let starSprites: THREE.Sprite[] = [];
 let starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }> = new Map();
 let animContext: ReturnType<typeof useSearchAnimation> | null = null;
+let camera: THREE.Camera | null = null;
+let scene: THREE.Scene | null = null;
 
 const starData = ref<StarPoint[]>([]);
 const config = ref<any>({});
@@ -167,7 +169,7 @@ function snapshotState(label: string): any {
       renderOrder: g.renderOrder,
       textureSize: g.material.map?.image ? `${g.material.map.image.width}x${g.material.map.image.height}` : 'none',
     })),
-    camera: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+    camera: { x: camera?.position.x, y: camera?.position.y, z: camera?.position.z },
   };
   console.log(`[snapshot ${label}]`, snap);
   return snap;
@@ -234,7 +236,7 @@ function openDebugGui() {
   guiParams.glowPosOffsetX = glows[0] ? glows[0].position.x - coreSprite.position.x : 0;
   guiParams.glowPosOffsetY = glows[0] ? glows[0].position.y - coreSprite.position.y : 0;
   guiParams.glowPosOffsetZ = glows[0] ? glows[0].position.z - coreSprite.position.z : 0;
-  guiParams.cameraZ = camera.position.z;
+  guiParams.cameraZ = camera?.position.z || 100;
 
   // 核心
   const coreFolder = debugGui.addFolder('⭐ 核心');
@@ -435,6 +437,8 @@ const handleSearch = async (query: string) => {
 const handleStarFieldReady = (context: any) => {
   starSprites = context.starSprites;
   starDataMap = context.starDataMap;
+  camera = context.camera;
+  scene = context.scene;
   animContext = useSearchAnimation(context);
   // 暴露到 window 方便调试
   (window as any).__stelladream = {
