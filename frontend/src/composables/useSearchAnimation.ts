@@ -534,14 +534,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       });
 
-      gsap.to(newMat, {
+      breathingTween = gsap.to(newMat, {
         opacity: 0.7,
         duration: 0.8,
         ease: 'sine.inOut',
         yoyo: true,
         repeat: -1,
       });
-      breathingTween = gsap.tweens.find((t: any) => t.target === newMat);
 
       finalStarInfo = {
         sprite: targetSprite,
@@ -647,14 +646,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       });
 
-      gsap.to(newMat, {
+      breathingTween = gsap.to(newMat, {
         opacity: 0.7,
         duration: 0.8,
         ease: 'sine.inOut',
         yoyo: true,
         repeat: -1,
       });
-      breathingTween = gsap.tweens.find((t: any) => t.target === newMat);
 
       finalStarInfo = {
         sprite: targetSprite,
