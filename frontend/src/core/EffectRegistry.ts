@@ -224,4 +224,30 @@ export class EffectRegistry {
 
     return { onlyInA, onlyInB, different };
   }
+
+  /** 输出简短摘要（控制台友好） */
+  summary(): string[] {
+    const lines: string[] = [];
+    lines.push(`=== EffectRegistry Summary ===`);
+    lines.push(`Total targets: ${this.entries.size}`);
+
+    for (const [targetId, entries] of this.entries.entries()) {
+      const applied = entries.filter(e => e.status === 'applied');
+      if (applied.length === 0) continue;
+
+      const sources = [...new Set(applied.map(e => e.source))];
+      const phases = [...new Set(applied.map(e => e.phase))];
+      lines.push(`\n[${targetId}] (${applied.length} changes, sources: ${sources.join(', ')}, phases: ${phases.join(', ')})`);
+
+      const properties = [...new Set(applied.map(e => e.property))];
+      for (const prop of properties) {
+        const latest = this.getLatest(targetId, prop);
+        if (latest) {
+          lines.push(`  ${prop}: ${JSON.stringify(latest.value)} (via ${latest.source}, ${latest.phase})`);
+        }
+      }
+    }
+
+    return lines;
+  }
 }
