@@ -1,18 +1,23 @@
 # 3D星图状态管理重构 — 改造进度
 
-## 完成
+## 完成 ✅
 
-- [x] `EffectRegistry.ts` — 变更注册中心（含覆盖链、对象映射、差异比对）
-- [x] `EffectFactory.ts` — 对象创建/清理中心（辉光、流星自动注册+自动dispose）
-- [x] `state-management-refactor.md` — 完整方案设计文档
+- [x] `EffectRegistry.ts` — 变更注册中心
+- [x] `EffectFactory.ts` — 对象创建/清理中心
+- [x] `state-management-refactor.md` — 完整方案文档
+- [x] 替换 `createGlow` → EffectFactory.createGlow
+- [x] 替换 `createMeteor` → EffectFactory.createMeteor
+- [x] 改造 `highlightAndGrow` — 属性变更走 registry
+- [x] 改造 `jumpToStar` — 统一走 factory + registry（情况1/情况2）
+- [x] 改造 `cleanup` / `clearAllGlows` — 增加 factory.sweepOrphanGlows 兜底
+- [x] 改造 `flyToStar` — 相机变更走 registry
+- [x] 改造 `animateSearch` — 协调全局流程，最终星变更走 registry
+- [x] TypeScript 编译通过（`tsc --noEmit` 零报错）
+- [x] Git 提交 `dc813b8`
 
-## 待开始（需要哥哥在家验证时再做）
+## 待验证
 
-- [ ] 替换 `useSearchAnimation.ts` 中的 `createGlow` 调用 → EffectFactory.createGlow
-- [ ] 替换 `useSearchAnimation.ts` 中的 `createMeteor` 调用 → EffectFactory.createMeteor
-- [ ] 改造 `highlightAndGrow` — 属性变更走 registry
-- [ ] 改造 `jumpToStar` — 统一走 factory + registry
-- [ ] 改造 `cleanup` / `resetFinalStar` — 通过 registry 恢复
-- [ ] 改造 `animateSearch` — 协调全局流程
-- [ ] 清理旧代码（散落的数组）
-- [ ] 验证效果
+- [ ] 运行项目，确认视觉效果和改造前一致
+- [ ] query 搜索 vs jumpToStar，registry 差异比对
+- [ ] 多次搜索 + 星跃，确认无光晕残留
+- [ ] 确认 `registry.export()` 输出完整变更历史

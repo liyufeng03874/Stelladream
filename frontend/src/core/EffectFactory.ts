@@ -7,7 +7,7 @@
 
 import * as THREE from 'three';
 import { gsap } from 'gsap';
-import { EffectRegistry, EffectEntry } from './EffectRegistry';
+import { EffectRegistry } from './EffectRegistry';
 
 export interface ManagedEffect {
   id: string;            // EffectRegistry 中注册的 ID
