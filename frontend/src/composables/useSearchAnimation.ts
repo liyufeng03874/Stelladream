@@ -497,11 +497,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const oldScale = targetSprite.scale.clone();
       registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale.x, y: oldScale.y, z: oldScale.z }, value: { x: 0.6, y: 0.6, z: 5 }, source, phase });
 
-      // 辉光：和 query 完全一致
-      createGlow(targetPos, 0xFFFFFF, 5, targetId, source, phase);
+      // 辉光：和 query 完全一致（单层绿色30，tween前立即创建）
       createGlow(targetPos, 0x34D399, 30, targetId, source, phase);
-
-      console.log('[jumpToStar-情况1] glows created: 3 layers (white5, green3, green30)');
 
       // 放大动画 — 和 query 完全一致 0.6，让辉光完全包裹核心
       const uniformFinalScale = 0.6;
@@ -632,8 +629,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       });
 
-      // 两层辉光
-      createGlow(targetSprite.position, 0xFFFFFF, 5, targetId, source, phase);
+      // 两层辉光：和 animateSearch 一致（仅一层绿色30）
       createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
 
       gsap.to(newMat, {
