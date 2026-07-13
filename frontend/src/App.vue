@@ -181,6 +181,14 @@ const handleStarFieldReady = (context: any) => {
   starSprites = context.starSprites;
   starDataMap = context.starDataMap;
   animContext = useSearchAnimation(context);
+  // 暴露到 window 方便调试
+  (window as any).__stelladream = {
+    animContext,
+    getRegistry: () => animContext?.getRegistry(),
+    getFactory: () => animContext?.getFactory(),
+    registry: () => animContext?.getRegistry(),
+    factory: () => animContext?.getFactory(),
+  };
 };
 
 onMounted(async () => {
