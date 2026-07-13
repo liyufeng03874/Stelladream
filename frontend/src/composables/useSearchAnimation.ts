@@ -67,6 +67,38 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     material: THREE.SpriteMaterial;
   }>();
 
+  // 从 difference.log 提取：query 阶段所有辉光（叠加到 jumpToStar 目标星上）
+  const FINAL_STAR_QUERY_GLOWS = [
+    // bm25 辉光（10个）
+    { color: 16766720, size: 1.7856828 },
+    { color: 16766720, size: 1.4432484 },
+    { color: 16766720, size: 1.4432484 },
+    { color: 16766720, size: 1.4432484 },
+    { color: 16766720, size: 1.217634 },
+    { color: 16766720, size: 1.4432484 },
+    { color: 16766720, size: 1.271127 },
+    { color: 16766720, size: 1.6337178 },
+    { color: 16766720, size: 1.5380772 },
+    { color: 16766720, size: 1.1890956 },
+    // knn 辉光（10个）
+    { color: 6333946, size: 1.4432484 },
+    { color: 6333946, size: 1.4432484 },
+    { color: 6333946, size: 1.4432484 },
+    { color: 6333946, size: 1.4432484 },
+    { color: 6333946, size: 1.5936228 },
+    { color: 6333946, size: 1.7064036 },
+    { color: 6333946, size: 1.5974244 },
+    { color: 6333946, size: 1.655115 },
+    { color: 6333946, size: 1.3979526 },
+    { color: 6333946, size: 1.2611544 },
+    // rrf 辉光（5个）
+    { color: 10980346, size: 1.9185936 },
+    { color: 10980346, size: 1.9185936 },
+    { color: 10980346, size: 1.9185936 },
+    { color: 10980346, size: 1.9185936 },
+    { color: 10980346, size: 2.1717864 },
+  ];
+
   function isVectorValid(v: THREE.Vector3): boolean {
     return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
   }
@@ -482,12 +514,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const phase = 'jumpToStar';
 
       // 辉光铺垫：先对目标星调用 highlightAndGrow，让它获得白色核心和辉光
-      const chunkId = targetSprite.userData.chunk_id;
-      if (chunkId) {
-        const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
-        // 等一小段时间让辉光创建完成
-        await new Promise<void>(r => setTimeout(r, 200));
-      }
+      // const chunkId = targetSprite.userData.chunk_id;
+      // if (chunkId) {
+      //   const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
+      //   // 等一小段时间让辉光创建完成
+      //   await new Promise<void>(r => setTimeout(r, 200));
+      // }
 
       // 立即换材质（白核心）
       gsap.killTweensOf(targetSprite.scale);
@@ -509,9 +541,16 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const oldScale = targetSprite.scale.clone();
       registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale.x, y: oldScale.y, z: oldScale.z }, value: { x: 0.6, y: 0.6, z: 5 }, source, phase });
 
-      // 辉光：和 query 完全一致（单层绿色30，tween前立即创建）
+      // 辉光：和 query 完全一致
+      // 1) 绿色辉光（finalStar 阶段）
       const glow = createGlow(targetPos, 0x34D399, 30, targetId, source, phase);
       if (glow) finalStarGlowSprites.push(glow);
+
+      // 2) 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
+      FINAL_STAR_QUERY_GLOWS.forEach(g => {
+        const g2 = createGlow(targetPos.clone(), g.color, g.size, targetId, source, 'jumpToStar-replay');
+        if (g2) finalStarGlowSprites.push(g2);
+      });
 
       // 放大动画 — 和 query 完全一致 0.6，让辉光完全包裹核心
       const uniformFinalScale = 0.6;
@@ -589,12 +628,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     resetFinalStar();
 
     // 3. 辉光铺垫：先对目标星调用 highlightAndGrow，让它获得白色核心和辉光
-    const chunkId = targetSprite.userData.chunk_id;
-    if (chunkId) {
-      const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
-      // 等一小段时间让辉光创建完成
-      await new Promise<void>(r => setTimeout(r, 200));
-    }
+    // const chunkId = targetSprite.userData.chunk_id;
+    // if (chunkId) {
+    //   const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
+    //   // 等一小段时间让辉光创建完成
+    //   await new Promise<void>(r => setTimeout(r, 200));
+    // }
 
     // 4. 目标星
     const targetPos = targetSprite.position;
@@ -621,7 +660,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     // 和 query 完全一致：改完材质后先创建辉光，再启动 tween
     const glow = createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
     if (glow) finalStarGlowSprites.push(glow);
-    console.log('[jumpToStar-情况2] glow created at scale:', targetSprite.scale.x.toFixed(3));
+
+    // 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
+    FINAL_STAR_QUERY_GLOWS.forEach(g => {
+      const g2 = createGlow(targetSprite.position.clone(), g.color, g.size, targetId, source, 'jumpToStar-replay');
+      if (g2) finalStarGlowSprites.push(g2);
+    });
 
     gsap.to(targetSprite.scale, {
       x: targetOrigScale.x * 2.2,
