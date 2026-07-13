@@ -9,6 +9,8 @@
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import type { StarPoint } from '../api';
+import { EffectRegistry } from '../core/EffectRegistry';
+import { EffectFactory, type ManagedEffect } from '../core/EffectFactory';
 
 interface SearchAnimationContext {
   scene: THREE.Scene;
@@ -47,6 +49,11 @@ export interface FinalStarInfo {
 export function useSearchAnimation(context: SearchAnimationContext) {
   const { scene, camera, controls, starSprites, starDataMap } = context;
 
+  // ===== 状态管理基础设施 =====
+  const registry = new EffectRegistry();
+  const factory = new EffectFactory({ registry, scene });
+
+  // 旧系统数组（过渡期保留，确保向后兼容）
   let glowSprites: THREE.Sprite[] = [];
   let highlightedSprites = new Map<THREE.Sprite, {
     originalScale: THREE.Vector3;
@@ -75,138 +82,26 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return FALLBACK_ORIGIN.clone();
   }
 
-  function createGlow(position: THREE.Vector3, color: number, size: number): THREE.Sprite {
-    const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 64;
-    const ctx = canvas.getContext('2d')!;
-    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    const hexColor = new THREE.Color(color);
-    gradient.addColorStop(0, `rgba(${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)},0.8)`);
-    gradient.addColorStop(0.4, `rgba(${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)},0.3)`);
-    gradient.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 64, 64);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({
-      map: texture,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    const glow = new THREE.Sprite(material);
-    glow.position.copy(position);
-    glow.scale.set(size, size, 1);
-    scene.add(glow);
+  /** 创建辉光（通过 EffectFactory，同时兼容旧系统） */
+  function createGlow(position: THREE.Vector3, color: number, size: number, targetId: string = 'default', source: string = 'createGlow', phase: string = 'default'): THREE.Sprite | null {
+    const effect = factory.createGlow(position, color, size, targetId, source, phase);
+    const glow = effect.threeObjects[0] as THREE.Sprite;
+    // 兼容旧系统：同时加入 glowSprites 数组
     glowSprites.push(glow);
     return glow;
   }
 
-  function createMeteor(from: THREE.Vector3, to: THREE.Vector3, color: number, delayMs: number = 0): Promise<void> {
+  /** 创建流星（通过 EffectFactory） */
+  function createMeteor(from: THREE.Vector3, to: THREE.Vector3, color: number, delayMs: number = 0, targetId: string = 'default', source: string = 'createMeteor', phase: string = 'default'): Promise<void> {
     if (!isVectorValid(from) || !isVectorValid(to)) {
       return Promise.resolve();
     }
-
-    const hexColor = new THREE.Color(color);
-
-    const curvePoints: THREE.Vector3[] = [];
-    const segments = 40;
-    for (let i = 0; i <= segments; i++) {
-      const t = i / segments;
-      const x = from.x + (to.x - from.x) * t;
-      const z = from.z + (to.z - from.z) * t;
-      const y = from.y + (to.y - from.y) * t + Math.sin(t * Math.PI) * 3;
-      curvePoints.push(new THREE.Vector3(x, y, z));
-    }
-    const curve = new THREE.CatmullRomCurve3(curvePoints);
-
-    const headCanvas = document.createElement('canvas');
-    headCanvas.width = 16;
-    headCanvas.height = 16;
-    const headCtx = headCanvas.getContext('2d')!;
-    const headGrad = headCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
-    headGrad.addColorStop(0, 'rgba(255,255,255,1)');
-    headGrad.addColorStop(0.4, `rgba(${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)},0.6)`);
-    headGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    headCtx.fillStyle = headGrad;
-    headCtx.fillRect(0, 0, 16, 16);
-    const headTexture = new THREE.CanvasTexture(headCanvas);
-    const headMat = new THREE.SpriteMaterial({
-      map: headTexture,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      opacity: 0
-    });
-    const head = new THREE.Sprite(headMat);
-    head.scale.set(0.6, 0.6, 1);
-    head.position.copy(from);
-    scene.add(head);
-
-    const trailMat = new THREE.LineBasicMaterial({
-      color,
-      transparent: true,
-      opacity: 0,
-      blending: THREE.AdditiveBlending
-    });
-    const trailGeo = new THREE.BufferGeometry();
-    const trail = new THREE.Line(trailGeo, trailMat);
-    scene.add(trail);
-
-    const flightDuration = 0.8;
-
-    return new Promise<void>(resolve => {
-      setTimeout(() => {
-        const startTimeMs = Date.now();
-
-        const update = () => {
-          const t = Math.min((Date.now() - startTimeMs) / (flightDuration * 1000), 1);
-
-          const headPos = curve.getPoint(t);
-          if (isVectorValid(headPos)) {
-            head.position.copy(headPos);
-            head.material.opacity = 1;
-          }
-
-          const trailSegments = Math.floor(t * segments);
-          if (trailSegments > 0) {
-            const positions: number[] = [];
-            for (let i = 0; i <= trailSegments; i++) {
-              const pt = curvePoints[i];
-              positions.push(pt.x, pt.y, pt.z);
-            }
-            trail.geometry.dispose();
-            trail.geometry = new THREE.BufferGeometry();
-            trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-          }
-          trail.material.opacity = 0.6;
-
-          if (t >= 1) {
-            gsap.to(head.material, { opacity: 0, duration: 0.2 });
-            gsap.to(trail.material, { opacity: 0, duration: 0.4 });
-            setTimeout(() => {
-              scene.remove(head);
-              scene.remove(trail);
-              head.geometry?.dispose();
-              trail.geometry.dispose();
-              head.material.dispose();
-              trail.material.dispose();
-              resolve();
-            }, 400);
-            return;
-          }
-
-          requestAnimationFrame(update);
-        };
-
-        update();
-      }, delayMs);
-    });
+    return factory.createMeteor(from, to, color, targetId, source, phase, delayMs).then(() => {});
   }
 
-  function highlightAndGrow(chunkIds: string[], color: number, scale: number = 2): THREE.Sprite[] {
+  function highlightAndGrow(chunkIds: string[], color: number, scale: number = 2, phase: string = 'highlightAndGrow'): THREE.Sprite[] {
     const sprites: THREE.Sprite[] = [];
+    const source = 'highlightAndGrow';
 
     chunkIds.forEach(chunkId => {
       const starInfo = starDataMap.get(chunkId);
@@ -215,10 +110,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const sprite = starInfo.sprite;
       if (!sprite || !isVectorValid(sprite.position)) return;
 
+      const targetId = `coreStar_${chunkId}`;
+
       if (!trueOriginals.has(sprite)) {
         trueOriginals.set(sprite, {
           scale: starInfo.originalScale.clone(),
-          material: starInfo.originalMaterial,
+          material: starInfo.originalMaterial.clone(),
         });
       }
 
@@ -229,24 +126,36 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         });
       }
 
-      const newMaterial = sprite.material.clone();
+      const oldMat = sprite.material as THREE.SpriteMaterial;
+      const oldColor = '#' + oldMat.color.getHexString();
+      const oldOpacity = oldMat.opacity;
+      const oldBlending = oldMat.blending;
+
+      const newMaterial = oldMat.clone();
       newMaterial.color.setHex(color);
       newMaterial.opacity = 1;
       newMaterial.blending = THREE.AdditiveBlending;
       sprite.material = newMaterial;
 
+      // 注册材质变更
+      registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#' + new THREE.Color(color).getHexString(), source, phase });
+      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: 1, source, phase });
+      registry.add({ targetId, effectType: 'material', property: 'blending', prevValue: oldBlending, value: THREE.AdditiveBlending, source, phase });
+
+      const origScale = sprite.scale.clone();
+      registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: origScale.x, y: origScale.y, z: origScale.z }, value: { x: origScale.x * scale, y: origScale.y * scale, z: origScale.z * scale }, source, phase });
+
       gsap.to(sprite.scale, {
-        x: sprite.scale.x * scale,
-        y: sprite.scale.y * scale,
-        z: sprite.scale.z * scale,
+        x: origScale.x * scale,
+        y: origScale.y * scale,
+        z: origScale.z * scale,
         duration: 0.8,
         ease: 'power2.out',
         delay: 0.3
       });
 
       setTimeout(() => {
-        const glow = createGlow(sprite.position, color, sprite.scale.x * scale * 3);
-        glowSprites.push(glow); // 关键修复：添加到数组以便后续清理
+        createGlow(sprite.position, color, sprite.scale.x * scale * 3, targetId, source, phase);
       }, 400);
 
       sprites.push(sprite);
@@ -255,10 +164,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return sprites;
   }
 
+  /** 清理辉光（通过 registry + factory，保留旧系统兼容） */
   function clearAllGlows() {
+    // 旧系统：手动清理数组
     const allGlows = [...glowSprites, ...finalStarGlowSprites];
-
-
     allGlows.forEach(glow => {
       scene.remove(glow);
       (glow.material as THREE.Material).dispose();
@@ -269,33 +178,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     glowSprites = [];
     finalStarGlowSprites = [];
 
-    // 额外的场景级清扫：移除所有可能遗漏的大光晕
-    const toRemove: THREE.Object3D[] = [];
-    scene.children.forEach(child => {
-      if (child instanceof THREE.Sprite) {
-        const maxDim = Math.max(child.scale.x, child.scale.y);
-        // 大于20的sprite很可能是光晕（正常星点最大约1.5）
-        if (maxDim > 20) {
-          toRemove.push(child);
-        }
-      }
-    });
-
-    if (toRemove.length > 0) {
-
-      toRemove.forEach(obj => {
-        scene.remove(obj);
-        if (obj instanceof THREE.Sprite) {
-          (obj.material as THREE.Material).dispose();
-          if (obj.material instanceof THREE.SpriteMaterial && obj.material.map) {
-            obj.material.map.dispose();
-          }
-        }
-      });
-    }
+    // 新系统：通过 factory 场景级兜底
+    factory.sweepOrphanGlows(20);
   }
 
+  /** 清理（通过 registry 恢复 + factory 清理，保留旧系统兼容） */
   function cleanup() {
+    // 旧系统：手动恢复
     glowSprites.forEach(glow => {
       scene.remove(glow);
       (glow.material as THREE.Material).dispose();
@@ -323,30 +212,39 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     });
     highlightedSprites.clear();
     trueOriginals.clear();
+
+    // 新系统：通过 factory 清理所有活跃对象
+    factory.sweepOrphanGlows(10);
   }
 
-  function flyToStar(targetPos: THREE.Vector3, duration: number = 2.0) {
+  /** 相机飞向目标（通过 registry 记录相机变更） */
+  function flyToStar(targetPos: THREE.Vector3, duration: number = 2.0, source: string = 'flyToStar', phase: string = 'flyToStar') {
     const startPos = camera.position.clone();
 
     if (!isVectorValid(targetPos)) {
       return Promise.resolve();
     }
 
-    const dir = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
+    // 注册相机起始状态
+    registry.add({
+      targetId: '_camera',
+      effectType: 'camera',
+      property: 'position',
+      prevValue: { x: startPos.x, y: startPos.y, z: startPos.z },
+      value: { x: targetPos.x, y: targetPos.y, z: targetPos.z },
+      source,
+      phase,
+    });
 
-    // 自适应距离：根据相机到目标的实际距离计算
+    const dir = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
     const directDist = startPos.distanceTo(targetPos);
     const flightDist = THREE.MathUtils.clamp(directDist * 0.8, 25, 60);
     const finalCamPos = targetPos.clone().add(dir.clone().multiplyScalar(-flightDist));
 
-    // 中间点：稍微向上偏移
     const midPoint = new THREE.Vector3().lerpVectors(startPos, finalCamPos, 0.5);
     midPoint.y += Math.min(8, directDist * 0.05);
 
     const curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, finalCamPos);
-
-    // 关键：不禁用 controls，让 OrbitControls 全程处理相机朝向
-    // 只动画 camera.position + controls.target，朝向由 controls.update() 自动计算
     const startTarget = controls.target.clone();
 
     return new Promise<void>(resolve => {
@@ -357,10 +255,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         const t = Math.min((Date.now() - startTime) / durationMs, 1);
         const point = curve.getPoint(t);
 
-        // 相机位置沿曲线移动
         camera.position.copy(point);
-
-        // controls.target 从起点平滑过渡到目标星
         controls.target.lerpVectors(startTarget, targetPos, t);
 
         if (t >= 1) {
@@ -390,9 +285,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return new THREE.Vector3(x, y, z);
   }
 
-  function shootMeteors(positions: THREE.Vector3[], color: number, staggerMs: number = 0): Promise<void[]> {
+  function shootMeteors(positions: THREE.Vector3[], color: number, staggerMs: number = 0, source: string = 'shootMeteors', phase: string = 'meteor'): Promise<void[]> {
     const origin = getEmissionPoint();
-    const promises = positions.map((pos, i) => createMeteor(origin, pos, color, i * staggerMs));
+    const promises = positions.map((pos, i) => createMeteor(origin, pos, color, i * staggerMs, `meteor_${i}`, source, phase));
     return Promise.all(promises);
   }
 
@@ -411,17 +306,17 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const knnIds = results.knn.map(r => r.chunk_id);
     const rrfIds = results.rrf_top5.map(r => r.chunk_id);
 
-    const bm25Sprites = highlightAndGrow(bm25Ids.slice(0, 10), 0xFFD700, 2.2);
-    const knnSprites = highlightAndGrow(knnIds.slice(0, 10), 0x60A5FA, 2.2);
-    const rrfSprites = highlightAndGrow(rrfIds, 0xA78BFA, 2.8);
+    const bm25Sprites = highlightAndGrow(bm25Ids.slice(0, 10), 0xFFD700, 2.2, 'bm25');
+    const knnSprites = highlightAndGrow(knnIds.slice(0, 10), 0x60A5FA, 2.2, 'knn');
+    const rrfSprites = highlightAndGrow(rrfIds, 0xA78BFA, 2.8, 'rrf');
 
     const bm25Positions = bm25Sprites.map(s => s.position);
     const knnPositions = knnSprites.map(s => s.position);
     const rrfPositions = rrfSprites.map(s => s.position);
 
-    shootMeteors(bm25Positions, 0xFFD700, 50);
-    shootMeteors(knnPositions, 0x60A5FA, 50);
-    shootMeteors(rrfPositions, 0xA78BFA, 50);
+    shootMeteors(bm25Positions, 0xFFD700, 50, 'animateSearch', 'bm25');
+    shootMeteors(knnPositions, 0x60A5FA, 50, 'animateSearch', 'knn');
+    shootMeteors(rrfPositions, 0xA78BFA, 50, 'animateSearch', 'rrf');
 
     await Promise.all([
       Promise.all(bm25Positions.map((_, i) => new Promise<void>(r => setTimeout(r, 800 + i * 50)))),
@@ -476,11 +371,16 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       // 应用新材质
       finalSprite.material = finalMat;
 
+      const finalTargetId = `coreStar_final_${finalId}`;
+      // 注册最终星的变更
+      registry.add({ targetId: finalTargetId, effectType: 'material', property: 'color', prevValue: '#34D399', value: '#FFFFFF', source: 'animateSearch', phase: 'finalStar' });
+      registry.add({ targetId: finalTargetId, effectType: 'material', property: 'opacity', prevValue: 1, value: 0.7, source: 'animateSearch', phase: 'finalStar' });
+      registry.add({ targetId: finalTargetId, effectType: 'scale', property: 'scale', prevValue: { x: trueOriginalScale.x, y: trueOriginalScale.y, z: trueOriginalScale.z }, value: { x: trueOriginalScale.x * 5, y: trueOriginalScale.y * 5, z: trueOriginalScale.z * 5 }, source: 'animateSearch', phase: 'finalStar' });
+
       gsap.killTweensOf(finalSprite.scale);
       gsap.killTweensOf(finalMat);
 
-      const finalGlow = createGlow(finalSprite.position, 0x34D399, 30);
-      finalStarGlowSprites.push(finalGlow);
+      createGlow(finalSprite.position, 0x34D399, 30, finalTargetId, 'animateSearch', 'finalStar');
 
       const flightDuration = 1.8;
 
@@ -499,7 +399,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         blending: finalSprite.material.blending
       });
       if (isVectorValid(targetPos)) {
-        shootMeteors([targetPos], 0x34D399, 0);
+        shootMeteors([targetPos], 0x34D399, 0, 'animateSearch', 'finalStar');
       }
 
       gsap.to(finalSprite.scale, {
@@ -539,7 +439,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       };
 
-      await flyToStar(targetPos, flightDuration);
+      await flyToStar(targetPos, flightDuration, 'animateSearch', 'finalStar');
     }
   }
 
@@ -573,12 +473,17 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     // 情况1：没有最终星（还没搜索过），使用默认样式
     if (!finalStarInfo || !finalStarInfo.sprite) {
       const targetPos = targetSprite.position;
+      const targetId = `coreStar_${targetSprite.userData.chunk_id || 'unknown'}`;
+      const source = 'jumpToStar';
+      const phase = 'jumpToStar';
 
       // 立即换材质（白核心）
       gsap.killTweensOf(targetSprite.scale);
       gsap.killTweensOf(targetSprite.material);
 
       const oldMat = targetSprite.material as THREE.SpriteMaterial;
+      const oldColor = '#' + oldMat.color.getHexString();
+      const oldOpacity = oldMat.opacity;
       const newMat = oldMat.clone();
       newMat.color.setHex(0xFFFFFF);
       newMat.opacity = 1;
@@ -586,14 +491,15 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       newMat.needsUpdate = true;
       targetSprite.material = newMat;
 
-      // 辉光：和 query 完全一致
-      // 第一层：白色核心辉光（紧贴核心，让核心区域饱满）
-      const coreGlow = createGlow(targetPos, 0xFFFFFF, 5);
-      if (coreGlow) finalStarGlowSprites.push(coreGlow);
+      // 注册变更
+      registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#FFFFFF', source, phase });
+      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: 0.7, source, phase });
+      const oldScale = targetSprite.scale.clone();
+      registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale.x, y: oldScale.y, z: oldScale.z }, value: { x: 0.6, y: 0.6, z: 5 }, source, phase });
 
-      // 第二层：大辉光（和 query reranker 阶段一致）
-      const glow = createGlow(targetPos, 0x34D399, 30);
-      if (glow) finalStarGlowSprites.push(glow);
+      // 辉光：和 query 完全一致
+      createGlow(targetPos, 0xFFFFFF, 5, targetId, source, phase);
+      createGlow(targetPos, 0x34D399, 30, targetId, source, phase);
 
       console.log('[jumpToStar-情况1] glows created: 3 layers (white5, green3, green30)');
 
@@ -601,13 +507,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const uniformFinalScale = 0.6;
       console.log('[jumpToStar-情况1] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
       console.log('[jumpToStar-情况1] target BEFORE:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
-      // 等动画完成打印
-      // 先等流星飞完再移动相机（和搜索动画一致）
-      (isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0) : Promise.resolve()).then(() => {
-        flyToStar(targetPos, 1.5);
-      });
 
-      // 打印辉光信息
       gsap.to(targetSprite.scale, {
         x: uniformFinalScale,
         y: uniformFinalScale,
@@ -654,38 +554,46 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       };
 
       // 先等流星飞完再移动相机（和搜索动画一致）
-      const meteorPromise = isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0) : Promise.resolve();
+      const meteorPromise = isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0, source, phase) : Promise.resolve();
       meteorPromise.then(() => {
-        flyToStar(targetPos, 1.5);
+        flyToStar(targetPos, 1.5, source, phase);
       });
       return;
     }
 
     // 情况2：有最终星，转移样式
     console.log('[jumpToStar-情况2] 开始星跃，有旧最终星');
+    const targetId = `coreStar_${targetSprite.userData.chunk_id || 'unknown'}`;
+    const source = 'jumpToStar';
+    const phase = 'jumpToStar';
+
     // 1. 清除最终星的辉光
     clearAllGlows();
 
     // 2. 恢复最终星
     resetFinalStar();
 
-    // 3. 目标星：和搜索动画完全一致的两步扩散
+    // 3. 目标星
     const targetPos = targetSprite.position;
-
-    console.log('[jumpToStar-情况2] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
-    console.log('[jumpToStar-情况2] target BEFORE:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
 
     // 第一步：白核心 + 2.2x 放大（和 highlightAndGrow 一致）
     gsap.killTweensOf(targetSprite.scale);
     gsap.killTweensOf(targetSprite.material);
 
-    const oldMat = targetSprite.material as THREE.SpriteMaterial;
-    const newMat = oldMat.clone();
+    const oldMat2 = targetSprite.material as THREE.SpriteMaterial;
+    const oldColor2 = '#' + oldMat2.color.getHexString();
+    const oldOpacity2 = oldMat2.opacity;
+    const newMat = oldMat2.clone();
     newMat.color.setHex(0xFFFFFF);
     newMat.opacity = 1;
     newMat.blending = THREE.AdditiveBlending;
     newMat.needsUpdate = true;
     targetSprite.material = newMat;
+
+    registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor2, value: '#FFFFFF', source, phase });
+    registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity2, value: 1, source, phase });
+    const oldScale2 = targetOrigScale.clone();
+    registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale2.x, y: oldScale2.y, z: oldScale2.z }, value: { x: oldScale2.x * 2.2, y: oldScale2.y * 2.2, z: oldScale2.z * 2.2 }, source, phase });
 
     gsap.to(targetSprite.scale, {
       x: targetOrigScale.x * 2.2,
@@ -698,10 +606,11 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // 第二步：0.8s 后再 GSAP 到 5x
     setTimeout(() => {
-      // 统一最终尺寸：和 query 完全一致 0.6×0.6×5
       const uniformFinalX = 0.6;
       const uniformFinalY = 0.6;
       const uniformFinalZ = 5;
+
+      registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: targetOrigScale.x * 2.2, y: targetOrigScale.y * 2.2, z: targetOrigScale.z * 2.2 }, value: { x: uniformFinalX, y: uniformFinalY, z: uniformFinalZ }, source, phase });
 
       gsap.to(targetSprite.scale, {
         x: uniformFinalX,
@@ -723,14 +632,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       });
 
-      // 两层辉光：和情况1完全一致
-      // 第一层：白色核心辉光（紧贴核心，让核心区域饱满）
-      const coreGlow = createGlow(targetSprite.position, 0xFFFFFF, 5);
-      if (coreGlow) finalStarGlowSprites.push(coreGlow);
-
-      // 第二层：绿色大辉光（和 query reranker 一致）
-      const glow = createGlow(targetSprite.position, 0x34D399, 30);
-      if (glow) finalStarGlowSprites.push(glow);
+      // 两层辉光
+      createGlow(targetSprite.position, 0xFFFFFF, 5, targetId, source, phase);
+      createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
 
       gsap.to(newMat, {
         opacity: 0.7,
@@ -757,9 +661,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         },
       };
 
-      // 等流星飞完再移动相机
-      (isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0) : Promise.resolve()).then(() => {
-        flyToStar(targetPos, 1.5);
+      (isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0, source, phase) : Promise.resolve()).then(() => {
+        flyToStar(targetPos, 1.5, source, phase);
       });
     }, 1100);
   }
@@ -822,5 +725,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return finalStarInfo;
   }
 
-  return { animateSearch, cleanup, getFinalStar, resetFinalStar, jumpToStar };
+  return {
+    animateSearch,
+    cleanup,
+    getFinalStar,
+    resetFinalStar,
+    jumpToStar,
+    getRegistry: () => registry,
+    getFactory: () => factory,
+  };
 }
