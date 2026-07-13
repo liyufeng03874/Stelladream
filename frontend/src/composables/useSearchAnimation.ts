@@ -450,7 +450,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   /**
    * 星跃：旧最终星恢复原样，新星星继承最终星样式，相机飞过去
    */
-  function jumpToStar(targetSprite: THREE.Sprite) {
+  async function jumpToStar(targetSprite: THREE.Sprite) {
     // 打印搜索动画中最终星的光晕信息
     function printFinalGlowInfo() {
       if (!finalStarInfo) return;
