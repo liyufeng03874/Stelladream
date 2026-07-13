@@ -107,6 +107,7 @@ const guiParams = {
   glowPosOffsetY: 0,
   glowPosOffsetZ: 0,
   cameraZ: 100,
+  breathing: true,
   // 快照对比
   lastSnapshot: null as any,
   resetToDefaults() {
@@ -179,28 +180,46 @@ function compareSnapshots(a: any, b: any) {
   if (!a || !b) { console.warn('请先做两个快照'); return; }
   console.log(`\n===== 快照对比: "${a.label}" vs "${b.label}" =====`);
   // 核心对比
-  const coreKeys = ['scale', 'material.opacity', 'material.color', 'material.blending', 'material.depthWrite', 'material.depthTest', 'material.transparent', 'renderOrder'];
-  coreKeys.forEach(k => {
-    const va = k.includes('.') ? (a.core as any)[k.split('.')[0]][k.split('.')[1]] : (a.core as any)[k];
-    const vb = k.includes('.') ? (b.core as any)[k.split('.')[0]][k.split('.')[1]] : (b.core as any)[k];
-    const diff = va !== vb ? ' ← 差异!' : '';
-    console.log(`  core.${k}: ${JSON.stringify(va)} vs ${JSON.stringify(b.core as any)[k.split('.')[0]]?.[k.split('.')[1]] ?? 'n/a'}${diff}`);
+  console.log('--- core ---');
+  ['scale.x', 'scale.y', 'scale.z', 'material.opacity', 'material.color', 'material.blending', 'material.depthWrite', 'material.depthTest', 'material.transparent', 'renderOrder'].forEach(k => {
+    const parts = k.split('.');
+    let va: any = a.core;
+    let vb: any = b.core;
+    for (const p of parts) {
+      if (typeof va === 'object' && va !== null) va = va[p];
+      if (typeof vb === 'object' && vb !== null) vb = vb[p];
+    }
+    const diff = JSON.stringify(va) !== JSON.stringify(vb) ? ' ← 差异!' : '';
+    console.log(`  ${k}: ${JSON.stringify(va)} vs ${JSON.stringify(vb)}${diff}`);
   });
   // 辉光对比
+  console.log('--- glows ---');
   if (a.glows.length !== b.glows.length) {
     console.log(`  glow count: ${a.glows.length} vs ${b.glows.length} ← 差异!`);
   }
   a.glows.forEach((ga: any, i: number) => {
     const gb = b.glows[i];
-    if (!gb) return;
-    ['scale', 'position', 'material.opacity', 'material.color', 'material.blending', 'material.depthWrite', 'material.depthTest'].forEach(k => {
-      const va = k.includes('.') ? ga[k.split('.')[0]][k.split('.')[1]] : ga[k];
-      const vb = k.includes('.') ? gb[k.split('.')[0]][k.split('.')[1]] : gb[k];
+    if (!gb) { console.log(`  glow[${i}]: missing in B ← 差异!`); return; }
+    ['scale.x', 'scale.y', 'scale.z', 'position.x', 'position.y', 'position.z', 'material.opacity', 'material.color', 'material.blending', 'material.depthWrite', 'material.depthTest', 'renderOrder'].forEach(k => {
+      const parts = k.split('.');
+      let va: any = ga;
+      let vb: any = gb;
+      for (const p of parts) {
+        if (typeof va === 'object' && va !== null) va = va[p];
+        if (typeof vb === 'object' && vb !== null) vb = vb[p];
+      }
       const diff = JSON.stringify(va) !== JSON.stringify(vb) ? ' ← 差异!' : '';
-      if (diff) console.log(`  glow[${i}].${k}: ${JSON.stringify(va)} vs ${JSON.stringify(vb)}${diff}`);
+      if (diff) console.log(`  ${k}: ${JSON.stringify(va)} vs ${JSON.stringify(vb)}${diff}`);
     });
   });
-  console.log('===== 对比完成 =====');
+  console.log('--- camera ---');
+  ['x', 'y', 'z'].forEach(k => {
+    const va = (a.camera as any)[k];
+    const vb = (b.camera as any)[k];
+    const diff = Math.abs(va - vb) > 0.1 ? ' ← 差异!' : '';
+    console.log(`  camera.${k}: ${va.toFixed(2)} vs ${vb.toFixed(2)}${diff}`);
+  });
+  console.log('===== 对比完成 =====\n');
 }
 
 function openDebugGui() {
