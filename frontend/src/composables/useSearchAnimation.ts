@@ -410,6 +410,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         ease: 'power3.out',
         onComplete: () => {
           console.log('[search-final] finalSprite AFTER tween:', finalSprite.scale.x.toFixed(3), finalSprite.scale.y.toFixed(3), finalSprite.scale.z.toFixed(3));
+          console.log('[search-final] camera pos:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
+          const camDist = camera.position.distanceTo(finalSprite.position);
+          console.log('[search-final] camera distance to target:', camDist.toFixed(2));
         }
       });
 
@@ -518,6 +521,11 @@ export function useSearchAnimation(context: SearchAnimationContext) {
             opacity: targetSprite.material.opacity,
             blending: targetSprite.material.blending
           });
+          console.log('[jumpToStar-情况1] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
+          console.log('[jumpToStar-情况1] camera pos:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
+          console.log('[jumpToStar-情况1] target pos:', targetPos.x.toFixed(2), targetPos.y.toFixed(2), targetPos.z.toFixed(2));
+          const camDist = camera.position.distanceTo(targetPos);
+          console.log('[jumpToStar-情况1] camera distance to target:', camDist.toFixed(2));
           console.log('[jumpToStar-情况1] glows:', finalStarGlowSprites.length);
           finalStarGlowSprites.forEach((g, i) => {
             console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
@@ -573,7 +581,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     // 3. 目标星
     const targetPos = targetSprite.position;
 
-    // 第一步：白核心 + 2.2x 放大（和 highlightAndGrow 一致）
+    // 和 query 一致：先改材质 + 创建辉光 + 再启动 tween
     gsap.killTweensOf(targetSprite.scale);
     gsap.killTweensOf(targetSprite.material);
 
@@ -601,7 +609,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       delay: 0.3,
     });
 
-    // 第二步：0.8s 后再 GSAP 到 5x
+    // 第二步：0.8s 后再 GSAP 到最终尺寸
     setTimeout(() => {
       const uniformFinalX = 0.6;
       const uniformFinalY = 0.6;
@@ -622,15 +630,19 @@ export function useSearchAnimation(context: SearchAnimationContext) {
             opacity: targetSprite.material.opacity,
             blending: targetSprite.material.blending
           });
-          console.log('[jumpToStar-情况2] glows:', finalStarGlowSprites.length);
-          finalStarGlowSprites.forEach((g, i) => {
-            console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
-          });
+          // 通过 factory 检查活跃辉光
+          const activeCount = factory.getActiveCount();
+          console.log('[jumpToStar-情况2] factory active effects:', activeCount);
+          console.log('[jumpToStar-情况2] camera pos:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
+          const camDist = camera.position.distanceTo(targetPos);
+          console.log('[jumpToStar-情况2] camera distance to target:', camDist.toFixed(2));
         },
       });
 
-      // 两层辉光：和 animateSearch 一致（仅一层绿色30）
-      createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
+      // 辉光：和 query 一致，立即创建
+      const glow = createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
+      if (glow) finalStarGlowSprites.push(glow);
+      console.log('[jumpToStar-情况2] glow created, finalStarGlowSprites.length:', finalStarGlowSprites.length);
 
       gsap.to(newMat, {
         opacity: 0.7,
