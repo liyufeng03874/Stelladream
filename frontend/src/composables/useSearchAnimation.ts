@@ -600,6 +600,11 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const oldScale2 = targetOrigScale.clone();
     registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale2.x, y: oldScale2.y, z: oldScale2.z }, value: { x: oldScale2.x * 2.2, y: oldScale2.y * 2.2, z: oldScale2.z * 2.2 }, source, phase });
 
+    // 和 query 完全一致：改完材质后先创建辉光，再启动 tween
+    const glow = createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
+    if (glow) finalStarGlowSprites.push(glow);
+    console.log('[jumpToStar-情况2] glow created at scale:', targetSprite.scale.x.toFixed(3));
+
     gsap.to(targetSprite.scale, {
       x: targetOrigScale.x * 2.2,
       y: targetOrigScale.y * 2.2,
@@ -630,19 +635,15 @@ export function useSearchAnimation(context: SearchAnimationContext) {
             opacity: targetSprite.material.opacity,
             blending: targetSprite.material.blending
           });
-          // 通过 factory 检查活跃辉光
-          const activeCount = factory.getActiveCount();
-          console.log('[jumpToStar-情况2] factory active effects:', activeCount);
+          console.log('[jumpToStar-情况2] glows:', finalStarGlowSprites.length);
+          finalStarGlowSprites.forEach((g, i) => {
+            console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
+          });
           console.log('[jumpToStar-情况2] camera pos:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
           const camDist = camera.position.distanceTo(targetPos);
           console.log('[jumpToStar-情况2] camera distance to target:', camDist.toFixed(2));
         },
       });
-
-      // 辉光：和 query 一致，立即创建
-      const glow = createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
-      if (glow) finalStarGlowSprites.push(glow);
-      console.log('[jumpToStar-情况2] glow created, finalStarGlowSprites.length:', finalStarGlowSprites.length);
 
       gsap.to(newMat, {
         opacity: 0.7,
