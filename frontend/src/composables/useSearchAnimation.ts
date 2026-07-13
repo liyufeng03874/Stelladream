@@ -60,6 +60,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     originalMaterial: THREE.SpriteMaterial;
   }>();
   let finalStarInfo: FinalStarInfo | null = null;
+  let breathingTween: any = null;
   let finalStarGlowSprites: THREE.Sprite[] = [];
   let trueOriginals = new Map<THREE.Sprite, {
     scale: THREE.Vector3;
@@ -540,6 +541,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         yoyo: true,
         repeat: -1,
       });
+      breathingTween = gsap.tweens.find((t: any) => t.target === newMat);
 
       finalStarInfo = {
         sprite: targetSprite,
@@ -652,6 +654,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         yoyo: true,
         repeat: -1,
       });
+      breathingTween = gsap.tweens.find((t: any) => t.target === newMat);
 
       finalStarInfo = {
         sprite: targetSprite,
@@ -734,10 +737,29 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return finalStarInfo;
   }
 
+  function getFinalStarGlows(): THREE.Sprite[] {
+    return [...finalStarGlowSprites];
+  }
+
+  function setBreathingActive(active: boolean) {
+    if (breathingTween) {
+      if (active) {
+        breathingTween.resume();
+      } else {
+        breathingTween.pause();
+      }
+    }
+    if (finalStarInfo?.appliedStyle) {
+      finalStarInfo.appliedStyle.breathingActive = active;
+    }
+  }
+
   return {
     animateSearch,
     cleanup,
     getFinalStar,
+    getFinalStarGlows,
+    setBreathingActive,
     resetFinalStar,
     jumpToStar,
     getRegistry: () => registry,

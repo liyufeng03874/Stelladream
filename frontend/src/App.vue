@@ -42,6 +42,11 @@
         {{ showDebugPanel ? '关闭调试' : '🔬 调试' }}
       </button>
 
+      <!-- lil-gui 调试面板开关 -->
+      <button class="gui-toggle" @click="toggleGuiPanel">
+        {{ debugGui ? '关闭面板' : '🎛️ 实时调参' }}
+      </button>
+
       <!-- 评估回放面板 -->
       <button class="eval-toggle" @click="showEvalPanel = !showEvalPanel" :class="{ active: showEvalPanel }">
         {{ showEvalPanel ? '关闭回放' : '📊 评估回放' }}
@@ -63,6 +68,7 @@ import EvalReplay from './components/EvalReplay.vue';
 import type { FinalStarInfo } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
 import { useSearchAnimation } from './composables/useSearchAnimation';
+import { GUI } from 'lil-gui';
 
 // 星场上下文（用于构建调试信息）
 let starSprites: THREE.Sprite[] = [];
@@ -80,6 +86,106 @@ const debugFinalStar = ref<FinalStarInfo | null>(null);
 
 // 评估回放面板
 const showEvalPanel = ref(false);
+
+// lil-gui 调试面板
+let debugGui: GUI | null = null;
+const guiParams = {
+  coreScaleX: 0.6,
+  coreScaleY: 0.6,
+  coreOpacity: 1.0,
+  glowSize: 30,
+  glowOpacity: 1.0,
+  glowColor: '#34d399',
+  breathing: true,
+  resetToDefaults() {
+    this.coreScaleX = 0.6;
+    this.coreScaleY = 0.6;
+    this.coreOpacity = 1.0;
+    this.glowSize = 30;
+    this.glowOpacity = 1.0;
+    this.glowColor = '#34d399';
+    this.breathing = true;
+    // 触发所有控制器更新
+    Object.values(guiControls).forEach(ctrl => ctrl?.updateDisplay());
+  },
+};
+const guiControls: Record<string, any> = {};
+
+function openDebugGui() {
+  // 销毁旧的
+  if (debugGui) {
+    debugGui.destroy();
+    debugGui = null;
+  }
+
+  const finalStar = animContext?.getFinalStar?.();
+  if (!finalStar?.sprite) {
+    console.warn('[debug-gui] 没有当前最终星，请先做一次 query 或星跃');
+    return;
+  }
+
+  debugGui = new GUI({ title: '🌸 最终星调试', width: 260 });
+
+  const coreSprite = finalStar.sprite;
+  const coreMat = coreSprite.material as THREE.SpriteMaterial;
+  const glows = animContext?.getFinalStarGlows?.() || [];
+
+  // 读取当前值
+  guiParams.coreScaleX = coreSprite.scale.x;
+  guiParams.coreScaleY = coreSprite.scale.y;
+  guiParams.coreOpacity = coreMat.opacity;
+  guiParams.glowColor = '#' + (glows[0]?.material.color?.getHexString() || '34d399');
+  guiParams.glowSize = glows[0]?.scale.x || 30;
+  guiParams.glowOpacity = glows[0]?.material.opacity ?? 1.0;
+  guiParams.breathing = finalStar.appliedStyle?.breathingActive ?? true;
+
+  // 核心
+  const coreFolder = debugGui.addFolder('⭐ 核心');
+  guiControls.coreScaleX = coreFolder.add(guiParams, 'coreScaleX', 0.01, 2.0, 0.01).name('scale X').onChange((v: number) => {
+    coreSprite.scale.x = v;
+  });
+  guiControls.coreScaleY = coreFolder.add(guiParams, 'coreScaleY', 0.01, 2.0, 0.01).name('scale Y').onChange((v: number) => {
+    coreSprite.scale.y = v;
+  });
+  guiControls.coreOpacity = coreFolder.add(guiParams, 'coreOpacity', 0, 1, 0.01).name('opacity').onChange((v: number) => {
+    coreMat.opacity = v;
+  });
+
+  // 辉光
+  const glowFolder = debugGui.addFolder('✨ 辉光');
+  guiControls.glowSize = glowFolder.add(guiParams, 'glowSize', 1, 100, 0.5).name('size').onChange((v: number) => {
+    glows.forEach(g => { g.scale.set(v, v, 1); });
+  });
+  guiControls.glowOpacity = glowFolder.add(guiParams, 'glowOpacity', 0, 1, 0.01).name('opacity').onChange((v: number) => {
+    glows.forEach(g => { g.material.opacity = v; });
+  });
+  guiControls.glowColor = glowFolder.addColor(guiParams, 'glowColor').name('color').onChange((v: string) => {
+    const color = parseInt(v.replace('#', ''), 16);
+    glows.forEach(g => { g.material.color.setHex(color); });
+  });
+
+  // 呼吸动画
+  const animFolder = debugGui.addFolder('🔄 动画');
+  guiControls.breathing = animFolder.add(guiParams, 'breathing').name('呼吸动画').onChange((v: boolean) => {
+    // 通过 animContext 控制呼吸动画的开关
+    if (animContext?.setBreathingActive !== undefined) {
+      animContext.setBreathingActive(v);
+    }
+  });
+
+  // 重置
+  debugGui.add(guiParams, 'resetToDefaults').name('🔄 重置为默认');
+
+  console.log('[debug-gui] 已打开，glow count:', glows.length);
+  (window as any).__stelladream.gui = debugGui;
+}
+
+function closeDebugGui() {
+  if (debugGui) {
+    debugGui.destroy();
+    debugGui = null;
+  }
+}
 
 const handleEvalHighlight = (_payload: any) => {
   // 评估回放的高亮事件，后续可对接星场动画
@@ -122,6 +228,14 @@ const toggleDebugPanel = () => {
     }
   } else {
     showDebugPanel.value = false;
+  }
+};
+
+const toggleGuiPanel = () => {
+  if (debugGui) {
+    closeDebugGui();
+  } else {
+    openDebugGui();
   }
 };
 
@@ -188,6 +302,8 @@ const handleStarFieldReady = (context: any) => {
     getFactory: () => animContext?.getFactory(),
     registry: () => animContext?.getRegistry(),
     factory: () => animContext?.getFactory(),
+    openDebugGui,
+    closeDebugGui,
   };
 };
 
@@ -310,5 +426,25 @@ onMounted(async () => {
   background: rgba(52, 211, 153, 0.2);
   border-color: rgba(52, 211, 153, 0.4);
   color: #34d399;
+}
+
+.gui-toggle {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 8rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  color: #a78bfa;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gui-toggle:hover {
+  background: rgba(0, 0, 0, 0.7);
+  color: #c4b5fd;
 }
 </style>
