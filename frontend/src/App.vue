@@ -82,12 +82,13 @@ const config = ref<any>({});
 const selectedStar = ref<StarPoint | null>(null);
 const isSearching = ref(false);
 
+// 评估回放相关
+const showEvalPanel = ref(false);
+const sourcePathToUuid = ref<Map<string, string>>(new Map());  // ID映射表
+
 // 调试面板
 const showDebugPanel = ref(false);
 const debugFinalStar = ref<FinalStarInfo | null>(null);
-
-// 评估回放面板
-const showEvalPanel = ref(false);
 
 // lil-gui 调试面板
 let debugGui: GUI | null = null;

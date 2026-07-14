@@ -115,7 +115,7 @@ const initScene = () => {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = 100;
+  // controls.minDistance = 100; // 取消最小距离限制
   controls.maxDistance = 800;
   controls.target.set(67.1, 96.2, 30.9);
   controls.enablePan = true;
