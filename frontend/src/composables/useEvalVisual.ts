@@ -145,7 +145,7 @@ export function useEvalVisual(context: EvalVisualContext) {
     starParticles.set(chunkId, points);
   }
 
-  /** 星星本体：明显提亮 + 薄辉光 */
+  /** 星星本体：明显提亮 + 放大 + 薄辉光 */
   function applyStarEffect(chunkId: string) {
     const starInfo = starDataMap.get(chunkId);
     if (!starInfo) return;
@@ -170,6 +170,16 @@ export function useEvalVisual(context: EvalVisualContext) {
       newColor.b = Math.min(1, newColor.b * boost);
       sprite.material.color.copy(newColor);
       sprite.material.opacity = Math.min(1, 0.5 + hitCount * 0.1);
+
+      // 放大：命中星明显变大（1个数量级）
+      const scaleMult = 1 + hitCount * 9; // 1次=10x, 2次=19x, 3次=28x
+      const origScale = starInfo.originalScale;
+      sprite.scale.set(
+        origScale.x * scaleMult,
+        origScale.y * scaleMult,
+        origScale.z * scaleMult
+      );
+
       sprite.material.needsUpdate = true;
 
       // 粒子从星星位置出发
