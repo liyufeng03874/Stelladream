@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D 星河 / RAG 数据图谱</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #020408; /* 深邃太空背景 */
+        }
+        canvas {
+            display: block;
+        }
+        .info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.2);
+            font-family: sans-serif;
+            font-size: 13px;
+            pointer-events: none;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">鼠标拖拽旋转 · 滚轮缩放</div>
+    
+    <!-- Three.js 模块化加载映射 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        // ==========================================
+        // 1. 核心依赖导入
+        // ==========================================
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        // ==========================================
+        // 2. 基础场景、相机、渲染器设置
+        // ==========================================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x020408); // 颜色接近纯黑带极轻微蓝底
+
+        // 设置透视相机：视野角度45度，宽高比自适应，近裁剪面0.1，远裁剪面1000
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // 调整相机位置以获得更优越的俯视倾斜角度
+        camera.position.set(22, 12, 22);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // 限制像素比，优化性能
+        document.body.appendChild(renderer.domElement);
+
+        // ==========================================
+        // 3. 鼠标控制与自动旋转
+        // ==========================================
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;          // 启用惯性
+        controls.dampingFactor = 0.05;          // 惯性系数
+        controls.autoRotate = true;             // 开启自动旋转
+        controls.autoRotateSpeed = 0.45;        // 旋转速度
+        controls.minDistance = 8;               // 最小拉近距离
+        controls.maxDistance = 40;              // 最大拉远距离
+
+        // ==========================================
+        // 4. 生成高质量圆形发光纹理（用作星星基础材质）
+        // ==========================================
+        const textureCanvas = document.createElement('canvas');
+        textureCanvas.width = 64;
+        textureCanvas.height = 64;
+        const ctx = textureCanvas.getContext('2d');
+        // 绘制径向渐变：中心极亮，向边缘平滑过渡至完全透明
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+        gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)'); // 极软边缘
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 64, 64);
+        const particleTexture = new THREE.CanvasTexture(textureCanvas);
+
+        // ==========================================
+        // 5. 第一层：背景密集星场（替代模糊云团，产生清晰颗粒感）
+        // ==========================================
+        const starFieldCount = 16000; // 近2万颗背景星
+        const starGeo = new THREE.BufferGeometry();
+        const starPos = new Float32Array(starFieldCount * 3);
+        const starColors = new Float32Array(starFieldCount * 3);
+        
+        // 旋臂控制参数
+        const armCount = 3;
+        const spiralFactor = 5;
+
+        for (let i = 0; i < starFieldCount; i++) {
+            // 半径从 0.5 开始，延伸至 24，分布相对均匀，打破完美的圆面
+            const radius = Math.pow(Math.random(), 1.2) * 24; 
+            const theta = Math.random() * Math.PI * 2;
+            
+            // 旋臂角度偏移：越靠近外围，旋转角度越大
+            const armAngle = theta + (radius / 18) * spiralFactor + (Math.random() - 0.5) * 0.8;
+            // 不规则噪声：让外边缘产生参差不齐的星云裂变感
+            const finalRadius = radius * (1.0 + (Math.random() - 0.5) * 0.4);
+
+            const x = finalRadius * Math.cos(armAngle);
+            const z = finalRadius * Math.sin(armAngle);
+            
+            // 扁平化设计：Y轴厚度，中心稍厚，边缘极度压扁
+            const thickness = 0.6 - (radius / 28) * 0.5;
+            const y = (Math.random() - 0.5) * Math.max(0.05, thickness);
+
+            starPos[i*3] = x;
+            starPos[i*3+1] = y;
+            starPos[i*3+2] = z;
+
+            // 颜色：暗青蓝色调
+            const color = new THREE.Color().setHSL(0.58, 0.6, 0.3 + Math.random() * 0.3);
+            starColors[i*3] = color.r;
+            starColors[i*3+1] = color.g;
+            starColors[i*3+2] = color.b;
+        }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+        const starMat = new THREE.PointsMaterial({
+            map: particleTexture,
+            size: 0.08 + Math.random() * 0.15,
+            vertexColors: true,    // 使用每个点自带的颜色
+            transparent: true,
+            opacity: 0.6,          // 半透明，防止背景喧宾夺主
+            blending: THREE.AdditiveBlending, // 叠加混合，增加发光效果
+            depthWrite: false,
+            sizeAttenuation: true  // 根据距离相机远近自动缩放大小
+        });
+        const starField = new THREE.Points(starGeo, starMat);
+        scene.add(starField);
+
+
+        // ==========================================
+        // 6. 第二层：核心高亮恒星 / 数据节点 (RAG 命中的星星)
+        // ==========================================
+        const nodeCount = 700;
+        const nodePos = [];
+        const nodeCol = [];
+        const colorCenter = new THREE.Color(0x88ddff); // 核心偏白蓝色
+        const colorOuter = new THREE.Color(0x1166aa);  // 外缘深蓝色
+
+        for (let i = 0; i < nodeCount; i++) {
+            // 核心变更：半径从 0 开始，让中心不再留出黑洞
+            const radius = Math.pow(Math.random(), 1.0) * 18; 
+            const theta = Math.random() * Math.PI * 2;
+            // 保持与底层星场相似的旋臂参数
+            const armAngle = theta + (radius / 18) * spiralFactor + (Math.random() - 0.5) * 0.5;
+            const finalRadius = radius * (1.0 + (Math.random() - 0.5) * 0.3);
+
+            const x = finalRadius * Math.cos(armAngle);
+            const z = finalRadius * Math.sin(armAngle);
+            // 核心节点扁平度控制，被包裹在星场中
+            const y = (Math.random() - 0.5) * 0.3;
+
+            nodePos.push(x, y, z);
+
+            // 颜色插值：根据半径距离渐变
+            const t = Math.min(1, radius / 18);
+            const color = colorCenter.clone().lerp(colorOuter, t * 1.2);
+            nodeCol.push(color.r, color.g, color.b);
+        }
+
+        const nodeGeometry = new THREE.BufferGeometry();
+        nodeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(nodePos, 3));
+        nodeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(nodeCol, 3));
+
+        const nodeMaterial = new THREE.PointsMaterial({
+            size: 0.4,             // 节点比背景星场大一些
+            map: particleTexture,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.9,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true,
+            depthWrite: false
+        });
+        const nodes = new THREE.Points(nodeGeometry, nodeMaterial);
+        scene.add(nodes);
+
+
+        // ==========================================
+        // 7. 第三层：极弱数据连接线 (体现 RAG 数据图谱特征)
+        // ==========================================
+        const connectDistance = 3.6; // 连线最大距离阈值
+        const linePositions = [];
+        const posAttr = nodeGeometry.attributes.position;
+
+        // 计算距离并连接节点 (双循环 O(n^2))
+        for (let i = 0; i < nodeCount; i++) {
+            const i3 = i * 3;
+            const x1 = posAttr.array[i3], y1 = posAttr.array[i3+1], z1 = posAttr.array[i3+2];
+            for (let j = i + 1; j < nodeCount; j++) {
+                const j3 = j * 3;
+                const dx = x1 - posAttr.array[j3];
+                const dy = y1 - posAttr.array[j3+1];
+                const dz = z1 - posAttr.array[j3+2];
+                const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+                if (dist < connectDistance) {
+                    // 记录线段起点和终点
+                    linePositions.push(x1, y1, z1);
+                    linePositions.push(posAttr.array[j3], posAttr.array[j3+1], posAttr.array[j3+2]);
+                }
+            }
+        }
+
+        const lineGeometry = new THREE.BufferGeometry();
+        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x88bbdd,
+            transparent: true,
+            opacity: 0.015,     // 极低的透明度，隐藏在星辰之间
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+        scene.add(lines);
+
+
+        // ==========================================
+        // 8. 后期处理特效 (UnrealBloomPass 泛光)
+        // ==========================================
+        const renderScene = new RenderPass(scene, camera);
+        // 参数：强度、半径、阈值。数值必须极低，保证星星清晰不糊
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            0.15, // 泛光强度
+            0.2,  // 光晕半径
+            0.4   // 只让足够亮的星星产生泛光
+        );
+
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        // ==========================================
+        // 9. 窗口自适应响应
+        // ==========================================
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ==========================================
+        // 10. 渲染循环
+        // ==========================================
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // 使用 controls.autoRotate 自动转动
+            composer.render(); // 使用 EffectComposer 渲染泛光后的画面
+        }
+        animate();
+    </script>
+</body>
+</html>

@@ -6,6 +6,9 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import type { StarPoint } from '../api';
 
 interface Props {
@@ -41,6 +44,8 @@ let raycaster: THREE.Raycaster;
 let mouse: THREE.Vector2;
 let starSprites: THREE.Sprite[] = [];
 let animationId: number;
+let composer: EffectComposer;
+let bloomPass: UnrealBloomPass;
 
 // Texture cache
 const textureCache = new Map<string, THREE.CanvasTexture>();
@@ -89,8 +94,8 @@ const initScene = () => {
   if (!containerRef.value) return;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000005);
-  scene.fog = new THREE.Fog(0x000005, 300, 800);
+  scene.background = new THREE.Color(0x020408); // demo 的深邃太空背景
+  scene.fog = new THREE.Fog(0x020408, 300, 800);
 
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
@@ -115,11 +120,25 @@ const initScene = () => {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  // controls.minDistance = 100; // 取消最小距离限制
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.45;
   controls.maxDistance = 800;
   controls.target.set(67.1, 96.2, 30.9);
   controls.enablePan = true;
   controls.panSpeed = 0.5;
+
+  // Bloom 后处理
+  composer = new EffectComposer(renderer);
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+
+  bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(width, height),
+    0.15, // 泛光强度
+    0.2,  // 光晕半径
+    0.4   // 阈值：只有足够亮的星星才产生泛光
+  );
+  composer.addPass(bloomPass);
 
   raycaster = new THREE.Raycaster();
   raycaster.params.Sprite = { threshold: 2 };
@@ -134,6 +153,10 @@ const renderStars = () => {
   starSprites.forEach(sprite => scene.remove(sprite));
   starSprites = [];
   starDataMap.clear();
+
+  // 螺旋臂参数（参考 demo 案例）
+  const spiralFactor = 5;
+  const centerPos = new THREE.Vector3(67.1, 96.2, 30.9);
 
   // Build mapping and render ALL stars
   props.stars.forEach((star) => {
@@ -151,11 +174,32 @@ const renderStars = () => {
     });
 
     const sprite = new THREE.Sprite(material);
-    sprite.position.set(star.x, star.y, star.z);
+
+    // 螺旋臂变换：从原位置计算相对中心的极坐标，应用旋臂偏移
+    const dx = star.x - centerPos.x;
+    const dz = star.z - centerPos.z;
+    const radius = Math.sqrt(dx * dx + dz * dz);
+    const theta = Math.atan2(dz, dx);
+
+    // 旋臂角度偏移 + 随机噪声
+    const armAngle = theta + (radius / 100) * spiralFactor + (Math.random() - 0.5) * 2;
+    const finalRadius = radius * (1.0 + (Math.random() - 0.5) * 0.15);
+
+    // Y 轴极扁平压制（中心稍厚，边缘压扁）
+    const thickness = 0.6 - (radius / 200) * 0.5;
+    const dy = star.y - centerPos.y;
+    const compressedY = Math.sign(dy) * Math.max(Math.abs(dy) * 0.1, Math.abs(dy) * Math.max(0.05, thickness));
+
+    sprite.position.set(
+      centerPos.x + finalRadius * Math.cos(armAngle),
+      centerPos.y + compressedY,
+      centerPos.z + finalRadius * Math.sin(armAngle)
+    );
+
     const scale = star.size * 0.06;
     sprite.scale.set(scale, scale, 1);
 
-    // 保存真正的原始材质和 scale（在 highlightAndGrow 修改之前）
+    // 保存真正的原始材质和 scale
     const originalMat = material.clone();
     const originalScale = new THREE.Vector3(scale, scale, 1);
 
@@ -188,7 +232,7 @@ const renderStars = () => {
 const animate = () => {
   animationId = requestAnimationFrame(animate);
   controls.update();
-  renderer.render(scene, camera);
+  composer.render(); // 用 Bloom 后处理渲染
 };
 
 // Handle resize
@@ -199,6 +243,7 @@ const handleResize = () => {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
+  composer.setSize(width, height);
 };
 
 // Mouse move with throttle
@@ -269,6 +314,7 @@ onUnmounted(() => {
 
   renderer.dispose();
   controls.dispose();
+  if (composer) composer.dispose();
 });
 
 watch(() => props.stars, renderStars, { deep: true });
