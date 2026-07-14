@@ -534,17 +534,80 @@ for sample in samples[:100]:
     })
 ```
 
-#### 推荐实施方案
+#### 推荐实施方案（修正版）
 
-**Phase 5当前阶段**: 使用**方案2**（映射文件）
-- 原因: 快速实现，不阻塞开发
-- 实施时间: 30分钟
-- 风险: 低（数据不变，只是查询）
+**⚠️ 原方案错误分析**:
+- ❌ 文档原建议: Phase 5用方案2（映射文件），Phase 6迁移到方案1
+- ❌ 问题1: 方案2需要ES在线查询或维护额外映射文件，增加依赖
+- ❌ 问题2: 重新导出只需5分钟，比维护映射逻辑更简单
+- ❌ 问题3: 当前star_data只有5000星点，但eval检索范围是全部34K
 
-**Phase 6优化阶段**: 迁移到**方案1**（重新导出）
-- 原因: 数据源统一，架构更清晰
-- 实施时间: 1小时（导出+测试）
-- 收益: 消除映射逻辑，性能提升
+**✅ 正确执行顺序**:
+
+**第一步: 重新导出star_data.json（方案1）** - **必须先做**
+- 修改`export_full_data.py`添加`source_path`字段
+- **导出全部34K星点**（不是5000子集）
+- 前端渲染时按需显示（性能优化留给Phase 6）
+- 实施时间: 10分钟修改 + 5分钟UMAP
+- 一劳永逸，无运行时依赖
+
+**第二步: 前端构建反向索引**
+```typescript
+// App.vue - 加载完star_data后
+const sourcePathToUuid = new Map<string, string>();
+starData.value.forEach(star => {
+  if (star.source_path) {
+    sourcePathToUuid.set(star.source_path, star.chunk_id);
+  }
+});
+
+// handleEvalHighlight中转换
+const uuidList = data.chunkIds
+  .map(sourcePath => sourcePathToUuid.get(sourcePath))
+  .filter(uuid => uuid !== undefined);
+
+console.log(`[eval] 映射成功: ${uuidList.length}/${data.chunkIds.length}`);
+```
+
+**第三步: 实现评估联动**
+- P0基础高亮（30分钟）
+- P1-P4完整功能（3小时）
+
+**关键修正点**:
+
+1. **ID映射范围问题**
+   - 当前star_data: 仅5000星点
+   - eval检索范围: 全部34K文档
+   - **解决**: 重新导出时导出全部34K
+   - 前端渲染: 先渲染5000（性能），找不到的静默跳过
+
+2. **样本数量不一致**
+   - `eval_report.json`: 500样本
+   - 当前导出脚本: `samples[:100]` (限制100)
+   - **解决**: 修改为`samples[:500]`或全部
+
+3. **渲染策略**
+   ```typescript
+   // 34K星点数据，只渲染前5000
+   const RENDER_LIMIT = 5000;
+   const starsToRender = starData.value.slice(0, RENDER_LIMIT);
+   
+   // 但sourcePathToUuid包含全部34K的映射
+   // 高亮时如果ID在34K但不在5000，静默跳过
+   ```
+
+**为什么方案1是第一步**:
+- ✅ 数据源统一，无额外依赖
+- ✅ 运行时零成本（映射在内存，O(1)查找）
+- ✅ 支持全部34K文档的评估回放
+- ✅ 一次导出，永久使用
+- ✅ 比维护映射文件简单得多
+
+**方案2的问题**:
+- ❌ 需要ES实时可用（部署依赖）
+- ❌ 或者维护`id_mapping.json`（数据同步风险）
+- ❌ 前端需要加载额外映射文件（100KB+）
+- ❌ 仍然没解决5000 vs 34K的问题
 
 ---
 

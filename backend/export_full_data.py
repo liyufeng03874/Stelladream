@@ -68,7 +68,8 @@ def main():
         size=1000
     ):
         doc = {
-            "chunk_id": hit["_id"],
+            "chunk_id": hit["_id"],  # UUID格式
+            "source_path": hit["_source"].get("source_path", hit["_id"]),  # doc_XXXXX格式，用于评估映射
             "content": hit["_source"].get("content", ""),
             "source": hit["_source"].get("source", ""),
             "domain": hit["_source"].get("domain", "general"),
@@ -145,6 +146,7 @@ def main():
             "z": float(coord[2]),
             "domain": doc["domain"],
             "chunk_id": doc["chunk_id"],
+            "source_path": doc["source_path"],  # 新增：用于评估映射
             "content": doc["content"],
             "source": doc["source"],
             "size": compute_size(len(doc["content"])),
