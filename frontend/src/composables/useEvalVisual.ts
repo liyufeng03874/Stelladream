@@ -1,11 +1,10 @@
 /**
- * EvalVisual Composable v7 — 极致锐利星尘
+ * EvalVisual Composable v8 — 方案A：星星先亮，粒子从星出
  *
- * 修复：
- * 1. 纹理：中心实心白点，0.05 半径内 100% alpha，之后归零 → 纯星点，零雾感
- * 2. 尺寸从 0.6 降到 0.3
- * 3. 去掉所有柔光 sprite，只用 Points
- * 4. 连线 opacity 降到 0.04
+ * 核心：
+ * 1. 命中星星明显提亮 + 加薄辉光（星星本身先有信号）
+ * 2. 粒子从每颗命中星星位置出发，向外环绕扩散（星周盘）
+ * 3. 不聚类，每颗星自给自足，叠加出银河感
  */
 
 import * as THREE from 'three';
@@ -27,18 +26,16 @@ export function useEvalVisual(context: EvalVisualContext) {
   const coHitCounts = new Map<string, number>();
 
   // ===== 粒子层 =====
-  const galaxyParticles: THREE.Points[] = [];
+  const starParticles = new Map<string, THREE.Points>(); // chunkId -> 该星的粒子群
   const particleGroup = new THREE.Group();
   particleGroup.name = 'eval-galaxy';
   scene.add(particleGroup);
 
-  const renderedClusters = new Set<string>();
-
-  // ===== 星星本体微调 =====
+  // ===== 星星本体 =====
   const originalColors = new Map<string, THREE.Color>();
   const originalOpacities = new Map<string, number>();
 
-  // ===== 共现连线（几乎不可见） =====
+  // ===== 共现连线 =====
   const coHitLines = new THREE.LineSegments(
     new THREE.BufferGeometry(),
     new THREE.LineBasicMaterial({
@@ -51,7 +48,7 @@ export function useEvalVisual(context: EvalVisualContext) {
   );
   scene.add(coHitLines);
 
-  // ===== 纹理：极致锐利星点 =====
+  // ===== 纹理 =====
   let sharpParticleTexture: THREE.CanvasTexture | null = null;
 
   function getSharpParticleTexture(): THREE.CanvasTexture {
@@ -61,7 +58,6 @@ export function useEvalVisual(context: EvalVisualContext) {
       canvas.height = 16;
       const ctx = canvas.getContext('2d')!;
 
-      // 中心实心亮点，0.05 半径内 100% alpha，之后快速衰减
       const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
       gradient.addColorStop(0, 'rgba(255,255,255,1)');
       gradient.addColorStop(0.05, 'rgba(255,255,255,1)');
@@ -92,82 +88,43 @@ export function useEvalVisual(context: EvalVisualContext) {
     }
   }
 
-  // ===== 空间聚类 =====
-  function buildClusters(): Array<{ center: THREE.Vector3; hitCount: number; memberCount: number }> {
-    const positions: { id: string; pos: THREE.Vector3; hits: number }[] = [];
-    hitCounts.forEach((count, id) => {
-      const info = starDataMap.get(id);
-      if (info && isFinite(info.sprite.position.x)) {
-        positions.push({ id, pos: info.sprite.position.clone(), hits: count });
-      }
-    });
+  /** 为单颗命中星星生成星周粒子盘 */
+  function spawnStarParticles(chunkId: string) {
+    if (starParticles.has(chunkId)) return; // 已生成过
 
-    if (positions.length === 0) return [];
+    const starInfo = starDataMap.get(chunkId);
+    if (!starInfo) return;
 
-    const clusters: Array<{ center: THREE.Vector3; hitCount: number; memberCount: number }> = [];
-    const assigned = new Set<string>();
-    positions.sort((a, b) => b.hits - a.hits);
-    const CLUSTER_RADIUS = 15;
+    const hitCount = hitCounts.get(chunkId) || 0;
+    if (hitCount < 1) return;
 
-    for (const p of positions) {
-      if (assigned.has(p.id)) continue;
+    const pos = starInfo.sprite.position;
 
-      const members: string[] = [p.id];
-      assigned.add(p.id);
-      let totalHits = p.hits;
-      const center = p.pos.clone();
+    // 粒子数随命中数增长
+    const particleCount = Math.min(5 + hitCount * 3, 30);
+    const spread = 4 + hitCount * 1.5; // 扩散范围
 
-      for (const q of positions) {
-        if (assigned.has(q.id)) continue;
-        if (p.pos.distanceTo(q.pos) < CLUSTER_RADIUS) {
-          assigned.add(q.id);
-          members.push(q.id);
-          totalHits += q.hits;
-          center.add(q.pos);
-        }
-      }
-
-      center.divideScalar(members.length);
-      clusters.push({ center, hitCount: totalHits, memberCount: members.length });
-    }
-
-    return clusters;
-  }
-
-  /** 为单个簇生成粒子 */
-  function spawnClusterParticles(cluster: { center: THREE.Vector3; hitCount: number; memberCount: number }) {
-    const clusterKey = `${cluster.center.x.toFixed(1)},${cluster.center.y.toFixed(1)},${cluster.center.z.toFixed(1)}`;
-    if (renderedClusters.has(clusterKey)) return;
-    if (cluster.hitCount < 2) return;
-
-    console.log(`[eval] 生成簇粒子: center=(${cluster.center.x.toFixed(1)},${cluster.center.y.toFixed(1)},${cluster.center.z.toFixed(1)}), hits=${cluster.hitCount}, members=${cluster.memberCount}`);
-
-    // 粒子数：少而精
-    const particleCount = Math.min(20 + cluster.hitCount * 5, 100);
-    const spread = cluster.memberCount * 1.2 + 6;
-
-    // 颜色：低命中=冷蓝，高命中=暖紫
+    // 颜色
     let color: THREE.Color;
-    if (cluster.hitCount < 5) color = new THREE.Color(0x6688bb);
-    else if (cluster.hitCount < 10) color = new THREE.Color(0x7788aa);
-    else if (cluster.hitCount < 20) color = new THREE.Color(0x8877aa);
+    if (hitCount === 1) color = new THREE.Color(0x6688bb);
+    else if (hitCount === 2) color = new THREE.Color(0x7788aa);
+    else if (hitCount < 5) color = new THREE.Color(0x8877aa);
     else color = new THREE.Color(0x9977aa);
 
-    // THREE.Points 批量渲染
+    // 生成盘状粒子
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const radius = Math.pow(Math.random(), 0.7) * spread; // 幂分布，中心更密
-      // 盘状分布
+      const radius = Math.pow(Math.random(), 0.5) * spread; // 幂分布，中心更密
       const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius * 0.3;
-      const z = (Math.random() - 0.5) * 2;
+      const y = Math.sin(angle) * radius * 0.3; // 椭圆压缩成盘
+      const z = (Math.random() - 0.5) * 2.5;
 
-      positions[i * 3] = cluster.center.x + x;
-      positions[i * 3 + 1] = cluster.center.y + y;
-      positions[i * 3 + 2] = cluster.center.z + z;
+      positions[i * 3] = pos.x + x;
+      positions[i * 3 + 1] = pos.y + y;
+      positions[i * 3 + 2] = pos.z + z;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -175,9 +132,9 @@ export function useEvalVisual(context: EvalVisualContext) {
     const material = new THREE.PointsMaterial({
       map: getSharpParticleTexture(),
       color,
-      size: 3.0, // 从 0.3 调到 3.0
+      size: 3.0,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.6,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       sizeAttenuation: true,
@@ -185,14 +142,10 @@ export function useEvalVisual(context: EvalVisualContext) {
 
     const points = new THREE.Points(geometry, material);
     particleGroup.add(points);
-    galaxyParticles.push(points);
-
-    console.log(`[eval] 已添加 ${particleCount} 个粒子到 particleGroup，当前共 ${galaxyParticles.length} 个对象`);
-
-    renderedClusters.add(clusterKey);
+    starParticles.set(chunkId, points);
   }
 
-  /** 星星本体：只改颜色，不加辉光 */
+  /** 星星本体：明显提亮 + 薄辉光 */
   function applyStarEffect(chunkId: string) {
     const starInfo = starDataMap.get(chunkId);
     if (!starInfo) return;
@@ -209,14 +162,18 @@ export function useEvalVisual(context: EvalVisualContext) {
 
     if (hitCount > 0) {
       const origColor = originalColors.get(chunkId)!;
-      const warmth = Math.min(hitCount / 8, 1);
+      const warmth = Math.min(hitCount / 5, 1);
       const newColor = origColor.clone().lerp(new THREE.Color(0xffffff), warmth);
-      const boost = 1 + hitCount * 0.08;
+      const boost = 1 + hitCount * 0.2;
       newColor.r = Math.min(1, newColor.r * boost);
       newColor.g = Math.min(1, newColor.g * boost);
       newColor.b = Math.min(1, newColor.b * boost);
       sprite.material.color.copy(newColor);
+      sprite.material.opacity = Math.min(1, 0.5 + hitCount * 0.1);
       sprite.material.needsUpdate = true;
+
+      // 粒子从星星位置出发
+      spawnStarParticles(chunkId);
     }
   }
 
@@ -248,10 +205,6 @@ export function useEvalVisual(context: EvalVisualContext) {
     hitCounts.forEach((_, chunkId) => {
       applyStarEffect(chunkId);
     });
-
-    const clusters = buildClusters();
-    clusters.forEach(c => spawnClusterParticles(c));
-
     updateCoHitLines();
   }
 
@@ -261,8 +214,6 @@ export function useEvalVisual(context: EvalVisualContext) {
     for (const id of chunkIds) {
       applyStarEffect(id);
     }
-    const clusters = buildClusters();
-    clusters.forEach(c => spawnClusterParticles(c));
     updateCoHitLines();
   }
 
@@ -278,13 +229,13 @@ export function useEvalVisual(context: EvalVisualContext) {
       starInfo.sprite.material.needsUpdate = true;
     });
 
-    galaxyParticles.forEach(p => {
-      particleGroup.remove(p);
-      p.geometry.dispose();
-      (p.material as THREE.Material).dispose();
+    // 清除所有粒子
+    starParticles.forEach(points => {
+      particleGroup.remove(points);
+      points.geometry.dispose();
+      (points.material as THREE.Material).dispose();
     });
-    galaxyParticles.length = 0;
-    renderedClusters.clear();
+    starParticles.clear();
 
     coHitLines.geometry.dispose();
     coHitLines.geometry = new THREE.BufferGeometry();
@@ -310,7 +261,7 @@ export function useEvalVisual(context: EvalVisualContext) {
       totalHits, maxHits, maxHitId, maxCoHits, maxCoHitKey,
       uniqueStars: hitCounts.size,
       coHitPairs: coHitCounts.size,
-      clusterCount: renderedClusters.size,
+      starParticleGroups: starParticles.size,
     };
   }
 
