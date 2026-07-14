@@ -414,6 +414,7 @@ const handleEvalReset = () => {
 };
 
 const handleMetricsUpdate = (payload: { step: number; currentMetrics: Record<string, number>; cumulativeMetrics: Record<string, number> }) => {
+  showTrendChart.value = true;
   evalMetricsHistory.value.push({
     step: payload.step,
     currentMetrics: payload.currentMetrics,

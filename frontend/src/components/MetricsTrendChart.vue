@@ -198,16 +198,25 @@ function drawAutoTooltip() {
 
   const maxSteps = props.maxSteps;
   const lastStep = history.length - 1;
+  const isComplete = lastStep >= maxSteps - 1;
 
-  // 自动播放：从左到右，到达末尾后暂停再循环
-  autoTooltipStep = (autoTooltipStep + 0.015) % (lastStep + 60); // +60 for pause at end
-  const stepIndex = Math.min(Math.floor(autoTooltipStep), lastStep);
-  const isPaused = autoTooltipStep > lastStep;
+  // 评估进行中：流光紧跟最后一步
+  let stepIndex: number;
+  let isPaused = false;
+  if (!isComplete) {
+    stepIndex = lastStep;
+  } else {
+    // 评估完成后：自动循环播放，末尾停顿
+    autoTooltipStep = (autoTooltipStep + 0.02) % (lastStep + 90);
+    stepIndex = Math.min(Math.floor(autoTooltipStep), lastStep);
+    isPaused = autoTooltipStep > lastStep;
+  }
 
   const entry = history[stepIndex];
   if (!entry) return;
 
   const x = PADDING.left + (entry.step / maxSteps) * chartWidth;
+  const y = PADDING.top + (1 - (entry.cumulativeMetrics['ndcg_5'] ?? 0)) * chartHeight;
 
   // 流光扫描线
   const scanGrad = ctx.createLinearGradient(x - 3, 0, x + 3, 0);
