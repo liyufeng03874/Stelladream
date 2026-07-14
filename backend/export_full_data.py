@@ -140,13 +140,14 @@ def main():
     print("\n构建星图数据...")
     star_data = []
     for doc, coord in zip(docs, coords_3d):
+        chunk_id = doc["chunk_id"]  # unified_rag 的 _id 已经是 doc_XXXXX / cmrc_XXXXX / UUID
         star_data.append({
             "x": float(coord[0]),
             "y": float(coord[1]),
             "z": float(coord[2]),
             "domain": doc["domain"],
-            "chunk_id": doc["chunk_id"],
-            "source_path": doc["source_path"],  # 新增：用于评估映射
+            "chunk_id": chunk_id,
+            "source_path": doc.get("source_path", chunk_id),
             "content": doc["content"],
             "source": doc["source"],
             "size": compute_size(len(doc["content"])),

@@ -84,7 +84,6 @@ const isSearching = ref(false);
 
 // 评估回放相关
 const showEvalPanel = ref(false);
-const sourcePathToUuid = ref<Map<string, string>>(new Map());  // ID映射表
 
 // 调试面板
 const showDebugPanel = ref(false);
@@ -353,14 +352,13 @@ function closeDebugGui() {
 const handleEvalHighlight = (payload: any) => {
   if (!animContext || !payload?.chunkIds?.length) return;
 
-  // 将 source_path (doc_XXXXX) 转换为 chunk_id (UUID)
-  const uuidIds = payload.chunkIds
-    .map((sp: string) => sourcePathToUuid.value.get(sp) ?? sp) // 如果已经是 UUID 就用原值
-    .filter((uuid: string) => starDataMap.has(uuid)); // 只保留存在的星点
+  // chunkIds 已经是 chunk_id 格式（doc_XXXXX / cmrc_XXXXX），直接查找
+  const validIds = payload.chunkIds
+    .filter((id: string) => starDataMap.has(id));
 
-  console.log(`[eval] 映射: ${uuidIds.length}/${payload.chunkIds.length} 找到对应星点`);
+  console.log(`[eval] 找到星点: ${validIds.length}/${payload.chunkIds.length}`);
 
-  if (uuidIds.length === 0) return;
+  if (validIds.length === 0) return;
 
   // 按排名分配颜色
   const rankColors = [
@@ -371,16 +369,15 @@ const handleEvalHighlight = (payload: any) => {
     0x87CEEB, // Rank 5: 浅蓝
   ];
 
-  // 按排名分组高亮
-  const topN = Math.min(uuidIds.length, 5);
+  const topN = Math.min(validIds.length, 5);
   for (let i = 0; i < topN; i++) {
     const color = rankColors[i] || 0xCCCCCC;
     const scale = 3 - i * 0.3;
-    animContext.evalHighlight([uuidIds[i]], color, scale);
+    animContext.evalHighlight([validIds[i]], color, scale);
   }
 
-  // 计算检索结果中心点，相机飞过去
-  const positions = uuidIds
+  // 相机飞向结果中心
+  const positions = validIds
     .map(id => starDataMap.get(id)?.sprite.position)
     .filter((p): p is THREE.Vector3 => !!p && isFinite(p.x) && isFinite(p.y) && isFinite(p.z));
 
@@ -499,9 +496,6 @@ const handleStarFieldReady = (context: any) => {
   scene = context.scene;
   animContext = useSearchAnimation(context);
 
-  // 构建 source_path → chunk_id 映射
-  buildSourcePathMapping();
-
   // 暴露到 window 方便调试
   (window as any).__stelladream = {
     animContext,
@@ -526,17 +520,6 @@ onMounted(async () => {
     console.error('Failed to load data:', error);
   }
 });
-
-// 星图就绪时构建 source_path → chunk_id 映射
-function buildSourcePathMapping() {
-  sourcePathToUuid.value = new Map();
-  starData.value.forEach(star => {
-    if (star.source_path) {
-      sourcePathToUuid.value.set(star.source_path, star.chunk_id);
-    }
-  });
-  console.log(`[mapping] 构建了 ${sourcePathToUuid.value.size} 条 source_path → chunk_id 映射`);
-}
 </script>
 
 <style scoped>
