@@ -49,6 +49,17 @@
 import { ref, computed } from 'vue';
 import { getEvalData } from '../api';
 
+const emit = defineEmits<{
+  highlight: [payload: {
+    chunkIds: string[];
+    ranks: number[];
+    correctIds: string[];
+    currentNdcg: number;
+    query: string;
+    domain: string;
+  }];
+}>();
+
 const domains = [
   { key: 'medical', name: '医疗 (Run 007)' },
   { key: 'law', name: '法律 (Run 008)' },
@@ -113,6 +124,17 @@ const loadEvalData = async () => {
       if (currentStep.value >= data.total_samples) {
         currentStep.value = data.total_samples - 1;
       }
+    }
+    // 发出高亮事件：如果后端返回了 retrieved_ids，传递给 App.vue
+    if (data.retrieved_ids && Array.isArray(data.retrieved_ids) && data.retrieved_ids.length > 0) {
+      emit('highlight', {
+        chunkIds: data.retrieved_ids,
+        ranks: data.ranks ?? [1, 2, 3, 4, 5].slice(0, data.retrieved_ids.length),
+        correctIds: data.correct_ids ?? [],
+        currentNdcg: currentNdcg.value,
+        query: data.query ?? '',
+        domain: currentDomain.value,
+      });
     }
   } catch (error) {
     console.error('Failed to load eval data:', error);

@@ -14,6 +14,7 @@ export interface StarPoint {
   z: number;
   domain: string;
   chunk_id: string;
+  source_path?: string;
   content: string;
   source: string;
   size: number;
@@ -33,6 +34,12 @@ export interface EvalData {
   is_correct: boolean;
   ndcg_at_5: number;
   cumulative_ndcg: number;
+  correct_rate: number;
+  total_samples: number;
+  current_step: number;
+  retrieved_ids: string[];
+  correct_ids: string[];
+  ranks: number[];
 }
 
 // API 方法

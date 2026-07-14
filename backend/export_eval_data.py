@@ -71,10 +71,18 @@ def export_domain(domain: str):
         query_id = sample["id"]
         query_info = query_map.get(query_id, {})
 
+        # 构建 correct_ids（从 dataset 的 relevant_ids 提取）
+        correct_ids = query_info.get("relevant_ids", [])
+        retrieved = sample.get("retrieved_ids", [])
+        # 计算排名
+        ranks = list(range(1, len(retrieved) + 1))
+
         export_data["samples"].append({
             "id": query_id,
             "query": query_info.get("query", ""),
-            "retrieved_ids": sample.get("retrieved_ids", []),
+            "retrieved_ids": retrieved,
+            "ranks": ranks,
+            "correct_ids": correct_ids,
             "metrics": sample.get("metrics", {}),
             "ndcg@5": sample["metrics"].get("ndcg@5", 0.0)
         })

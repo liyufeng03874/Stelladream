@@ -251,6 +251,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   }
 
   /** 相机飞向目标（通过 registry 记录相机变更） */
+  /** 相机飞向目标（通过 registry 记录相机变更） */
   function flyToStar(targetPos: THREE.Vector3, duration: number = 2.0, source: string = 'flyToStar', phase: string = 'flyToStar') {
     const startPos = camera.position.clone();
 
@@ -813,6 +814,102 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     }
   }
 
+  // ===== 评估回放联动 =====
+  let evalHighlightedSprites = new Map<THREE.Sprite, {
+    originalMaterial: THREE.SpriteMaterial;
+    originalScale: THREE.Vector3;
+  }>();
+
+  /** 评估高亮：传入 UUID chunk_id 列表，按排名着色 */
+  function evalHighlight(chunkIds: string[], color: number, scale: number = 2) {
+    // 先清理之前的高亮
+    clearEvalHighlight();
+
+    chunkIds.forEach(chunkId => {
+      const starInfo = starDataMap.get(chunkId);
+      if (!starInfo) return; // 静默跳过（评估ID可能不在渲染的星点中）
+
+      const sprite = starInfo.sprite;
+      if (!sprite || !isVectorValid(sprite.position)) return;
+
+      const targetId = `eval_${chunkId}`;
+
+      if (!trueOriginals.has(sprite)) {
+        trueOriginals.set(sprite, {
+          scale: starInfo.originalScale.clone(),
+          material: starInfo.originalMaterial.clone(),
+        });
+      }
+
+      if (!evalHighlightedSprites.has(sprite)) {
+        evalHighlightedSprites.set(sprite, {
+          originalScale: sprite.scale.clone(),
+          originalMaterial: sprite.material.clone(),
+        });
+      }
+
+      const oldMat = sprite.material as THREE.SpriteMaterial;
+      const oldColor = '#' + oldMat.color.getHexString();
+      const oldOpacity = oldMat.opacity;
+
+      const newMaterial = oldMat.clone();
+      newMaterial.color.setHex(color);
+      newMaterial.opacity = 1;
+      newMaterial.blending = THREE.AdditiveBlending;
+      sprite.material = newMaterial;
+
+      registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#' + new THREE.Color(color).getHexString(), source: 'evalHighlight', phase: 'eval' });
+      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: 1, source: 'evalHighlight', phase: 'eval' });
+
+      const origScale = sprite.scale.clone();
+      registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: origScale.x, y: origScale.y, z: origScale.z }, value: { x: origScale.x * scale, y: origScale.y * scale, z: origScale.z * scale }, source: 'evalHighlight', phase: 'eval' });
+
+      gsap.to(sprite.scale, {
+        x: origScale.x * scale,
+        y: origScale.y * scale,
+        z: origScale.z * scale,
+        duration: 0.5,
+        ease: 'back.out'
+      });
+
+      // 绿色光晕表示正确召回
+      setTimeout(() => {
+        createGlow(sprite.position, 0x00FF00, sprite.scale.x * 2, targetId, 'evalHighlight', 'eval');
+      }, 300);
+    });
+  }
+
+  /** 清除评估高亮，恢复原样 */
+  function clearEvalHighlight() {
+    evalHighlightedSprites.forEach((original, sprite) => {
+      gsap.killTweensOf(sprite.scale);
+      gsap.killTweensOf(sprite.material);
+
+      // 恢复原始材质和缩放
+      sprite.material = original.originalMaterial;
+      sprite.scale.copy(original.originalScale);
+
+      // 场景级清扫该 sprite 的所有光晕
+      scene.children.forEach(child => {
+        if (child instanceof THREE.Sprite && child !== sprite) {
+          const maxDim = Math.max(child.scale.x, child.scale.y);
+          if (maxDim > 5 && maxDim < 50) { // 光晕范围
+            const childPos = child.position;
+            const spritePos = sprite.position;
+            if (childPos.distanceTo(spritePos) < 3) { // 距离近的视为光晕
+              scene.remove(child);
+              (child.material as THREE.Material).dispose();
+              if (child.material instanceof THREE.SpriteMaterial && child.material.map) {
+                child.material.map.dispose();
+              }
+            }
+          }
+        }
+      });
+    });
+    evalHighlightedSprites.clear();
+  }
+
   return {
     animateSearch,
     cleanup,
@@ -821,6 +918,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     setBreathingActive,
     resetFinalStar,
     jumpToStar,
+    evalHighlight,
+    clearEvalHighlight,
+    flyToStar,
     getRegistry: () => registry,
     getFactory: () => factory,
   };

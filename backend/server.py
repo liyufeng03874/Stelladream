@@ -138,6 +138,10 @@ async def get_eval_data(domain: str, step: int = 0):
         "correct_rate": round(rate, 2),
         "total_samples": len(samples),
         "current_step": step,
+        "retrieved_ids": current_sample.get("retrieved_ids", []),
+        "correct_ids": current_sample.get("correct_ids", []),
+        "query": current_sample.get("query", ""),
+        "ranks": current_sample.get("ranks", list(range(1, len(current_sample.get("retrieved_ids", [])) + 1))),
     }
 
 
