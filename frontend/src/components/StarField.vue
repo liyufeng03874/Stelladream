@@ -47,10 +47,13 @@ let animationId: number;
 let composer: EffectComposer;
 let bloomPass: UnrealBloomPass;
 
+// 底层星尘（16000 个极微小粒子）
+let starDust: THREE.Points | null = null;
+
 // Texture cache
 const textureCache = new Map<string, THREE.CanvasTexture>();
 
-// chunk_id to star mapping (includes ALL stars, not just rendered ones)
+// chunk_id to star mapping
 const starDataMap = new Map<string, {
   sprite: THREE.Sprite;
   data: StarPoint;
@@ -58,7 +61,7 @@ const starDataMap = new Map<string, {
   originalScale: THREE.Vector3;
 }>();
 
-// Create star texture with caching
+// 星星纹理：中心纯白够亮才能触发 Bloom
 const createStarTexture = (color: string): THREE.CanvasTexture => {
   if (textureCache.has(color)) {
     return textureCache.get(color)!;
@@ -73,10 +76,13 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
   const center = textureSize / 2;
 
   const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+  // 中心纯白高亮 → 触发 Bloom 阈值 (0.4)
   gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-  gradient.addColorStop(0.03, 'rgba(255, 255, 255, 0.95)');
-  gradient.addColorStop(0.08, color);
-  gradient.addColorStop(0.35, color + '88');
+  gradient.addColorStop(0.05, 'rgba(255, 255, 255, 1)');
+  gradient.addColorStop(0.1, 'rgba(255, 255, 255, 0.9)');
+  // 向外渐变色
+  gradient.addColorStop(0.2, color);
+  gradient.addColorStop(0.5, color + '44');
   gradient.addColorStop(1, 'transparent');
 
   ctx.fillStyle = gradient;
@@ -89,13 +95,65 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
   return texture;
 };
 
+// 创建底层星尘（16000 个极微小暗色粒子）
+const createStarDust = () => {
+  if (!starDataMap.size) return;
+
+  const count = 16000;
+  const positions = new Float32Array(count * 3);
+
+  // 从所有星星的范围中采样
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  starDataMap.forEach(({ sprite }) => {
+    minX = Math.min(minX, sprite.position.x);
+    maxX = Math.max(maxX, sprite.position.x);
+    minY = Math.min(minY, sprite.position.y);
+    maxY = Math.max(maxY, sprite.position.y);
+    minZ = Math.min(minZ, sprite.position.z);
+    maxZ = Math.max(maxZ, sprite.position.z);
+  });
+
+  // 稍微扩大范围
+  const rangeX = (maxX - minX) * 0.8;
+  const rangeY = (maxY - minY) * 0.3;
+  const rangeZ = (maxZ - minZ) * 0.8;
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  const centerZ = (minZ + maxZ) / 2;
+
+  for (let i = 0; i < count; i++) {
+    // 指数分布，让中心更密
+    const radius = Math.pow(Math.random(), 1.2);
+    const angle = Math.random() * Math.PI * 2;
+
+    positions[i * 3] = centerX + Math.cos(angle) * radius * rangeX + (Math.random() - 0.5) * rangeX * 0.3;
+    positions[i * 3 + 1] = centerY + (Math.random() - 0.5) * rangeY;
+    positions[i * 3 + 2] = centerZ + Math.sin(angle) * radius * rangeZ + (Math.random() - 0.5) * rangeZ * 0.3;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  const material = new THREE.PointsMaterial({
+    color: 0x334466, // 暗蓝灰色
+    size: 0.15, // 极微小
+    transparent: true,
+    opacity: 0.3,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    sizeAttenuation: true,
+  });
+
+  starDust = new THREE.Points(geometry, material);
+  scene.add(starDust);
+};
+
 // Init scene
 const initScene = () => {
   if (!containerRef.value) return;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x020408); // demo 的深邃太空背景
-  scene.fog = new THREE.Fog(0x020408, 300, 800);
+  scene.background = new THREE.Color(0x020408);
 
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
@@ -120,23 +178,21 @@ const initScene = () => {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.45;
-  controls.maxDistance = 800;
+  controls.maxDistance = 1200;
   controls.target.set(67.1, 96.2, 30.9);
   controls.enablePan = true;
   controls.panSpeed = 0.5;
 
-  // Bloom 后处理
+  // Bloom 后处理（克制参数）
   composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
 
   bloomPass = new UnrealBloomPass(
     new THREE.Vector2(width, height),
-    0.15, // 泛光强度
+    0.15, // 强度：极低，仅让最亮的星星溢出光晕
     0.2,  // 光晕半径
-    0.4   // 阈值：只有足够亮的星星才产生泛光
+    0.4   // 阈值：只有亮度达到 0.4 的星星才产生泛光
   );
   composer.addPass(bloomPass);
 
@@ -149,14 +205,16 @@ const initScene = () => {
 const renderStars = () => {
   if (!props.stars.length || !props.config.domains) return;
 
-  // Clear old sprites
+  // Clear old
   starSprites.forEach(sprite => scene.remove(sprite));
   starSprites = [];
   starDataMap.clear();
-
-  // 螺旋臂参数（参考 demo 案例）
-  const spiralFactor = 5;
-  const centerPos = new THREE.Vector3(67.1, 96.2, 30.9);
+  if (starDust) {
+    scene.remove(starDust);
+    starDust.geometry.dispose();
+    (starDust.material as THREE.Material).dispose();
+    starDust = null;
+  }
 
   // Build mapping and render ALL stars
   props.stars.forEach((star) => {
@@ -174,32 +232,11 @@ const renderStars = () => {
     });
 
     const sprite = new THREE.Sprite(material);
-
-    // 螺旋臂变换：从原位置计算相对中心的极坐标，应用旋臂偏移
-    const dx = star.x - centerPos.x;
-    const dz = star.z - centerPos.z;
-    const radius = Math.sqrt(dx * dx + dz * dz);
-    const theta = Math.atan2(dz, dx);
-
-    // 旋臂角度偏移 + 随机噪声
-    const armAngle = theta + (radius / 100) * spiralFactor + (Math.random() - 0.5) * 2;
-    const finalRadius = radius * (1.0 + (Math.random() - 0.5) * 0.15);
-
-    // Y 轴极扁平压制（中心稍厚，边缘压扁）
-    const thickness = 0.6 - (radius / 200) * 0.5;
-    const dy = star.y - centerPos.y;
-    const compressedY = Math.sign(dy) * Math.max(Math.abs(dy) * 0.1, Math.abs(dy) * Math.max(0.05, thickness));
-
-    sprite.position.set(
-      centerPos.x + finalRadius * Math.cos(armAngle),
-      centerPos.y + compressedY,
-      centerPos.z + finalRadius * Math.sin(armAngle)
-    );
+    sprite.position.set(star.x, star.y, star.z);
 
     const scale = star.size * 0.06;
     sprite.scale.set(scale, scale, 1);
 
-    // 保存真正的原始材质和 scale
     const originalMat = material.clone();
     const originalScale = new THREE.Vector3(scale, scale, 1);
 
@@ -217,6 +254,9 @@ const renderStars = () => {
     starDataMap.set(star.chunk_id, { sprite, data: star, originalMaterial: originalMat, originalScale });
   });
 
+  // 创建底层星尘
+  createStarDust();
+
   controls.update();
 
   emit('ready', {
@@ -232,7 +272,7 @@ const renderStars = () => {
 const animate = () => {
   animationId = requestAnimationFrame(animate);
   controls.update();
-  composer.render(); // 用 Bloom 后处理渲染
+  composer.render();
 };
 
 // Handle resize
@@ -246,7 +286,7 @@ const handleResize = () => {
   composer.setSize(width, height);
 };
 
-// Mouse move with throttle
+// Mouse move
 let lastRaycastTime = 0;
 const RAYCAST_THROTTLE = 100;
 
@@ -311,6 +351,11 @@ onUnmounted(() => {
 
   textureCache.forEach(texture => texture.dispose());
   textureCache.clear();
+
+  if (starDust) {
+    starDust.geometry.dispose();
+    (starDust.material as THREE.Material).dispose();
+  }
 
   renderer.dispose();
   controls.dispose();

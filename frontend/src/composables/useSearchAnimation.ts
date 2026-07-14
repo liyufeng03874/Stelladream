@@ -9,6 +9,13 @@
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import type { StarPoint } from '../api';
+
+// 领域颜色（与 useEvalVisual 保持一致）
+function getDomainColor(chunkId: string): number {
+  if (chunkId.startsWith('cmrc_')) return 0x34D399; // 百科：绿
+  if (chunkId.startsWith('doc_')) return 0x4A9AF5;  // 医疗：蓝
+  return 0xF5A623;                                  // 游戏/小说：橙
+}
 import { EffectRegistry } from '../core/EffectRegistry';
 import { EffectFactory, type ManagedEffect } from '../core/EffectFactory';
 
@@ -414,7 +421,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       gsap.killTweensOf(finalSprite.scale);
       gsap.killTweensOf(finalMat);
 
-      createGlow(finalSprite.position, 0x34D399, 30, finalTargetId, 'animateSearch', 'finalStar');
+      const domainColor = getDomainColor(finalId);
+      createGlow(finalSprite.position, domainColor, 30, finalTargetId, 'animateSearch', 'finalStar');
 
       const flightDuration = 1.8;
 
@@ -433,7 +441,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         blending: finalSprite.material.blending
       });
       if (isVectorValid(targetPos)) {
-        shootMeteors([targetPos], 0x34D399, 0, 'animateSearch', 'finalStar');
+        shootMeteors([targetPos], domainColor, 0, 'animateSearch', 'finalStar');
       }
 
       gsap.to(finalSprite.scale, {
@@ -458,19 +466,19 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         repeat: -1
       });
 
-      const domainColor = '#' + trueOriginalMaterial.color.getHexString();
+      const dcHex = '#' + trueOriginalMaterial.color.getHexString();
       finalStarInfo = {
         sprite: finalSprite,
         data: finalStar.data,
         trueOriginalScale,
         trueOriginalMaterial,
-        domainColor,
+        domainColor: dcHex,
         appliedStyle: {
           coreColor: '#ffffff',
           opacity: 0.7,
           blending: THREE.AdditiveBlending,
           scaleMultiplier: 5,
-          glowColor: 0x34D399,
+          glowColor: domainColor,
           glowSize: 30,
           breathingActive: true,
         },
@@ -542,9 +550,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const oldScale = targetSprite.scale.clone();
       registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale.x, y: oldScale.y, z: oldScale.z }, value: { x: 0.6, y: 0.6, z: 5 }, source, phase });
 
-      // 辉光：和 query 完全一致
-      // 1) 绿色辉光（finalStar 阶段）
-      const glow = createGlow(targetPos, 0x34D399, 30, targetId, source, phase);
+      // 辉光：根据目标星领域色
+      const targetChunkId = targetSprite.userData.chunk_id;
+      const domainColor = getDomainColor(targetChunkId);
+      const glow = createGlow(targetPos, domainColor, 30, targetId, source, phase);
       if (glow) finalStarGlowSprites.push(glow);
 
       // 2) 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
@@ -596,20 +605,20 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         data: null,
         trueOriginalScale: targetOrigScale,
         trueOriginalMaterial: targetOrigMat,
-        domainColor: '#34D399',
+        domainColor: '#' + domainColor.toString(16).padStart(6, '0'),
         appliedStyle: {
           coreColor: '#ffffff',
           opacity: 0.7,
           blending: THREE.AdditiveBlending,
           scaleMultiplier: 5,
-          glowColor: 0x34D399,
+          glowColor: domainColor,
           glowSize: 30,
           breathingActive: true,
         },
       };
 
       // 先等流星飞完再移动相机（和搜索动画一致）
-      const meteorPromise = isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0, source, phase) : Promise.resolve();
+      const meteorPromise = isVectorValid(targetPos) ? shootMeteors([targetPos], domainColor, 0, source, phase) : Promise.resolve();
       meteorPromise.then(() => {
         flyToStar(targetPos, 1.5, source, phase);
       });
@@ -658,8 +667,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const oldScale2 = targetOrigScale.clone();
     registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale2.x, y: oldScale2.y, z: oldScale2.z }, value: { x: oldScale2.x * 2.2, y: oldScale2.y * 2.2, z: oldScale2.z * 2.2 }, source, phase });
 
-    // 和 query 完全一致：改完材质后先创建辉光，再启动 tween
-    const glow = createGlow(targetSprite.position, 0x34D399, 30, targetId, source, phase);
+    // 和 query 完全一致：改完材质后先创建领域色辉光，再启动 tween
+    const targetChunkId2 = targetSprite.userData.chunk_id;
+    const domainColor2 = getDomainColor(targetChunkId2);
+    const glow = createGlow(targetSprite.position, domainColor2, 30, targetId, source, phase);
     if (glow) finalStarGlowSprites.push(glow);
 
     // 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
@@ -727,13 +738,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
           opacity: 0.7,
           blending: THREE.AdditiveBlending,
           scaleMultiplier: 5,
-          glowColor: 0x34D399,
+          glowColor: domainColor2,
           glowSize: 30,
           breathingActive: true,
         },
       };
 
-      (isVectorValid(targetPos) ? shootMeteors([targetPos], 0x34D399, 0, source, phase) : Promise.resolve()).then(() => {
+      (isVectorValid(targetPos) ? shootMeteors([targetPos], domainColor2, 0, source, phase) : Promise.resolve()).then(() => {
         flyToStar(targetPos, 1.5, source, phase);
       });
     }, 1100);
@@ -872,9 +883,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         ease: 'back.out'
       });
 
-      // 绿色光晕表示正确召回
+      // 领域色光晕表示正确召回
       setTimeout(() => {
-        createGlow(sprite.position, 0x00FF00, sprite.scale.x * 2, targetId, 'evalHighlight', 'eval');
+        createGlow(sprite.position, color, sprite.scale.x * 2, targetId, 'evalHighlight', 'eval');
       }, 300);
     });
   }

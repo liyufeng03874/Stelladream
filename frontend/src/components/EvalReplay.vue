@@ -57,9 +57,10 @@ const emit = defineEmits<{
     currentNdcg: number;
     query: string;
     domain: string;
-    isBatch: boolean;  // 新增：标识是否为批量数据沉淀模式
+    isBatch: boolean;
   }];
-  reset: [];  // 新增：领域切换时发出重置信号
+  reset: [];
+  'fly-to-domain': [domain: string];  // 新增：评估开始时飞向领域簇
 }>();
 
 const domains = [
@@ -103,6 +104,11 @@ const togglePlay = () => {
   if (isPlaying.value) {
     stopPlayback();
     return;
+  }
+
+  // 第一次播放时飞向领域簇
+  if (currentStep.value === 0) {
+    emit('fly-to-domain', currentDomain.value);
   }
 
   isPlaying.value = true;

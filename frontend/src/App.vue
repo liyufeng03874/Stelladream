@@ -52,7 +52,7 @@
         {{ showEvalPanel ? '关闭回放' : '📊 评估回放' }}
       </button>
 
-      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" @reset="handleEvalReset" />
+      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" @reset="handleEvalReset" @fly-to-domain="handleEvalFlyToDomain" />
     </div>
   </div>
 </template>
@@ -365,6 +365,33 @@ const handleEvalHighlight = (payload: any) => {
   if (payload.chunkIds?.length) {
     evalVisual.processStep(payload.chunkIds.slice(0, 5));  // 只取 Top-5
   }
+};
+
+// 评估开始时相机飞向对应领域簇
+const handleEvalFlyToDomain = (domain: string) => {
+  if (!animContext || !starDataMap) return;
+
+  // 计算该领域所有星的平均位置
+  const domainStars = Array.from(starDataMap.entries()).filter(
+    ([_, { data }]) => data.domain === domain
+  );
+
+  if (domainStars.length === 0) return;
+
+  let cx = 0, cy = 0, cz = 0;
+  for (const [_, { sprite }] of domainStars) {
+    cx += sprite.position.x;
+    cy += sprite.position.y;
+    cz += sprite.position.z;
+  }
+  cx /= domainStars.length;
+  cy /= domainStars.length;
+  cz /= domainStars.length;
+
+  // 飞到领域中心上方一定距离
+  const targetPos = new THREE.Vector3(cx, cy + 50, cz + 100);
+  console.log(`[eval] 飞向 ${domain} 簇中心: (${cx.toFixed(1)}, ${cy.toFixed(1)}, ${cz.toFixed(1)})`);
+  animContext.flyToStar(targetPos, 2.0, 'eval-fly', 'initial');
 };
 
 const handleEvalReset = () => {
