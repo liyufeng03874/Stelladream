@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { getEvalData } from '../api';
 
 const emit = defineEmits<{
@@ -57,7 +57,9 @@ const emit = defineEmits<{
     currentNdcg: number;
     query: string;
     domain: string;
+    isBatch: boolean;  // 新增：标识是否为批量数据沉淀模式
   }];
+  reset: [];  // 新增：领域切换时发出重置信号
 }>();
 
 const domains = [
@@ -78,34 +80,55 @@ const correctRate = ref(0);
 let playInterval: number | null = null;
 
 const switchDomain = (domain: string) => {
+  // 切换领域时重置
+  emit('reset');
+  stopPlayback();
   currentDomain.value = domain;
   currentStep.value = 0;
+  currentNdcg.value = 0;
+  cumulativeNdcg.value = 0;
+  correctRate.value = 0;
   loadEvalData();
 };
 
-const togglePlay = () => {
-  isPlaying.value = !isPlaying.value;
-
-  if (isPlaying.value) {
-    playInterval = window.setInterval(() => {
-      if (currentStep.value < maxSteps.value - 1) {
-        currentStep.value++;
-        loadEvalData();
-      } else {
-        isPlaying.value = false;
-        if (playInterval) clearInterval(playInterval);
-      }
-    }, 1000);
-  } else {
-    if (playInterval) {
-      clearInterval(playInterval);
-      playInterval = null;
-    }
+const stopPlayback = () => {
+  isPlaying.value = false;
+  if (playInterval) {
+    clearInterval(playInterval);
+    playInterval = null;
   }
 };
 
+const togglePlay = () => {
+  if (isPlaying.value) {
+    stopPlayback();
+    return;
+  }
+
+  isPlaying.value = true;
+
+  // 50ms 间隔，25秒播完 500 步
+  playInterval = window.setInterval(() => {
+    if (currentStep.value < maxSteps.value - 1) {
+      currentStep.value++;
+      loadEvalData();
+    } else {
+      stopPlayback();
+      // 播完最后一帧后发出完整数据
+      emit('highlight', {
+        chunkIds: [],
+        ranks: [],
+        correctIds: [],
+        currentNdcg: cumulativeNdcg.value,
+        query: '',
+        domain: currentDomain.value,
+        isBatch: true,  // 标识为批量模式
+      });
+    }
+  }, 50);
+};
+
 const handleStepChange = (event: Event) => {
-  // 从 slider 获取最新值
   const slider = event.target as HTMLInputElement;
   currentStep.value = parseInt(slider.value, 10);
   loadEvalData();
@@ -117,15 +140,13 @@ const loadEvalData = async () => {
     currentNdcg.value = data.ndcg_at_5 ?? 0;
     cumulativeNdcg.value = data.cumulative_ndcg ?? 0;
     correctRate.value = data.correct_rate ?? 0;
-    // 同步 maxSteps 为后端返回的总样本数
     if (data.total_samples) {
       maxSteps.value = data.total_samples;
-      // clamp 当前步进，防止超出新范围
       if (currentStep.value >= data.total_samples) {
         currentStep.value = data.total_samples - 1;
       }
     }
-    // 发出高亮事件：如果后端返回了 retrieved_ids，传递给 App.vue
+    // 发出高亮事件：传递 Top-5 数据
     if (data.retrieved_ids && Array.isArray(data.retrieved_ids) && data.retrieved_ids.length > 0) {
       emit('highlight', {
         chunkIds: data.retrieved_ids,
@@ -134,12 +155,18 @@ const loadEvalData = async () => {
         currentNdcg: currentNdcg.value,
         query: data.query ?? '',
         domain: currentDomain.value,
+        isBatch: false,
       });
     }
   } catch (error) {
     console.error('Failed to load eval data:', error);
   }
 };
+
+// 挂载时自动加载第一步
+onMounted(() => {
+  loadEvalData();
+});
 </script>
 
 <style scoped>

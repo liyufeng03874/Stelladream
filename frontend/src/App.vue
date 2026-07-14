@@ -52,7 +52,7 @@
         {{ showEvalPanel ? '关闭回放' : '📊 评估回放' }}
       </button>
 
-      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" />
+      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" @reset="handleEvalReset" />
     </div>
   </div>
 </template>
@@ -68,12 +68,14 @@ import EvalReplay from './components/EvalReplay.vue';
 import type { FinalStarInfo } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
 import { useSearchAnimation } from './composables/useSearchAnimation';
+import { useEvalVisual } from './composables/useEvalVisual';
 import { GUI } from 'lil-gui';
 
 // 星场上下文（用于构建调试信息）
 let starSprites: THREE.Sprite[] = [];
 let starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }> = new Map();
 let animContext: ReturnType<typeof useSearchAnimation> | null = null;
+let evalVisual: ReturnType<typeof useEvalVisual> | null = null;
 let camera: THREE.Camera | null = null;
 let scene: THREE.Scene | null = null;
 
@@ -350,42 +352,25 @@ function closeDebugGui() {
 }
 
 const handleEvalHighlight = (payload: any) => {
-  if (!animContext || !payload?.chunkIds?.length) return;
+  if (!evalVisual) return;
 
-  // chunkIds 已经是 chunk_id 格式（doc_XXXXX / cmrc_XXXXX），直接查找
-  const validIds = payload.chunkIds
-    .filter((id: string) => starDataMap.has(id));
-
-  console.log(`[eval] 找到星点: ${validIds.length}/${payload.chunkIds.length}`);
-
-  if (validIds.length === 0) return;
-
-  // 按排名分配颜色
-  const rankColors = [
-    0xFFD700, // Rank 1: 金色
-    0xFFA500, // Rank 2: 橙色
-    0xFFFF00, // Rank 3: 黄色
-    0x90EE90, // Rank 4: 浅绿
-    0x87CEEB, // Rank 5: 浅蓝
-  ];
-
-  const topN = Math.min(validIds.length, 5);
-  for (let i = 0; i < topN; i++) {
-    const color = rankColors[i] || 0xCCCCCC;
-    const scale = 3 - i * 0.3;
-    animContext.evalHighlight([validIds[i]], color, scale);
+  // 批量模式：播完 500 步后展示最终效果
+  if (payload.isBatch) {
+    evalVisual.applyAllEffects();
+    console.log('[eval] 播放完成，展示最终效果:', evalVisual.getStats());
+    return;
   }
 
-  // 相机飞向结果中心
-  const positions = validIds
-    .map(id => starDataMap.get(id)?.sprite.position)
-    .filter((p): p is THREE.Vector3 => !!p && isFinite(p.x) && isFinite(p.y) && isFinite(p.z));
+  // 正常模式：逐步处理
+  if (payload.chunkIds?.length) {
+    evalVisual.processStep(payload.chunkIds.slice(0, 5));  // 只取 Top-5
+  }
+};
 
-  if (positions.length > 0) {
-    const center = new THREE.Vector3();
-    positions.forEach(p => center.add(p));
-    center.divideScalar(positions.length);
-    animContext.flyToStar?.(center, 1.5);
+const handleEvalReset = () => {
+  if (evalVisual) {
+    evalVisual.reset();
+    console.log('[eval] 重置评估数据');
   }
 };
 
@@ -495,6 +480,7 @@ const handleStarFieldReady = (context: any) => {
   camera = context.camera;
   scene = context.scene;
   animContext = useSearchAnimation(context);
+  evalVisual = useEvalVisual(context);
 
   // 暴露到 window 方便调试
   (window as any).__stelladream = {
