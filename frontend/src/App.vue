@@ -52,7 +52,13 @@
         {{ showEvalPanel ? '关闭回放' : '📊 评估回放' }}
       </button>
 
-      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" @reset="handleEvalReset" @fly-to-domain="handleEvalFlyToDomain" />
+      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" @reset="handleEvalReset" @fly-to-domain="handleEvalFlyToDomain" @metrics-update="handleMetricsUpdate" />
+
+      <MetricsTrendChart
+        v-if="showTrendChart && evalMetricsHistory.length > 0"
+        :history="evalMetricsHistory"
+        :max-steps="evalMaxSteps"
+      />
     </div>
   </div>
 </template>
@@ -65,6 +71,7 @@ import SearchBar from './components/SearchBar.vue';
 import InfoPanel from './components/InfoPanel.vue';
 import DebugPanel from './components/DebugPanel.vue';
 import EvalReplay from './components/EvalReplay.vue';
+import MetricsTrendChart from './components/MetricsTrendChart.vue';
 import type { FinalStarInfo } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
 import { useSearchAnimation } from './composables/useSearchAnimation';
@@ -86,6 +93,9 @@ const isSearching = ref(false);
 
 // 评估回放相关
 const showEvalPanel = ref(false);
+const showTrendChart = ref(false);
+const evalMetricsHistory = ref<Array<{ step: number; currentMetrics: Record<string, number>; cumulativeMetrics: Record<string, number> }>>([]);
+let evalMaxSteps = 500;
 
 // 调试面板
 const showDebugPanel = ref(false);
@@ -399,6 +409,16 @@ const handleEvalReset = () => {
     evalVisual.reset();
     console.log('[eval] 重置评估数据');
   }
+  evalMetricsHistory.value = [];
+  showTrendChart.value = false;
+};
+
+const handleMetricsUpdate = (payload: { step: number; currentMetrics: Record<string, number>; cumulativeMetrics: Record<string, number> }) => {
+  evalMetricsHistory.value.push({
+    step: payload.step,
+    currentMetrics: payload.currentMetrics,
+    cumulativeMetrics: payload.cumulativeMetrics,
+  });
 };
 
 const handleStarClick = (star: StarPoint) => {

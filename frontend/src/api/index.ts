@@ -31,9 +31,8 @@ export interface EvalData {
   query: string;
   results: string[];
   is_correct: boolean;
-  ndcg_at_5: number;
-  cumulative_ndcg: number;
-  correct_rate: number;
+  current_metrics: Record<string, number>;
+  cumulative_metrics: Record<string, number>;
   total_samples: number;
   current_step: number;
   retrieved_ids: string[];

@@ -117,25 +117,24 @@ async def get_eval_data(domain: str, step: int = 0):
     samples = eval_data.get("samples", [])
     summary = eval_data.get("summary", {})
 
-    # step 为当前回放进度（从 0 开始），返回前 step+1 个样本的累计 NDCG 和当前 NDCG
+    # step 为当前回放进度（从 0 开始），返回前 step+1 个样本的累计指标
     step = min(max(step, 0), len(samples) - 1) if samples else 0
     current_sample = samples[step] if samples else {}
-    current_ndcg = current_sample.get("ndcg@5", 0)
 
-    # 累计 NDCG：前 step+1 个样本的平均
-    if step + 1 > 0:
-        cumulative_ndcg = sum(s.get("ndcg@5", 0) for s in samples[: step + 1]) / (step + 1)
-    else:
-        cumulative_ndcg = current_ndcg
+    metric_keys = ["hr@1", "hr@3", "hr@5", "recall@5", "precision@5", "mrr@5", "ndcg@5"]
 
-    # 正确率：ndcg@5 > 0 视为正确
-    correct = sum(1 for s in samples[: step + 1] if s.get("ndcg@5", 0) > 0)
-    rate = (correct / (step + 1) * 100) if step + 1 > 0 else 0
+    # 当前样本指标
+    current_metrics = {k.replace("@", "_"): current_sample.get("metrics", {}).get(k, 0) for k in metric_keys}
+
+    # 累计指标：前 step+1 个样本的平均
+    cumulative_metrics = {}
+    for k in metric_keys:
+        values = [s.get("metrics", {}).get(k, 0) for s in samples[: step + 1]]
+        cumulative_metrics[k.replace("@", "_")] = sum(values) / len(values) if values else 0
 
     return {
-        "ndcg_at_5": current_ndcg,
-        "cumulative_ndcg": cumulative_ndcg,
-        "correct_rate": round(rate, 2),
+        "current_metrics": current_metrics,
+        "cumulative_metrics": cumulative_metrics,
         "total_samples": len(samples),
         "current_step": step,
         "retrieved_ids": current_sample.get("retrieved_ids", []),
