@@ -68,8 +68,8 @@ def main():
         size=1000
     ):
         doc = {
-            "chunk_id": hit["_id"],  # UUID格式
-            "source_path": hit["_source"].get("source_path", hit["_id"]),  # doc_XXXXX格式，用于评估映射
+            "chunk_id": hit["_id"],  # ES的_id（可能是UUID或doc_XXXXX）
+            "source_path": hit["_id"],  # 用于评估映射，和chunk_id相同
             "content": hit["_source"].get("content", ""),
             "source": hit["_source"].get("source", ""),
             "domain": hit["_source"].get("domain", "general"),
