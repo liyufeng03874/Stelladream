@@ -13,8 +13,10 @@ from typing import List, Dict, Any
 from pathlib import Path
 import json
 
-# 添加 other-world 项目路径
-sys.path.insert(0, "D:/code/other-world/backend")
+# 添加 other-world 项目路径（Docker 环境中挂载到 /app/other-world-rag）
+import os
+OTHER_WORLD_RAG = os.environ.get('OTHER_WORLD_RAG_PATH', str(Path(__file__).parent.parent / 'other-world-rag'))
+sys.path.insert(0, str(OTHER_WORLD_RAG))
 
 try:
     from rag.embedder import Embedder
