@@ -7,9 +7,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 
 WORKDIR /app
 
-# 先拷依赖，利用缓存（加阿里云 pip 镜像）
+# 先拷依赖，利用缓存（加阿里云 pip 镜像，排除 torch）
 COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
+RUN grep -v torch requirements.txt > requirements-no-torch.txt && \
+    pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ -r requirements-no-torch.txt && \
+    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 
 # 再拷代码
 COPY ./ ./
