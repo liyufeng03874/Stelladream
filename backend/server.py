@@ -16,7 +16,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-// 添加 other-world 项目路径以复用 RAG 组件（Docker 环境中挂载到 /app/other-world-rag）
+# 添加 other-world 项目路径以复用 RAG 组件（Docker 环境中挂载到 /app/other-world-rag）
 import os
 import sys
 OTHER_WORLD_RAG = os.environ.get('OTHER_WORLD_RAG_PATH', str(Path(__file__).parent / 'other-world-rag'))
