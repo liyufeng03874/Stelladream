@@ -1,0 +1,46 @@
+# ---------- Stelladream docker-compose.yml ----------
+# 复用 ECS 已有的 ES（projects_default 网络），前后端自行构建
+
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: stelladream-backend
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    environment:
+      - ES_URL=http://es:9200
+      - OTHER_WORLD_RAG_PATH=/app/other-world-rag
+    volumes:
+      - ./backend/other-world-rag:/app/other-world-rag:ro
+    networks:
+      - stelladream-net
+      - projects_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: stelladream-frontend
+    restart: unless-stopped
+    ports:
+      - "8012:80"
+    networks:
+      - stelladream-net
+    depends_on:
+      - backend
+
+networks:
+  stelladream-net:
+    driver: bridge
+  projects_default:
+    external: true
