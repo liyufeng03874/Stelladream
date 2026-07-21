@@ -14,9 +14,8 @@ services:
       - "8002:8002"
     environment:
       - ES_URL=http://es:9200
-      - OTHER_WORLD_RAG_PATH=/app/other-world-rag
+      - OTHER_WORLD_API_URL=http://otherworld-backend:8000
     volumes:
-      - ./backend/other-world-rag:/app/other-world-rag:ro
       - ./backend/shared:/app/shared:ro
     networks:
       - stelladream-net

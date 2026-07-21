@@ -8,9 +8,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 WORKDIR /app
 
 # 1. 业务依赖（走阿里云源）
+# 注：已移除 torch/sentence-transformers 依赖，改为调 other-world HTTP API
 COPY requirements.txt ./requirements.txt
-RUN grep -v torch requirements.txt > requirements-no-torch.txt && \
-    pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ -r requirements-no-torch.txt
+RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 
 # 2. 最频繁改的：代码
 COPY ./ ./

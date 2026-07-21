@@ -1,34 +1,26 @@
 """
-RAG 检索逻辑封装
+RAG 搜索逻辑封装（解耦版）
 
-基于 other-world 项目的 RAG 组件实现完整检索流程：
-1. BM25 关键词召回
-2. kNN 向量召回
-3. RRF 融合
-4. Reranker 精排
+不再直接 import other-world 的代码，改为通过 HTTP 调用 other-world 的 API：
+- /api/embed  → 文本向量化（BGE）
+- /api/rerank → Cross-Encoder 精排
+
+完整检索流程：
+1. BM25 关键词召回（本地 ES）
+2. kNN 向量召回（调 other-world /api/embed + 本地 ES）
+3. RRF 融合（本地）
+4. Reranker 精排（调 other-world /api/rerank）
 """
 
-import sys
+import os
+import httpx
 from typing import List, Dict, Any
 from pathlib import Path
 import json
 
-# 添加 other-world 项目路径（Docker 环境中挂载到 /app/other-world-rag）
-import os
-OTHER_WORLD_RAG = os.environ.get('OTHER_WORLD_RAG_PATH', str(Path(__file__).parent.parent / 'other-world-rag'))
-sys.path.insert(0, str(OTHER_WORLD_RAG))
-
-try:
-    from rag.embedder import Embedder
-    from rag.retriever.reranker import Reranker
-    HAS_RAG = True
-except Exception as e:
-    print(f"Warning: Could not import RAG components: {e}")
-    HAS_RAG = False
-
 from elasticsearch import Elasticsearch
 
-# 加载配置
+# ===== 配置加载 =====
 CONFIG_PATH = Path(__file__).parent.parent / "shared" / "config.json"
 with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = json.load(f)
@@ -36,20 +28,25 @@ with open(CONFIG_PATH, "r", encoding="utf-8") as f:
 ES_CONFIG = config["elasticsearch"]
 RRF_K = config["rrf"]["k"]
 
+# other-world API 地址（Docker 内网 or 本机开发）
+OTHER_WORLD_API = os.environ.get('OTHER_WORLD_API_URL', 'http://localhost:5000')
+
 
 class RAGSearchEngine:
-    """RAG 检索引擎"""
+    """RAG 检索引擎（HTTP 解耦版）"""
 
     def __init__(self):
-        if not HAS_RAG:
-            raise RuntimeError("RAG components not available")
-
-        print("初始化 RAG 检索引擎...")
-        self.embedder = Embedder()
-        self.reranker = Reranker()
+        print("初始化 RAG 检索引擎（HTTP 版）...")
         self.es = Elasticsearch(ES_CONFIG["host"])
         self.index = ES_CONFIG["index"]
-        print("RAG 检索引擎初始化完成")
+        # HTTP 客户端，30 秒超时（embedding 和 rerank 比较耗时）
+        # 注意：显式设置 trust_env=False 绕过系统代理，localhost 直连
+        self.client = httpx.Client(
+            base_url=OTHER_WORLD_API,
+            timeout=30.0,
+            trust_env=False
+        )
+        print(f"RAG 检索引擎初始化完成，other-world API: {OTHER_WORLD_API}")
 
     def search_bm25(self, query: str, top_k: int = 20) -> List[Dict[str, Any]]:
         """BM25 关键词召回"""
@@ -81,9 +78,15 @@ class RAGSearchEngine:
         return results
 
     def search_knn(self, query: str, top_k: int = 20) -> List[Dict[str, Any]]:
-        """kNN 向量召回"""
-        # 编码查询
-        query_vec = self.embedder.encode([query]).numpy()[0].tolist()
+        """
+        kNN 向量召回
+        
+        调 other-world /api/embed 获取查询向量，然后在本地 ES 做向量检索。
+        """
+        # 调 other-world 获取 query 的 embedding
+        resp = self.client.post("/api/embed", json={"texts": [query]})
+        resp_data = resp.json()
+        query_vec = resp_data["embeddings"][0]  # 1024 维向量
 
         body = {
             "knn": {
@@ -171,10 +174,15 @@ class RAGSearchEngine:
         rrf_top5 = rrf_results[:5]
         print(f"  -> Top 5: {[r['chunk_id'][:8] for r in rrf_top5]}")
 
-        # Step 4: Reranker 精排
+        # Step 4: Reranker 精排（调 other-world /api/rerank）
         print("Step 4: Reranker 精排...")
         if rrf_top5:
-            reranked = self.reranker.rerank(query, rrf_top5, top_n=1)
+            resp = self.client.post("/api/rerank", json={
+                "query": query,
+                "passages": rrf_top5,
+                "top_n": 1
+            })
+            reranked = resp.json()["results"]
             reranker_final = reranked[0] if reranked else None
             print(f"  -> 最终结果: {reranker_final['chunk_id'][:8] if reranker_final else 'None'}")
         else:

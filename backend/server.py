@@ -8,21 +8,13 @@ FastAPI 后端服务器
 """
 
 import json
-import sys
+import os
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
-# 添加 other-world 项目路径以复用 RAG 组件（Docker 环境中挂载到 /app/other-world-rag）
-import os
-import sys
-OTHER_WORLD_RAG = os.environ.get('OTHER_WORLD_RAG_PATH', str(Path(__file__).parent / 'other-world-rag'))
-sys.path.insert(0, str(OTHER_WORLD_RAG))
-# 添加 Stelladream 自己的 backend 路径
-sys.path.insert(0, str(Path(__file__).parent))
 
 app = FastAPI(title="Stelladream API")
 
