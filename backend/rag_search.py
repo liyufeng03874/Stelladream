@@ -25,7 +25,9 @@ CONFIG_PATH = Path(__file__).parent.parent / "shared" / "config.json"
 with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = json.load(f)
 
-ES_CONFIG = config["elasticsearch"]
+# ES 地址：优先用环境变量（Docker 部署用 es:9200），回退到 config（本地开发用 localhost:9200）
+ES_HOST = os.environ.get("ES_URL", config["elasticsearch"]["host"])
+ES_INDEX = config["elasticsearch"]["index"]
 RRF_K = config["rrf"]["k"]
 
 # other-world API 地址（Docker 内网 or 本机开发）
@@ -37,8 +39,8 @@ class RAGSearchEngine:
 
     def __init__(self):
         print("初始化 RAG 检索引擎（HTTP 版）...")
-        self.es = Elasticsearch(ES_CONFIG["host"], meta_header=False)
-        self.index = ES_CONFIG["index"]
+        self.es = Elasticsearch(ES_HOST, meta_header=False)
+        self.index = ES_INDEX
         # HTTP 客户端，30 秒超时（embedding 和 rerank 比较耗时）
         # 注意：显式设置 trust_env=False 绕过系统代理，localhost 直连
         self.client = httpx.Client(
