@@ -16,7 +16,7 @@ services:
       - ES_URL=http://es:9200
       - OTHER_WORLD_API_URL=http://otherworld-backend:8000
     volumes:
-      - ./backend/shared:/app/shared:ro
+      - ./backend/shared:/shared:ro
     networks:
       - stelladream-net
       - projects_default
