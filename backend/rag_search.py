@@ -37,7 +37,7 @@ class RAGSearchEngine:
 
     def __init__(self):
         print("初始化 RAG 检索引擎（HTTP 版）...")
-        self.es = Elasticsearch(ES_CONFIG["host"])
+        self.es = Elasticsearch(ES_CONFIG["host"], meta_header=False)
         self.index = ES_CONFIG["index"]
         # HTTP 客户端，30 秒超时（embedding 和 rerank 比较耗时）
         # 注意：显式设置 trust_env=False 绕过系统代理，localhost 直连

@@ -41,9 +41,13 @@ export interface EvalData {
 }
 
 // API 方法
-export const getStarData = async (): Promise<{ count: number; data: StarPoint[] }> => {
+export const getStarData = async (): Promise<StarPoint[]> => {
   const response = await api.get('/api/star-data');
-  return response.data;
+  // 后端返回 { count, data } 或直接数组，统一提取
+  if (Array.isArray(response.data)) {
+    return response.data;
+  }
+  return response.data.data || response.data.points || [];
 };
 
 export const search = async (query: string): Promise<SearchResult> => {

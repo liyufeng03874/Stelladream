@@ -157,13 +157,33 @@ const initScene = () => {
 
   const width = containerRef.value.clientWidth;
   const height = containerRef.value.clientHeight;
-  camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 2000);
+    // 根据数据范围动态设置相机位置，确保所有星星可见
+    camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 2000);
 
-  const centerX = 67.1;
-  const centerY = 96.2;
-  const centerZ = 30.9;
-  camera.position.set(centerX, centerY + 50, centerZ + 300);
-  camera.lookAt(centerX, centerY, centerZ);
+    let centerX = 0, centerY = 0, centerZ = 0, camZ = 100;
+    if (data.length > 0) {
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
+      let minZ = Infinity, maxZ = -Infinity;
+      for (const p of data) {
+        if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
+        if (p.z < minZ) minZ = p.z; if (p.z > maxZ) maxZ = p.z;
+      }
+      centerX = (minX + maxX) / 2;
+      centerY = (minY + maxY) / 2;
+      centerZ = (minZ + maxZ) / 2;
+      const spanX = maxX - minX;
+      const spanY = maxY - minY;
+      const spanZ = maxZ - minZ;
+      const maxSpan = Math.max(spanX, spanY, spanZ);
+      camZ = maxSpan * 1.3 + 20;
+      console.log(`[StarField] data range x:[${minX.toFixed(0)},${maxX.toFixed(0)}] y:[${minY.toFixed(0)},${maxY.toFixed(0)}] z:[${minZ.toFixed(0)},${maxZ.toFixed(0)}]`);
+      console.log(`[StarField] camera center=(${centerX.toFixed(1)},${centerY.toFixed(1)},${centerZ.toFixed(1)}) camZ=${camZ.toFixed(1)}`);
+    }
+
+    camera.position.set(centerX, centerY, camZ);
+    camera.lookAt(centerX, centerY, centerZ);
 
   renderer = new THREE.WebGLRenderer({
     antialias: false,
@@ -179,7 +199,7 @@ const initScene = () => {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.maxDistance = 1200;
-  controls.target.set(67.1, 96.2, 30.9);
+  controls.target.set(centerX, centerY, centerZ);
   controls.enablePan = true;
   controls.panSpeed = 0.5;
 
