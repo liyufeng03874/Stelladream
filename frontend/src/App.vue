@@ -549,7 +549,7 @@ onMounted(async () => {
 
     // 加载星图数据
     const result = await getStarData();
-    starData.value = result.data;
+    starData.value = result;
   } catch (error) {
     console.error('Failed to load data:', error);
   }

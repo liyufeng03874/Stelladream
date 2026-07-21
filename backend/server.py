@@ -70,8 +70,7 @@ async def get_star_data(limit: int = 0):
     else:
         return_data = star_data[:limit]
 
-    # 直接返回数组，与前端期望一致
-    return return_data
+    return {"count": len(return_data), "data": return_data}
 
 
 @app.post("/api/search")

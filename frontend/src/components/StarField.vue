@@ -161,11 +161,11 @@ const initScene = () => {
     camera = new THREE.PerspectiveCamera(25, width / height, 0.1, 2000);
 
     let centerX = 0, centerY = 0, centerZ = 0, camZ = 100;
-    if (data.length > 0) {
+    if (props.stars.length > 0) {
       let minX = Infinity, maxX = -Infinity;
       let minY = Infinity, maxY = -Infinity;
       let minZ = Infinity, maxZ = -Infinity;
-      for (const p of data) {
+      for (const p of props.stars) {
         if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
         if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
         if (p.z < minZ) minZ = p.z; if (p.z > maxZ) maxZ = p.z;
