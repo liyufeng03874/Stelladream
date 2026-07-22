@@ -142,8 +142,38 @@ export function detectGPUProfile(): GPUProfile {
  */
 export const gpuProfile = detectGPUProfile();
 
+// ====== 调试：手动降级开关 ======
+// 在浏览器控制台执行：
+//   localStorage.setItem('gpu_level', 'none')  // 无 GPU 模式
+//   localStorage.setItem('gpu_level', 'low')   // 集成 GPU 模式
+//   localStorage.setItem('gpu_level', 'high')  // 默认（自动检测）
+// 然后刷新页面
+const debugLevel = localStorage.getItem('gpu_level');
+if (debugLevel === 'none' || debugLevel === 'low') {
+  console.warn(`[GPU] 调试模式：强制降级为 ${debugLevel}`);
+  gpuProfile.level = debugLevel;
+  gpuProfile.bloom = false;
+  gpuProfile.starDustCount = debugLevel === 'none' ? 0 : 4000;
+  gpuProfile.bloomStrength = 0;
+  gpuProfile.maxPixelRatio = 1;
+  gpuProfile.usePoints = debugLevel === 'none';
+}
+
 // 启动时打印 GPU 信息（方便调试）
 console.log(
   `[GPU] 检测到: ${gpuProfile.renderer} → 等级: ${gpuProfile.level}` +
   (gpuProfile.level === 'none' ? '（已关闭 Bloom 和星尘）' : '')
 );
+
+// ====== 临时调试开关（测试完后删除） ======
+// 用法：localStorage.setItem('gpuForce', 'none') 或 'low' 或 'high'
+const forceGpu = localStorage.getItem('gpuForce');
+if (forceGpu === 'none' || forceGpu === 'low' || forceGpu === 'high') {
+  console.warn(`[GPU] 强制降级: ${forceGpu}`);
+  gpuProfile.level = forceGpu as 'none' | 'low' | 'high';
+  gpuProfile.bloom = forceGpu !== 'none';
+  gpuProfile.starDustCount = forceGpu === 'none' ? 0 : forceGpu === 'low' ? 4000 : 16000;
+  gpuProfile.bloomStrength = forceGpu === 'none' ? 0 : forceGpu === 'low' ? 0.08 : 0.15;
+  gpuProfile.maxPixelRatio = forceGpu === 'high' ? 1.5 : 1;
+  gpuProfile.usePoints = forceGpu === 'none';
+}
