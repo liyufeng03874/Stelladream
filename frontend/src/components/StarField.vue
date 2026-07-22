@@ -10,6 +10,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import type { StarPoint } from '../api';
+import { gpuProfile } from '../utils/gpuDetect';
 
 interface Props {
   stars: StarPoint[];
@@ -44,8 +45,8 @@ let raycaster: THREE.Raycaster;
 let mouse: THREE.Vector2;
 let starSprites: THREE.Sprite[] = [];
 let animationId: number;
-let composer: EffectComposer;
-let bloomPass: UnrealBloomPass;
+let composer: EffectComposer | undefined;
+let bloomPass: UnrealBloomPass | undefined;
 
 // 底层星尘（16000 个极微小粒子）
 let starDust: THREE.Points | null = null;
@@ -99,7 +100,8 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
 const createStarDust = () => {
   if (!starDataMap.size) return;
 
-  const count = 16000;
+  const count = gpuProfile.starDustCount;
+  if (count === 0) return; // 无 GPU 时完全关闭星尘
   const positions = new Float32Array(count * 3);
 
   // 从所有星星的范围中采样
@@ -188,10 +190,10 @@ const initScene = () => {
   renderer = new THREE.WebGLRenderer({
     antialias: false,
     alpha: true,
-    powerPreference: 'high-performance'
+    powerPreference: gpuProfile.level === 'none' ? 'default' : 'high-performance'
   });
   renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, gpuProfile.maxPixelRatio));
 
   containerRef.value.appendChild(renderer.domElement);
 
@@ -203,18 +205,21 @@ const initScene = () => {
   controls.enablePan = true;
   controls.panSpeed = 0.5;
 
-  // Bloom 后处理（克制参数）
-  composer = new EffectComposer(renderer);
-  const renderPass = new RenderPass(scene, camera);
-  composer.addPass(renderPass);
+  // Bloom 后处理（GPU 降级策略）
+  let useBloom = gpuProfile.bloom;
+  if (useBloom) {
+    composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
 
-  bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(width, height),
-    0.15, // 强度：极低，仅让最亮的星星溢出光晕
-    0.2,  // 光晕半径
-    0.4   // 阈值：只有亮度达到 0.4 的星星才产生泛光
-  );
-  composer.addPass(bloomPass);
+    bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(width, height),
+      gpuProfile.bloomStrength,  // 根据 GPU 等级调整强度
+      0.2,
+      0.4
+    );
+    composer.addPass(bloomPass);
+  }
 
   raycaster = new THREE.Raycaster();
   raycaster.params.Sprite = { threshold: 2 };
@@ -292,7 +297,11 @@ const renderStars = () => {
 const animate = () => {
   animationId = requestAnimationFrame(animate);
   controls.update();
-  composer.render();
+  if (gpuProfile.bloom && composer) {
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 };
 
 // Handle resize
@@ -303,7 +312,9 @@ const handleResize = () => {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
-  composer.setSize(width, height);
+  if (gpuProfile.bloom && composer) {
+    composer.setSize(width, height);
+  }
 };
 
 // Mouse move
