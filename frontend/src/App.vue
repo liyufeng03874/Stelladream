@@ -4,6 +4,7 @@
       v-if="starData.length > 0"
       :stars="starData"
       :config="config"
+      :auto-rotate="!isSearching"
       @star-click="handleStarClick"
       @star-hover="handleStarHover"
       @ready="handleStarFieldReady"
