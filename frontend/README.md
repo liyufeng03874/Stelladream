@@ -1,5 +1,24 @@
-# Vue 3 + TypeScript + Vite
+# Stelladream Frontend
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Vue 3 + TypeScript + Vite 前端。
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## 开发
+
+```bash
+npm install
+npm run dev
+```
+
+默认端口: `5175`
+
+## 主要入口
+
+- `src/main.ts`
+- `src/App.vue`
+- `src/components/StarField.vue`
+- `src/composables/useSearchAnimation.ts`
+
+## 说明
+
+- `/api` 会代理到后端
+- 当前 UI 包含搜索、星图、详情面板、评估回放和趋势图

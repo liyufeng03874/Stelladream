@@ -1,78 +1,49 @@
-# Stelladream - 3D Star Atlas Project Status
+# Stelladream 项目状态
 
-## ✅ Completed Phases
+最后更新: 2026-08-26
 
-### Phase 0: Environment Setup
-- Project structure initialized
-- Vue 3 + TypeScript + Vite frontend
-- FastAPI backend
-- Three.js dependencies installed
+## 当前结论
 
-### Phase 1: Data Preparation  
-- Exported 10,000 documents from Elasticsearch
-- BGE-large-zh embedding encoding
-- TF-IDF entropy calculation for brightness
-- UMAP 3D dimensionality reduction completed
-- Generated star_data.json (13MB)
+项目主链路已经成型：
 
-### Phase 2: 3D Star Field Foundation
-- Three.js scene with full-screen display
-- High-quality star rendering (64px texture, 2.5x scale)
-- OrbitControls for navigation
-- Camera optimized for coordinate range
-- Deep space background and fog effects
+- 3D 星图可用
+- RAG 搜索动画可用
+- 星点详情和星跃可用
+- 评估回放和指标趋势图可用
 
-## 📊 Current Data
+## 当前数据
 
-- **Total Stars**: 10,000
-- **Game Strategy**: 6,532 (65.3%)
-- **Medical**: 3,174 (31.7%)
-- **General Knowledge**: 294 (2.9%)
+- 星图数据: `33,919` 个星点
+- 评估数据:
+  - `medical`: 500 条
+  - `law`: 500 条
+  - `general`: 500 条
 
-**Coordinate Range:**
-- X: [-12.64, 17.85]
-- Y: [-13.58, 18.08]
-- Z: [-8.89, 20.46]
+## 当前运行口径
 
-## 🚀 Services
+- 本地开发前端: `http://localhost:5175`
+- 本地开发后端: `http://localhost:8000`
+- Docker 前端: `http://localhost:8012`
+- Docker 后端: `http://localhost:8002`
 
-- **Frontend**: http://localhost:5178
-- **Backend**: http://localhost:8000
-- **API Docs**: http://localhost:8000/docs
+## 已完成
 
-## 🚧 In Progress
+- Vue 3 + TypeScript + Vite 前端骨架
+- FastAPI 后端
+- Three.js 星图渲染
+- ES BM25 + kNN + RRF + rerank 检索链路
+- `EvalReplay` 回放面板
+- `MetricsTrendChart` 指标趋势图
+- Docker 基本部署脚本
 
-### Phase 3: Interactive Features
-- [x] Raycaster for mouse interaction
-- [x] Hover detection
-- [x] Click to show details
-- [x] InfoPanel component
-- [ ] Enhanced star highlighting
-- [ ] Tooltip on hover
-- [ ] Domain filtering
+## 待继续完善
 
-## 📋 Next Steps
+- Hover tooltip 仍未完成
+- 星图全量渲染还有性能优化空间
+- 文档曾有较多历史漂移，现已开始对齐
 
-1. Complete Phase 3 interactive features
-2. Phase 4: RAG search visualization
-3. Phase 5: Evaluation replay system
-4. Phase 6: Performance optimization
+## 近期建议
 
-## 🛠️ Tech Stack
-
-- **Frontend**: Vue 3, TypeScript, Three.js
-- **Backend**: FastAPI, Python
-- **ML**: BGE-large-zh, UMAP
-- **Data**: Elasticsearch (33,919 docs)
-
-## 📝 Git History
-
-```
-21e1396 - Adjust camera settings for new coordinate range
-6253cea - Complete UMAP dimensionality reduction  
-0c1bdef - Polish UI components styling
-02ff028 - Improve visual quality and full-screen
-```
-
----
-Last updated: 2026-07-11
+1. 明确并统一本地开发与 Docker 的端口说明
+2. 做星图性能优化，比如 LOD、视锥剔除、实例化
+3. 完成 hover tooltip 和筛选类交互
