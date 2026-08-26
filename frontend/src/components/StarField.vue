@@ -327,6 +327,50 @@ const getAnnotationSprites = (): THREE.Sprite[] => {
   ));
 };
 
+const toScreenPoint = (worldPoint: THREE.Vector3, rect: DOMRect) => {
+  const projected = worldPoint.clone().project(camera);
+  return {
+    x: ((projected.x + 1) * 0.5) * rect.width,
+    y: ((1 - projected.y) * 0.5) * rect.height,
+    z: projected.z,
+  };
+};
+
+const hitTestAnnotation = (event: MouseEvent): THREE.Sprite | null => {
+  if (!containerRef.value) return null;
+  const rect = containerRef.value.getBoundingClientRect();
+  const pointerX = event.clientX - rect.left;
+  const pointerY = event.clientY - rect.top;
+  const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).normalize();
+  const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1).normalize();
+
+  let bestHit: { sprite: THREE.Sprite; depth: number } | null = null;
+  for (const sprite of getAnnotationSprites()) {
+    const center = toScreenPoint(sprite.position, rect);
+    if (center.z < -1 || center.z > 1) continue;
+
+    const halfWidthPoint = sprite.position.clone().add(right.clone().multiplyScalar(sprite.scale.x * 0.5));
+    const halfHeightPoint = sprite.position.clone().add(up.clone().multiplyScalar(sprite.scale.y * 0.5));
+    const screenRight = toScreenPoint(halfWidthPoint, rect);
+    const screenUp = toScreenPoint(halfHeightPoint, rect);
+    const halfWidth = Math.abs(screenRight.x - center.x);
+    const halfHeight = Math.abs(screenUp.y - center.y);
+
+    if (
+      pointerX >= center.x - halfWidth &&
+      pointerX <= center.x + halfWidth &&
+      pointerY >= center.y - halfHeight &&
+      pointerY <= center.y + halfHeight
+    ) {
+      if (!bestHit || center.z < bestHit.depth) {
+        bestHit = { sprite, depth: center.z };
+      }
+    }
+  }
+
+  return bestHit?.sprite ?? null;
+};
+
 const getInteractiveStar = (object: THREE.Object3D): StarPoint | null => {
   if (object.userData?.interactiveStar) {
     return object.userData.interactiveStar as StarPoint;
@@ -347,14 +391,16 @@ const handleMouseMove = (event: MouseEvent) => {
   if (now - lastRaycastTime < RAYCAST_THROTTLE) return;
   lastRaycastTime = now;
 
-  raycaster.setFromCamera(mouse, camera);
-  const annotationIntersects = raycaster.intersectObjects(getAnnotationSprites());
-  const intersects = annotationIntersects.length > 0
-    ? annotationIntersects
-    : raycaster.intersectObjects(starSprites);
+  const annotationHit = hitTestAnnotation(event);
+  let hoveredObject: THREE.Object3D | null = annotationHit;
+  if (!hoveredObject) {
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(starSprites);
+    hoveredObject = intersects[0]?.object ?? null;
+  }
 
-  if (intersects.length > 0) {
-    const star = getInteractiveStar(intersects[0].object);
+  if (hoveredObject) {
+    const star = getInteractiveStar(hoveredObject);
     emit('star-hover', star);
     document.body.style.cursor = 'pointer';
   } else {
@@ -370,14 +416,16 @@ const handleClick = (event: MouseEvent) => {
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-  raycaster.setFromCamera(mouse, camera);
-  const annotationIntersects = raycaster.intersectObjects(getAnnotationSprites());
-  const intersects = annotationIntersects.length > 0
-    ? annotationIntersects
-    : raycaster.intersectObjects(starSprites);
+  const annotationHit = hitTestAnnotation(event);
+  let clickedObject: THREE.Object3D | null = annotationHit;
+  if (!clickedObject) {
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(starSprites);
+    clickedObject = intersects[0]?.object ?? null;
+  }
 
-  if (intersects.length > 0) {
-    const star = getInteractiveStar(intersects[0].object);
+  if (clickedObject) {
+    const star = getInteractiveStar(clickedObject);
     if (star) {
       emit('star-click', star);
     }

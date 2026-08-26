@@ -159,13 +159,14 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     const lateral = new THREE.Vector3(-away.z, 0, away.x).normalize();
     const vertical = new THREE.Vector3(0, 1, 0);
+    const lift = THREE.MathUtils.clamp(baseHeight * 0.22, 0.55, 1.1);
     const candidates = [
-      starPosition.clone().add(away.clone().multiplyScalar(3.4)).add(vertical.clone().multiplyScalar(baseHeight)),
-      starPosition.clone().add(away.clone().multiplyScalar(4.1)).add(lateral.clone().multiplyScalar(2.2)).add(vertical.clone().multiplyScalar(baseHeight + 0.8)),
-      starPosition.clone().add(away.clone().multiplyScalar(4.1)).add(lateral.clone().multiplyScalar(-2.2)).add(vertical.clone().multiplyScalar(baseHeight + 1.3)),
-      starPosition.clone().add(lateral.clone().multiplyScalar(4.6)).add(vertical.clone().multiplyScalar(baseHeight + 1.8)),
-      starPosition.clone().add(lateral.clone().multiplyScalar(-4.6)).add(vertical.clone().multiplyScalar(baseHeight + 2.3)),
-      starPosition.clone().add(away.clone().multiplyScalar(5.2)).add(vertical.clone().multiplyScalar(baseHeight + 2.8)),
+      starPosition.clone().add(vertical.clone().multiplyScalar(lift)),
+      starPosition.clone().add(lateral.clone().multiplyScalar(0.7)).add(vertical.clone().multiplyScalar(lift + 0.16)),
+      starPosition.clone().add(lateral.clone().multiplyScalar(-0.7)).add(vertical.clone().multiplyScalar(lift + 0.22)),
+      starPosition.clone().add(away.clone().multiplyScalar(0.9)).add(vertical.clone().multiplyScalar(lift + 0.28)),
+      starPosition.clone().add(away.clone().multiplyScalar(-0.8)).add(vertical.clone().multiplyScalar(lift + 0.34)),
+      starPosition.clone().add(lateral.clone().multiplyScalar(index % 2 === 0 ? 1.05 : -1.05)).add(vertical.clone().multiplyScalar(lift + 0.5)),
     ];
 
     let best = candidates[0];
@@ -178,6 +179,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
           score += (ANNOTATION_MIN_SPACING - dist) * 50;
         }
       }
+      const offsetXZ = new THREE.Vector2(candidate.x - starPosition.x, candidate.z - starPosition.z).length();
+      score += offsetXZ * 28;
       if (avoidPosition) {
         const distToAvoid = candidate.distanceTo(avoidPosition);
         if (distToAvoid < 7.5) {
@@ -242,7 +245,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         title: buildStarTitle(starInfo.data),
         subtitle: `ID ${compactId(starInfo.data.chunk_id)}`,
         accentColor: color,
-        scale: { width: 10.8, height: 5.0 },
+        scale: { width: 3.6, height: 1.67 },
         interaction: {
           starData: starInfo.data,
           chunkId: starInfo.data.chunk_id,

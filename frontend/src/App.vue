@@ -23,7 +23,7 @@
       <SearchBar @search="handleSearch" />
 
       <InfoPanel
-        v-if="selectedStar && !showDebugPanel"
+        v-if="selectedStar"
         :star="selectedStar"
         @close="selectedStar = null"
         @jump="handleStarJump"
@@ -38,7 +38,7 @@
       />
 
       <!-- 手动调试开关 -->
-      <button class="debug-toggle" @click="toggleDebugPanel" :class="{ active: showDebugPanel }">
+      <button class="debug-toggle debug-hidden" @click="toggleDebugPanel" :class="{ active: showDebugPanel }">
         {{ showDebugPanel ? '关闭调试' : '🔬 调试' }}
       </button>
 
@@ -423,6 +423,7 @@ const handleMetricsUpdate = (payload: { step: number; currentMetrics: Record<str
 };
 
 const handleStarClick = (star: StarPoint) => {
+  showDebugPanel.value = false;
   selectedStar.value = star;
 };
 
@@ -506,12 +507,8 @@ const handleSearch = async (query: string) => {
       );
       if (finalStar) {
         selectedStar.value = finalStar;
-        // 自动打开调试面板
-        const finalInfo = animContext.getFinalStar();
-        if (finalInfo) {
-          debugFinalStar.value = finalInfo;
-          showDebugPanel.value = true;
-        }
+        debugFinalStar.value = animContext.getFinalStar();
+        showDebugPanel.value = false;
       }
     }
   } catch (error) {
@@ -650,6 +647,10 @@ onMounted(async () => {
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.debug-hidden {
+  display: none;
 }
 
 .debug-toggle:hover {

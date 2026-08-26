@@ -428,9 +428,9 @@ export class EffectFactory {
       opacity: 0,
     });
     const sprite = new THREE.Sprite(material);
-    const width = options.scale?.width ?? 9.6;
-    const height = options.scale?.height ?? 4.6;
-    const rise = options.rise ?? 0.85;
+    const width = options.scale?.width ?? 3.2;
+    const height = options.scale?.height ?? 1.53;
+    const rise = options.rise ?? 0.18;
     const maxOpacity = options.opacity ?? 0.96;
     const initialScale = 0.78;
     const baseDistance = Math.max(this.camera.position.distanceTo(position), 1);
