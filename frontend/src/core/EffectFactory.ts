@@ -1,8 +1,8 @@
 /**
- * EffectFactory — 对象创建/清理中心
+ * EffectFactory �?对象创建/清理中心
  * 
- * 所有辉光、流星等视觉对象的统一入口。
- * 创建时自动注册 EffectRegistry，销毁时自动同步状态。
+ * 所有辉光、流星等视觉对象的统一入口�?
+ * 创建时自动注�?EffectRegistry，销毁时自动同步状态�?
  */
 
 import * as THREE from 'three';
@@ -11,7 +11,7 @@ import { EffectRegistry } from './EffectRegistry';
 
 export interface ManagedEffect {
   id: string;            // EffectRegistry 中注册的 ID
-  targetId: string;      // 所属目标标识
+  targetId: string;      // 所属目标标�?
   type: string;          // 'glow' | 'meteor' | 'trail'
   threeObjects: THREE.Object3D[];
   status: 'active' | 'disposed';
@@ -22,7 +22,7 @@ export interface EffectFactoryContext {
   scene: THREE.Scene;
 }
 
-/** 创建辉光纹理的共享函数 */
+/** 创建辉光纹理的共享函�?*/
 function createGlowTexture(color: number, size: number = 64): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -68,14 +68,13 @@ export class EffectFactory {
   private registry: EffectRegistry;
   private scene: THREE.Scene;
   private managed: Map<string, ManagedEffect> = new Map();
-  private tweenDisposers: Map<string, () => void> = new Map();
 
   constructor(ctx: EffectFactoryContext) {
     this.registry = ctx.registry;
     this.scene = ctx.scene;
   }
 
-  /** 创建辉光（自动注册 registry + 关联对象映射） */
+  /** 创建辉光（自动注�?registry + 关联对象映射�?*/
   createGlow(
     position: THREE.Vector3,
     color: number,
@@ -99,8 +98,8 @@ export class EffectFactory {
 
     const managedId = genGlowId();
 
-    // 注册到 registry
-    const regId = this.registry.add({
+    // 注册�?registry
+    this.registry.add({
       targetId,
       effectType: 'glow',
       property: 'size',
@@ -142,7 +141,7 @@ export class EffectFactory {
     return effect;
   }
 
-  /** 创建流星（自动注册，动画结束后自动 dispose） */
+  /** 创建流星（自动注册，动画结束后自�?dispose�?*/
   createMeteor(
     from: THREE.Vector3,
     to: THREE.Vector3,
@@ -153,21 +152,19 @@ export class EffectFactory {
     delayMs: number = 0,
     flightDuration: number = 0.8,
   ): Promise<ManagedEffect> {
-    const hexColor = new THREE.Color(color);
-
-    // 生成曲线点
     const segments = 40;
     const curvePoints: THREE.Vector3[] = [];
+    const arcHeight = THREE.MathUtils.clamp(from.distanceTo(to) * 0.08, 2.5, 8);
+
     for (let i = 0; i <= segments; i++) {
       const t = i / segments;
       const x = from.x + (to.x - from.x) * t;
       const z = from.z + (to.z - from.z) * t;
-      const y = from.y + (to.y - from.y) * t + Math.sin(t * Math.PI) * 3;
+      const y = from.y + (to.y - from.y) * t + Math.sin(t * Math.PI) * arcHeight;
       curvePoints.push(new THREE.Vector3(x, y, z));
     }
-    const curve = new THREE.CatmullRomCurve3(curvePoints);
 
-    // 创建流星头部
+    const curve = new THREE.CatmullRomCurve3(curvePoints);
     const headTexture = createMeteorHeadTexture(color);
     const headMat = new THREE.SpriteMaterial({
       map: headTexture,
@@ -177,24 +174,30 @@ export class EffectFactory {
       opacity: 0,
     });
     const head = new THREE.Sprite(headMat);
-    head.scale.set(0.6, 0.6, 1);
+    head.scale.set(0.85, 0.85, 1);
     head.position.copy(from);
     this.scene.add(head);
 
-    // 创建流星尾迹
-    const trailMat = new THREE.LineBasicMaterial({
-      color,
-      transparent: true,
-      opacity: 0,
-      blending: THREE.AdditiveBlending,
-    });
-    const trailGeo = new THREE.BufferGeometry();
-    const trail = new THREE.Line(trailGeo, trailMat);
-    this.scene.add(trail);
+    const tailCount = 7;
+    const tailSprites: THREE.Sprite[] = [];
+    for (let i = 0; i < tailCount; i++) {
+      const tailMat = new THREE.SpriteMaterial({
+        map: headTexture,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        opacity: 0,
+      });
+      const tail = new THREE.Sprite(tailMat);
+      const scale = 0.72 - i * 0.07;
+      tail.scale.set(scale, scale, 1);
+      tail.position.copy(from);
+      this.scene.add(tail);
+      tailSprites.push(tail);
+    }
 
     const managedId = genMeteorId();
 
-    // 注册
     this.registry.add({
       targetId,
       effectType: 'meteor',
@@ -214,51 +217,64 @@ export class EffectFactory {
       phase,
     });
 
-    // 关联对象（注意：流星结束后会被销毁）
-    this.registry.registerObject(managedId, { head, trail });
+    this.registry.registerObject(managedId, { head, tailSprites });
 
     const effect: ManagedEffect = {
       id: managedId,
       targetId,
       type: 'meteor',
-      threeObjects: [head, trail],
+      threeObjects: [head, ...tailSprites],
       status: 'active',
     };
     this.managed.set(managedId, effect);
 
-    // 执行动画
     return new Promise<ManagedEffect>(resolve => {
       setTimeout(() => {
+        if (effect.status !== 'active') {
+          resolve(effect);
+          return;
+        }
+
         const startTimeMs = Date.now();
 
         const update = () => {
-          const t = Math.min((Date.now() - startTimeMs) / (flightDuration * 1000), 1);
+          if (effect.status !== 'active') {
+            resolve(effect);
+            return;
+          }
 
+          const t = Math.min((Date.now() - startTimeMs) / (flightDuration * 1000), 1);
           const headPos = curve.getPoint(t);
           if (this._isVectorValid(headPos)) {
             head.position.copy(headPos);
             head.material.opacity = 1;
           }
 
-          const trailSegments = Math.floor(t * segments);
-          if (trailSegments > 0) {
-            const positions: number[] = [];
-            for (let i = 0; i <= trailSegments; i++) {
-              const pt = curvePoints[i];
-              positions.push(pt.x, pt.y, pt.z);
+          tailSprites.forEach((tail, index) => {
+            const trailT = Math.max(0, t - (index + 1) * 0.028);
+            const visible = trailT > 0 && t < 1.02;
+            if (!visible) {
+              tail.material.opacity = 0;
+              return;
             }
-            trail.geometry.dispose();
-            trail.geometry = new THREE.BufferGeometry();
-            trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-          }
-          trail.material.opacity = 0.6;
+
+            tail.position.copy(curve.getPoint(trailT));
+            tail.material.opacity = Math.max(0, 0.55 - index * 0.07) * Math.min(1, t * 3.5);
+          });
 
           if (t >= 1) {
             gsap.to(head.material, { opacity: 0, duration: 0.2 });
-            gsap.to(trail.material, { opacity: 0, duration: 0.4 });
+            tailSprites.forEach((tail, index) => {
+              gsap.to(tail.material, { opacity: 0, duration: 0.18 + index * 0.03 });
+            });
+
             setTimeout(() => {
-              // 自动 dispose
-              this._disposeMeteorObjects(head, trail);
+              if (effect.status !== 'active') {
+                resolve(effect);
+                return;
+              }
+
+              this._disposeMeteorObjects(head, tailSprites);
               effect.status = 'disposed';
               this.registry.markDisposed(targetId);
               this.managed.delete(managedId);
@@ -274,8 +290,7 @@ export class EffectFactory {
       }, delayMs);
     });
   }
-
-  /** 销毁单个 ManagedEffect */
+  /** 销毁单�?ManagedEffect */
   dispose(id: string): void {
     const effect = this.managed.get(id);
     if (!effect || effect.status === 'disposed') return;
@@ -291,7 +306,17 @@ export class EffectFactory {
     this.managed.delete(id);
   }
 
-  /** 按 targetId 批量清理 */
+  disposeAll(): void {
+    Array.from(this.managed.keys()).forEach(id => this.dispose(id));
+  }
+
+  disposeByType(type: string): void {
+    Array.from(this.managed.entries())
+      .filter(([, effect]) => effect.type === type && effect.status === 'active')
+      .forEach(([id]) => this.dispose(id));
+  }
+
+  /** �?targetId 批量清理 */
   disposeByTarget(targetId: string): void {
     const toDispose: string[] = [];
     this.managed.forEach((effect, id) => {
@@ -302,7 +327,7 @@ export class EffectFactory {
     toDispose.forEach(id => this.dispose(id));
   }
 
-  /** 按 phase 批量清理 */
+  /** �?phase 批量清理 */
   disposeByPhase(phase: string): void {
     const toDispose: string[] = [];
     this.managed.forEach((effect, id) => {
@@ -332,7 +357,7 @@ export class EffectFactory {
     });
   }
 
-  /** 获取所有活跃对象 */
+  /** 获取所有活跃对�?*/
   getActive(): ManagedEffect[] {
     return Array.from(this.managed.values()).filter(e => e.status === 'active');
   }
@@ -356,20 +381,21 @@ export class EffectFactory {
         mat.dispose();
       }
     } else if (obj instanceof THREE.Line) {
-      if (obj.material) (obj.material as THREE.Material).dispose();
+      if (obj.material && !Array.isArray(obj.material)) obj.material.dispose();
       if (obj.geometry) obj.geometry.dispose();
     }
   }
 
-  private _disposeMeteorObjects(head: THREE.Sprite, trail: THREE.Line): void {
+  private _disposeMeteorObjects(head: THREE.Sprite, tailSprites: THREE.Sprite[]): void {
     head.material.dispose();
     if (head.material instanceof THREE.SpriteMaterial && head.material.map) {
       head.material.map.dispose();
     }
     this.scene.remove(head);
 
-    trail.material.dispose();
-    trail.geometry.dispose();
-    this.scene.remove(trail);
+    tailSprites.forEach(tail => {
+      tail.material.dispose();
+      this.scene.remove(tail);
+    });
   }
 }
