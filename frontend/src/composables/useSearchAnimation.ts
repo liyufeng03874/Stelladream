@@ -59,6 +59,7 @@ interface HighlightOptions {
   glowMaxSize?: number;
   glowDelayMs?: number;
   materialOpacity?: number;
+  glowOpacity?: number;
 }
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -68,6 +69,12 @@ const PHASE_BADGES: Record<string, string> = {
   knn: 'kNN',
   rrf: 'RRF',
 };
+const FINAL_STAR_SCALE_MULTIPLIER = 2.7;
+const FINAL_STAR_OPACITY = 0.72;
+const FINAL_STAR_GLOW_OPACITY = 0.48;
+const FINAL_STAR_FLIGHT_DURATION = 1.5;
+const FINAL_NEIGHBOR_RADIUS = 5.5;
+const ANNOTATION_MIN_SPACING = 5.5;
 
 function compactText(value: string, maxLength: number): string {
   const normalized = value.replace(/\s+/g, ' ').trim();
@@ -100,7 +107,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
   // ===== 状态管理基础设施 =====
   const registry = new EffectRegistry();
-  const factory = new EffectFactory({ registry, scene });
+  const factory = new EffectFactory({ registry, scene, camera });
 
   // 旧系统数组（过渡期保留，确保向后兼容）
   let glowSprites: THREE.Sprite[] = [];
@@ -116,6 +123,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     scale: THREE.Vector3;
     material: THREE.SpriteMaterial;
   }>();
+  let annotationAnchors: THREE.Vector3[] = [];
 
   // 从 difference.log 提取：query 阶段所有辉光（叠加到 jumpToStar 目标星上）
   const FINAL_STAR_QUERY_GLOWS = [
@@ -170,22 +178,74 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return factory.createMeteor(from, to, color, targetId, source, phase, delayMs, METEOR_FLIGHT_DURATION).then(() => {});
   }
 
-  function createImpactAnnotation(chunkId: string, phase: string, color: number, index: number) {
+  function resolveAnnotationPosition(starPosition: THREE.Vector3, baseHeight: number, index: number, avoidPosition?: THREE.Vector3 | null): THREE.Vector3 {
+    const away = avoidPosition
+      ? new THREE.Vector3().subVectors(starPosition, avoidPosition)
+      : new THREE.Vector3().subVectors(starPosition, controls.target);
+
+    away.y = 0;
+    if (away.lengthSq() < 0.001) {
+      away.set(index % 2 === 0 ? 1 : -1, 0, 0.35);
+    }
+    away.normalize();
+
+    const lateral = new THREE.Vector3(-away.z, 0, away.x).normalize();
+    const vertical = new THREE.Vector3(0, 1, 0);
+    const candidates = [
+      starPosition.clone().add(away.clone().multiplyScalar(3.4)).add(vertical.clone().multiplyScalar(baseHeight)),
+      starPosition.clone().add(away.clone().multiplyScalar(4.1)).add(lateral.clone().multiplyScalar(2.2)).add(vertical.clone().multiplyScalar(baseHeight + 0.8)),
+      starPosition.clone().add(away.clone().multiplyScalar(4.1)).add(lateral.clone().multiplyScalar(-2.2)).add(vertical.clone().multiplyScalar(baseHeight + 1.3)),
+      starPosition.clone().add(lateral.clone().multiplyScalar(4.6)).add(vertical.clone().multiplyScalar(baseHeight + 1.8)),
+      starPosition.clone().add(lateral.clone().multiplyScalar(-4.6)).add(vertical.clone().multiplyScalar(baseHeight + 2.3)),
+      starPosition.clone().add(away.clone().multiplyScalar(5.2)).add(vertical.clone().multiplyScalar(baseHeight + 2.8)),
+    ];
+
+    let best = candidates[0];
+    let bestScore = Number.POSITIVE_INFINITY;
+    for (const candidate of candidates) {
+      let score = 0;
+      for (const anchor of annotationAnchors) {
+        const dist = candidate.distanceTo(anchor);
+        if (dist < ANNOTATION_MIN_SPACING) {
+          score += (ANNOTATION_MIN_SPACING - dist) * 50;
+        }
+      }
+      if (avoidPosition) {
+        const distToAvoid = candidate.distanceTo(avoidPosition);
+        if (distToAvoid < 7.5) {
+          score += (7.5 - distToAvoid) * 24;
+        }
+      }
+      if (score < bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
+    }
+
+    annotationAnchors.push(best.clone());
+    return best;
+  }
+
+  function createImpactAnnotation(chunkId: string, phase: string, color: number, index: number, avoidPosition?: THREE.Vector3 | null) {
     const starInfo = starDataMap.get(chunkId);
     if (!starInfo) return;
+    const distanceLabel = avoidPosition
+      ? `d ${starInfo.sprite.position.distanceTo(avoidPosition).toFixed(1)}`
+      : null;
 
-    const labelPosition = starInfo.sprite.position.clone().add(new THREE.Vector3(
-      (index % 2 === 0 ? -1 : 1) * (1 + Math.floor(index / 2) * 0.75),
-      Math.max(3.4, starInfo.originalScale.y * 9) + (index % 3) * 0.35,
-      0,
-    ));
+    const labelPosition = resolveAnnotationPosition(
+      starInfo.sprite.position,
+      Math.max(3.4, starInfo.originalScale.y * 9),
+      index,
+      avoidPosition,
+    );
 
     factory.createAnnotationLabel(
       labelPosition,
       {
         badge: PHASE_BADGES[phase] ?? phase.toUpperCase(),
         title: buildStarTitle(starInfo.data),
-        subtitle: `ID ${compactId(chunkId)}`,
+        subtitle: distanceLabel ? `${compactId(chunkId)}  ${distanceLabel}` : `ID ${compactId(chunkId)}`,
         accentColor: color,
       },
       `annotation_${phase}_${chunkId}`,
@@ -194,45 +254,61 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     );
   }
 
-  function applyWaveImpact(chunkId: string, color: number, phase: string, options: { scale: number; glowMaxSize: number; labelCount: number; index: number }) {
-    highlightAndGrow([chunkId], color, options.scale, phase, {
-      withGlow: true,
+  function createFinalAnnotation(starInfo: { sprite: THREE.Sprite; data: StarPoint; originalScale: THREE.Vector3 }, color: number) {
+    const labelPosition = resolveAnnotationPosition(
+      starInfo.sprite.position,
+      Math.max(4.2, starInfo.originalScale.y * 10.5),
+      annotationAnchors.length + 1,
+      null,
+    );
+
+    factory.createAnnotationLabel(
+      labelPosition,
+      {
+        badge: 'FINAL',
+        title: buildStarTitle(starInfo.data),
+        subtitle: `ID ${compactId(starInfo.data.chunk_id)}`,
+        accentColor: color,
+        scale: { width: 12.8, height: 5.8 },
+      },
+      `annotation_final_${starInfo.data.chunk_id}`,
+      'animateSearch',
+      'finalStar',
+    );
+  }
+
+  function disposeFinalAnnotations() {
+    factory.getActive().forEach(effect => {
+      if (effect.type === 'annotation' && effect.targetId.startsWith('annotation_final_')) {
+        factory.dispose(effect.id);
+      }
+    });
+  }
+
+  function applyWaveImpact(
+    chunkId: string,
+    color: number,
+    phase: string,
+    options: { scale: number; glowMaxSize: number; labelCount: number; index: number; finalAnchor?: THREE.Vector3 | null },
+  ) {
+    const starInfo = starDataMap.get(chunkId);
+    if (!starInfo) return;
+
+    const distanceToFinal = options.finalAnchor ? starInfo.sprite.position.distanceTo(options.finalAnchor) : Number.POSITIVE_INFINITY;
+    const nearFinal = distanceToFinal < FINAL_NEIGHBOR_RADIUS;
+
+    highlightAndGrow([chunkId], color, nearFinal ? Math.min(options.scale, 1.12) : options.scale, phase, {
+      withGlow: !nearFinal,
       glowScaleMultiplier: 1.15,
-      glowMaxSize: options.glowMaxSize,
+      glowMaxSize: nearFinal ? 1.8 : options.glowMaxSize,
       glowDelayMs: 50,
-      materialOpacity: 0.88,
+      materialOpacity: nearFinal ? 0.62 : 0.88,
+      glowOpacity: nearFinal ? 0.12 : 0.24,
     });
 
     if (options.index < options.labelCount) {
-      createImpactAnnotation(chunkId, phase, color, options.index);
+      createImpactAnnotation(chunkId, phase, color, options.index, options.finalAnchor);
     }
-  }
-
-  function fadeOutAnnotations(duration: number = 0.32) {
-    const annotationEffects = factory.getActive().filter(effect => effect.type === 'annotation');
-    if (!annotationEffects.length) return;
-
-    annotationEffects.forEach(effect => {
-      effect.threeObjects.forEach(obj => {
-        if (!(obj instanceof THREE.Sprite)) return;
-
-        const mat = obj.material as THREE.SpriteMaterial;
-        gsap.to(mat, {
-          opacity: 0,
-          duration,
-          ease: 'power1.in',
-        });
-        gsap.to(obj.position, {
-          y: obj.position.y + 0.5,
-          duration,
-          ease: 'power1.in',
-        });
-      });
-    });
-
-    setTimeout(() => {
-      factory.disposeByType('annotation');
-    }, duration * 1000 + 80);
   }
 
   function highlightAndGrow(
@@ -250,6 +326,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       glowMaxSize = 10,
       glowDelayMs = 240,
       materialOpacity = 1,
+      glowOpacity = 0.3,
     } = options;
 
     chunkIds.forEach(chunkId => {
@@ -306,7 +383,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       if (withGlow) {
         setTimeout(() => {
           const glowSize = Math.min(glowMaxSize, Math.max(1.6, sprite.scale.x * scale * glowScaleMultiplier));
-          createGlow(sprite.position, color, glowSize, targetId, source, phase);
+          const glow = createGlow(sprite.position, color, glowSize, targetId, source, phase);
+          if (glow) {
+            glow.material.opacity = glowOpacity;
+          }
         }, glowDelayMs);
       }
 
@@ -338,6 +418,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     factory.disposeAll();
     glowSprites = [];
     finalStarGlowSprites = [];
+    annotationAnchors = [];
     highlightedSprites.forEach((original, sprite) => {
       const trueOrig = trueOriginals.get(sprite);
       if (trueOrig) {
@@ -463,6 +544,107 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       .filter((pos): pos is THREE.Vector3 => pos !== undefined && isVectorValid(pos));
   }
 
+  function getFinalStarVisuals(trueOriginalScale: THREE.Vector3) {
+    return {
+      scaleMultiplier: FINAL_STAR_SCALE_MULTIPLIER,
+      glowSize: THREE.MathUtils.clamp(trueOriginalScale.x * 10, 4.5, 9),
+      cameraDistance: THREE.MathUtils.clamp(22 + trueOriginalScale.x * 10, 20, 30),
+      opacity: FINAL_STAR_OPACITY,
+      glowOpacity: FINAL_STAR_GLOW_OPACITY,
+      flightDuration: FINAL_STAR_FLIGHT_DURATION,
+    };
+  }
+
+  function applyFinalStarVisual(
+    sprite: THREE.Sprite,
+    data: StarPoint,
+    trueOriginalScale: THREE.Vector3,
+    trueOriginalMaterial: THREE.SpriteMaterial,
+    source: string,
+    phase: string,
+  ) {
+    const targetId = `coreStar_final_${data.chunk_id}`;
+    const visuals = getFinalStarVisuals(trueOriginalScale);
+    const oldMat = sprite.material as THREE.SpriteMaterial;
+    const oldColor = '#' + oldMat.color.getHexString();
+    const oldOpacity = oldMat.opacity;
+    const finalMat = oldMat.clone();
+    finalMat.color.setHex(0xFFFFFF);
+    finalMat.opacity = 0.92;
+    finalMat.blending = THREE.AdditiveBlending;
+    finalMat.needsUpdate = true;
+    sprite.material = finalMat;
+
+    registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#FFFFFF', source, phase });
+    registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: visuals.opacity, source, phase });
+    registry.add({
+      targetId,
+      effectType: 'scale',
+      property: 'scale',
+      prevValue: { x: trueOriginalScale.x, y: trueOriginalScale.y, z: trueOriginalScale.z },
+      value: {
+        x: trueOriginalScale.x * visuals.scaleMultiplier,
+        y: trueOriginalScale.y * visuals.scaleMultiplier,
+        z: trueOriginalScale.z * visuals.scaleMultiplier,
+      },
+      source,
+      phase,
+    });
+
+    gsap.killTweensOf(sprite.scale);
+    gsap.killTweensOf(finalMat);
+
+    const domainColor = getDomainColor(data.domain);
+    const glow = createGlow(sprite.position, domainColor, visuals.glowSize, targetId, source, phase);
+    if (glow) {
+      glow.material.opacity = visuals.glowOpacity;
+      finalStarGlowSprites.push(glow);
+    }
+
+    gsap.to(sprite.scale, {
+      x: trueOriginalScale.x * visuals.scaleMultiplier,
+      y: trueOriginalScale.y * visuals.scaleMultiplier,
+      z: trueOriginalScale.z * visuals.scaleMultiplier,
+      duration: visuals.flightDuration,
+      ease: 'power3.out',
+    });
+
+    if (breathingTween) {
+      breathingTween.kill();
+    }
+    breathingTween = gsap.to(finalMat, {
+      opacity: visuals.opacity,
+      duration: 0.95,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    });
+
+    finalStarInfo = {
+      sprite,
+      data,
+      trueOriginalScale,
+      trueOriginalMaterial,
+      domainColor: '#' + trueOriginalMaterial.color.getHexString(),
+      appliedStyle: {
+        coreColor: '#ffffff',
+        opacity: visuals.opacity,
+        blending: THREE.AdditiveBlending,
+        scaleMultiplier: visuals.scaleMultiplier,
+        glowColor: domainColor,
+        glowSize: visuals.glowSize,
+        breathingActive: true,
+      },
+    };
+
+    return {
+      domainColor,
+      targetPos: sprite.position,
+      targetId,
+      visuals,
+    };
+  }
+
   async function frameTargetCluster(positions: THREE.Vector3[], duration: number = 0.9) {
     if (!positions.length) return;
 
@@ -524,6 +706,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       glowMaxSize: number;
       holdMs?: number;
       labelCount: number;
+      finalAnchor?: THREE.Vector3 | null;
     },
   ) {
     const ids = chunkIds.slice(0, options.maxTargets);
@@ -542,6 +725,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
           glowMaxSize: options.glowMaxSize,
           labelCount: options.labelCount,
           index,
+          finalAnchor: options.finalAnchor,
         });
       }, impactDelayMs);
     });
@@ -564,6 +748,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const bm25Ids = results.bm25.map(r => r.chunk_id);
     const knnIds = results.knn.map(r => r.chunk_id);
     const rrfIds = results.rrf_top5.map(r => r.chunk_id);
+    const finalAnchor = results.reranker_final
+      ? starDataMap.get(results.reranker_final.chunk_id)?.sprite.position.clone() ?? null
+      : null;
 
     const framingPositions = [
       ...collectPositions(bm25Ids, 6),
@@ -580,6 +767,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       glowMaxSize: 2.7,
       labelCount: 3,
       holdMs: 240,
+      finalAnchor,
     });
 
     await playMeteorWave(knnIds, 0x60A5FA, 'knn', {
@@ -589,6 +777,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       glowMaxSize: 2.7,
       labelCount: 3,
       holdMs: 240,
+      finalAnchor,
     });
 
     await playMeteorWave(rrfIds, 0xA78BFA, 'rrf', {
@@ -598,6 +787,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       glowMaxSize: 3.2,
       labelCount: 4,
       holdMs: 280,
+      finalAnchor,
     });
 
     if (results.reranker_final) {
@@ -610,11 +800,19 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
       highlightedSprites.forEach((original, sprite) => {
         if (sprite !== finalStar.sprite) {
-          gsap.to(sprite.material, { opacity: 0.32, duration: 0.4 });
+          const distanceToFinal = sprite.position.distanceTo(finalStar.sprite.position);
+          const nearFinal = distanceToFinal < FINAL_NEIGHBOR_RADIUS;
+          const spriteChunkId = sprite.userData.chunk_id as string | undefined;
+
+          if (nearFinal && spriteChunkId) {
+            factory.disposeByTarget(`coreStar_${spriteChunkId}`);
+          }
+
+          gsap.to(sprite.material, { opacity: nearFinal ? 0.14 : 0.32, duration: 0.4 });
           gsap.to(sprite.scale, {
-            x: original.originalScale.x * 1.28,
-            y: original.originalScale.y * 1.28,
-            z: original.originalScale.z * 1.28,
+            x: original.originalScale.x * (nearFinal ? 1.06 : 1.28),
+            y: original.originalScale.y * (nearFinal ? 1.06 : 1.28),
+            z: original.originalScale.z * (nearFinal ? 1.06 : 1.28),
             duration: 0.4
           });
         }
@@ -633,88 +831,24 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const trueOriginalScale = trueOrig.scale.clone();
       const trueOriginalMaterial = trueOrig.material;
 
-      const finalSprite = finalStar.sprite;
-
-      // 关键修复：克隆当前材质，不要直接修改（避免污染原始材质）
-      const oldMat = finalSprite.material as THREE.SpriteMaterial;
-      const finalMat = oldMat.clone();
-
-      // 在新克隆的材质上修改
-      finalMat.color.setHex(0xFFFFFF);
-      finalMat.opacity = 0.92;
-      finalMat.blending = THREE.AdditiveBlending;
-      finalMat.needsUpdate = true;
-
-      // 应用新材质
-      finalSprite.material = finalMat;
-
-      const finalTargetId = `coreStar_final_${finalId}`;
-      const finalScaleMultiplier = 2.7;
-      const finalGlowSize = THREE.MathUtils.clamp(trueOriginalScale.x * 10, 4.5, 9);
-      const finalCameraDistance = THREE.MathUtils.clamp(22 + trueOriginalScale.x * 10, 20, 30);
-      // 注册最终星的变更
-      registry.add({ targetId: finalTargetId, effectType: 'material', property: 'color', prevValue: '#34D399', value: '#FFFFFF', source: 'animateSearch', phase: 'finalStar' });
-      registry.add({ targetId: finalTargetId, effectType: 'material', property: 'opacity', prevValue: 1, value: 0.72, source: 'animateSearch', phase: 'finalStar' });
-      registry.add({ targetId: finalTargetId, effectType: 'scale', property: 'scale', prevValue: { x: trueOriginalScale.x, y: trueOriginalScale.y, z: trueOriginalScale.z }, value: { x: trueOriginalScale.x * finalScaleMultiplier, y: trueOriginalScale.y * finalScaleMultiplier, z: trueOriginalScale.z * finalScaleMultiplier }, source: 'animateSearch', phase: 'finalStar' });
-
-      gsap.killTweensOf(finalSprite.scale);
-      gsap.killTweensOf(finalMat);
-
-      const domainColor = getDomainColor(finalStar.data.domain);
-      const finalGlow = createGlow(finalSprite.position, domainColor, finalGlowSize, finalTargetId, 'animateSearch', 'finalStar');
-      if (finalGlow) {
-        finalGlow.material.opacity = 0.48;
-        finalStarGlowSprites.push(finalGlow);
-      }
-
-      const flightDuration = 1.5;
-
-      const targetPos = finalSprite.position;
-      // 列出所有光晕
-
-      gsap.to(finalSprite.scale, {
-        x: trueOriginalScale.x * finalScaleMultiplier,
-        y: trueOriginalScale.y * finalScaleMultiplier,
-        z: trueOriginalScale.z * finalScaleMultiplier,
-        duration: flightDuration,
-        ease: 'power3.out',
-      });
-
-      gsap.to(finalSprite.material, {
-        opacity: 0.72,
-        duration: 0.95,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1
-      });
-
-      const dcHex = '#' + trueOriginalMaterial.color.getHexString();
-      finalStarInfo = {
-        sprite: finalSprite,
-        data: finalStar.data,
+      const promoted = applyFinalStarVisual(
+        finalStar.sprite,
+        finalStar.data,
         trueOriginalScale,
         trueOriginalMaterial,
-        domainColor: dcHex,
-        appliedStyle: {
-          coreColor: '#ffffff',
-          opacity: 0.72,
-          blending: THREE.AdditiveBlending,
-          scaleMultiplier: finalScaleMultiplier,
-          glowColor: domainColor,
-          glowSize: finalGlowSize,
-          breathingActive: true,
-        },
-      };
+        'animateSearch',
+        'finalStar',
+      );
+      disposeFinalAnnotations();
+      createFinalAnnotation(finalStar, promoted.domainColor);
 
-      if (isVectorValid(targetPos)) {
-        await sleep(260);
-        fadeOutAnnotations(0.3);
-        const finalMeteor = shootMeteors([targetPos], domainColor, 0, 'animateSearch', 'finalStar');
+      if (isVectorValid(promoted.targetPos)) {
+        const finalMeteor = shootMeteors([promoted.targetPos], promoted.domainColor, 0, 'animateSearch', 'finalStar');
         await sleep(120);
         await Promise.all([
           finalMeteor,
-          flyToStar(targetPos, flightDuration, 'animateSearch', 'finalStar', {
-            cameraDistance: finalCameraDistance,
+          flyToStar(promoted.targetPos, promoted.visuals.flightDuration, 'animateSearch', 'finalStar', {
+            cameraDistance: promoted.visuals.cameraDistance,
             arcLift: 5,
           }),
         ]);
@@ -733,6 +867,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     if (!targetOrig) return;
     const targetOrigScale = targetOrig.scale.clone();
     const targetOrigMat = targetOrig.material;
+    const finalVisuals = getFinalStarVisuals(targetOrigScale);
 
     // 情况1：没有最终星（还没搜索过），使用默认样式
     if (!finalStarInfo || !finalStarInfo.sprite) {
@@ -758,39 +893,53 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       const oldOpacity = oldMat.opacity;
       const newMat = oldMat.clone();
       newMat.color.setHex(0xFFFFFF);
-      newMat.opacity = 1;
+      newMat.opacity = 0.92;
       newMat.blending = THREE.AdditiveBlending;
       newMat.needsUpdate = true;
       targetSprite.material = newMat;
 
       // 注册变更
       registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#FFFFFF', source, phase });
-      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: 0.7, source, phase });
+      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: finalVisuals.opacity, source, phase });
       const oldScale = targetSprite.scale.clone();
-      registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale.x, y: oldScale.y, z: oldScale.z }, value: { x: 0.6, y: 0.6, z: 5 }, source, phase });
+      registry.add({
+        targetId,
+        effectType: 'scale',
+        property: 'scale',
+        prevValue: { x: oldScale.x, y: oldScale.y, z: oldScale.z },
+        value: {
+          x: targetOrigScale.x * finalVisuals.scaleMultiplier,
+          y: targetOrigScale.y * finalVisuals.scaleMultiplier,
+          z: targetOrigScale.z * finalVisuals.scaleMultiplier,
+        },
+        source,
+        phase
+      });
 
       // 辉光：根据目标星领域色
       const targetChunkId = targetSprite.userData.chunk_id;
       const domainColor = getDomainColor(targetSprite.userData.domain || targetChunkId);
-      const glow = createGlow(targetPos, domainColor, 30, targetId, source, phase);
-      if (glow) finalStarGlowSprites.push(glow);
+      const glow = createGlow(targetPos, domainColor, finalVisuals.glowSize, targetId, source, phase);
+      if (glow) {
+        glow.material.opacity = finalVisuals.glowOpacity;
+        finalStarGlowSprites.push(glow);
+      }
 
       // 2) 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
-      FINAL_STAR_QUERY_GLOWS.forEach(g => {
-        const g2 = createGlow(targetPos.clone(), g.color, g.size, targetId, source, 'jumpToStar-replay');
-        if (g2) finalStarGlowSprites.push(g2);
-      });
+      void FINAL_STAR_QUERY_GLOWS.length;
 
       // 放大动画 — 和 query 完全一致 0.6，让辉光完全包裹核心
-      const uniformFinalScale = 0.6;
+      const uniformFinalScale = targetOrigScale.x * finalVisuals.scaleMultiplier;
+      const uniformFinalScaleY = targetOrigScale.y * finalVisuals.scaleMultiplier;
+      const uniformFinalScaleZ = targetOrigScale.z * finalVisuals.scaleMultiplier;
       console.log('[jumpToStar-情况1] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
       console.log('[jumpToStar-情况1] target BEFORE:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
 
       gsap.to(targetSprite.scale, {
         x: uniformFinalScale,
-        y: uniformFinalScale,
-        z: 5,
-        duration: 1.8,
+        y: uniformFinalScaleY,
+        z: uniformFinalScaleZ,
+        duration: finalVisuals.flightDuration,
         ease: 'power3.out',
         onComplete: () => {
           console.log('[jumpToStar-情况1] target AFTER tween:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
@@ -812,8 +961,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       });
 
       breathingTween = gsap.to(newMat, {
-        opacity: 0.7,
-        duration: 0.8,
+        opacity: finalVisuals.opacity,
+        duration: 0.95,
         ease: 'sine.inOut',
         yoyo: true,
         repeat: -1,
@@ -827,19 +976,29 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         domainColor: '#' + domainColor.toString(16).padStart(6, '0'),
         appliedStyle: {
           coreColor: '#ffffff',
-          opacity: 0.7,
+          opacity: finalVisuals.opacity,
           blending: THREE.AdditiveBlending,
-          scaleMultiplier: 5,
+          scaleMultiplier: finalVisuals.scaleMultiplier,
           glowColor: domainColor,
-          glowSize: 30,
+          glowSize: finalVisuals.glowSize,
           breathingActive: true,
         },
       };
 
       // 先等流星飞完再移动相机（和搜索动画一致）
+      disposeFinalAnnotations();
+      createFinalAnnotation({
+        sprite: targetSprite,
+        data: targetSprite.userData as StarPoint,
+        originalScale: targetOrigScale,
+      }, domainColor);
+
       const meteorPromise = isVectorValid(targetPos) ? shootMeteors([targetPos], domainColor, 0, source, phase) : Promise.resolve();
       meteorPromise.then(() => {
-        flyToStar(targetPos, 1.5, source, phase);
+        flyToStar(targetPos, finalVisuals.flightDuration, source, phase, {
+          cameraDistance: finalVisuals.cameraDistance,
+          arcLift: 5,
+        });
       });
       return;
     }
@@ -876,27 +1035,27 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const oldOpacity2 = oldMat2.opacity;
     const newMat = oldMat2.clone();
     newMat.color.setHex(0xFFFFFF);
-    newMat.opacity = 1;
+    newMat.opacity = 0.92;
     newMat.blending = THREE.AdditiveBlending;
     newMat.needsUpdate = true;
     targetSprite.material = newMat;
 
     registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor2, value: '#FFFFFF', source, phase });
-    registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity2, value: 1, source, phase });
+    registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity2, value: finalVisuals.opacity, source, phase });
     const oldScale2 = targetOrigScale.clone();
     registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale2.x, y: oldScale2.y, z: oldScale2.z }, value: { x: oldScale2.x * 2.2, y: oldScale2.y * 2.2, z: oldScale2.z * 2.2 }, source, phase });
 
     // 和 query 完全一致：改完材质后先创建领域色辉光，再启动 tween
     const targetChunkId2 = targetSprite.userData.chunk_id;
     const domainColor2 = getDomainColor(targetSprite.userData.domain || targetChunkId2);
-    const glow = createGlow(targetSprite.position, domainColor2, 30, targetId, source, phase);
-    if (glow) finalStarGlowSprites.push(glow);
+    const glow = createGlow(targetSprite.position, domainColor2, finalVisuals.glowSize, targetId, source, phase);
+    if (glow) {
+      glow.material.opacity = finalVisuals.glowOpacity;
+      finalStarGlowSprites.push(glow);
+    }
 
     // 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
-    FINAL_STAR_QUERY_GLOWS.forEach(g => {
-      const g2 = createGlow(targetSprite.position.clone(), g.color, g.size, targetId, source, 'jumpToStar-replay');
-      if (g2) finalStarGlowSprites.push(g2);
-    });
+    void FINAL_STAR_QUERY_GLOWS.length;
 
     gsap.to(targetSprite.scale, {
       x: targetOrigScale.x * 2.2,
@@ -909,9 +1068,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // 第二步：0.8s 后再 GSAP 到最终尺寸
     setTimeout(() => {
-      const uniformFinalX = 0.6;
-      const uniformFinalY = 0.6;
-      const uniformFinalZ = 5;
+      const uniformFinalX = targetOrigScale.x * finalVisuals.scaleMultiplier;
+      const uniformFinalY = targetOrigScale.y * finalVisuals.scaleMultiplier;
+      const uniformFinalZ = targetOrigScale.z * finalVisuals.scaleMultiplier;
 
       registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: targetOrigScale.x * 2.2, y: targetOrigScale.y * 2.2, z: targetOrigScale.z * 2.2 }, value: { x: uniformFinalX, y: uniformFinalY, z: uniformFinalZ }, source, phase });
 
@@ -919,7 +1078,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         x: uniformFinalX,
         y: uniformFinalY,
         z: uniformFinalZ,
-        duration: 1.8,
+        duration: finalVisuals.flightDuration,
         ease: 'power3.out',
         onComplete: () => {
           console.log('[jumpToStar-情况2] target AFTER tween:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
@@ -939,8 +1098,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       });
 
       breathingTween = gsap.to(newMat, {
-        opacity: 0.7,
-        duration: 0.8,
+        opacity: finalVisuals.opacity,
+        duration: 0.95,
         ease: 'sine.inOut',
         yoyo: true,
         repeat: -1,
@@ -954,17 +1113,27 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         domainColor: domainColorFromSprite(targetOrigMat),
         appliedStyle: {
           coreColor: '#ffffff',
-          opacity: 0.7,
+          opacity: finalVisuals.opacity,
           blending: THREE.AdditiveBlending,
-          scaleMultiplier: 5,
+          scaleMultiplier: finalVisuals.scaleMultiplier,
           glowColor: domainColor2,
-          glowSize: 30,
+          glowSize: finalVisuals.glowSize,
           breathingActive: true,
         },
       };
 
+      disposeFinalAnnotations();
+      createFinalAnnotation({
+        sprite: targetSprite,
+        data: targetSprite.userData as StarPoint,
+        originalScale: targetOrigScale,
+      }, domainColor2);
+
       (isVectorValid(targetPos) ? shootMeteors([targetPos], domainColor2, 0, source, phase) : Promise.resolve()).then(() => {
-        flyToStar(targetPos, 1.5, source, phase);
+        flyToStar(targetPos, finalVisuals.flightDuration, source, phase, {
+          cameraDistance: finalVisuals.cameraDistance,
+          arcLift: 5,
+        });
       });
     }, 1100);
   }

@@ -20,6 +20,7 @@ export interface ManagedEffect {
 export interface EffectFactoryContext {
   registry: EffectRegistry;
   scene: THREE.Scene;
+  camera: THREE.Camera;
 }
 
 export interface AnnotationLabelOptions {
@@ -52,18 +53,37 @@ function createGlowTexture(color: number, size: number = 64): THREE.CanvasTextur
 }
 
 /** 创建流星头部纹理 */
-function createMeteorHeadTexture(color: number): THREE.CanvasTexture {
+function createMeteorStreakTexture(color: number): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
-  canvas.width = 16;
-  canvas.height = 16;
+  canvas.width = 128;
+  canvas.height = 32;
   const ctx = canvas.getContext('2d')!;
   const hexColor = new THREE.Color(color);
-  const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-  grad.addColorStop(0, 'rgba(255,255,255,1)');
-  grad.addColorStop(0.4, `rgba(${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)},0.6)`);
-  grad.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 16, 16);
+  const rgb = `${Math.round(hexColor.r * 255)},${Math.round(hexColor.g * 255)},${Math.round(hexColor.b * 255)}`;
+  const streak = ctx.createLinearGradient(0, 16, 128, 16);
+  streak.addColorStop(0, 'rgba(0,0,0,0)');
+  streak.addColorStop(0.2, `rgba(${rgb},0.02)`);
+  streak.addColorStop(0.55, `rgba(${rgb},0.16)`);
+  streak.addColorStop(0.82, `rgba(${rgb},0.62)`);
+  streak.addColorStop(0.94, `rgba(${rgb},0.95)`);
+  streak.addColorStop(1, 'rgba(255,255,255,1)');
+  ctx.fillStyle = streak;
+  ctx.beginPath();
+  ctx.moveTo(4, 16);
+  ctx.quadraticCurveTo(18, 3, 122, 11);
+  ctx.lineTo(126, 16);
+  ctx.lineTo(122, 21);
+  ctx.quadraticCurveTo(18, 29, 4, 16);
+  ctx.closePath();
+  ctx.fill();
+
+  const headGlow = ctx.createRadialGradient(112, 16, 1, 112, 16, 14);
+  headGlow.addColorStop(0, 'rgba(255,255,255,1)');
+  headGlow.addColorStop(0.25, `rgba(${rgb},0.95)`);
+  headGlow.addColorStop(0.7, `rgba(${rgb},0.18)`);
+  headGlow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = headGlow;
+  ctx.fillRect(92, 2, 34, 28);
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
   return texture;
@@ -154,11 +174,13 @@ function genAnnotationId(): string { return `annotation_${++_annotationSeq}`; }
 export class EffectFactory {
   private registry: EffectRegistry;
   private scene: THREE.Scene;
+  private camera: THREE.Camera;
   private managed: Map<string, ManagedEffect> = new Map();
 
   constructor(ctx: EffectFactoryContext) {
     this.registry = ctx.registry;
     this.scene = ctx.scene;
+    this.camera = ctx.camera;
   }
 
   /** 创建辉光（自动注�?registry + 关联对象映射�?*/
@@ -252,32 +274,33 @@ export class EffectFactory {
     }
 
     const curve = new THREE.CatmullRomCurve3(curvePoints);
-    const headTexture = createMeteorHeadTexture(color);
+    const streakTexture = createMeteorStreakTexture(color);
     const headMat = new THREE.SpriteMaterial({
-      map: headTexture,
+      map: streakTexture,
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       opacity: 0,
     });
     const head = new THREE.Sprite(headMat);
-    head.scale.set(0.85, 0.85, 1);
+    head.scale.set(3.4, 0.7, 1);
     head.position.copy(from);
     this.scene.add(head);
 
-    const tailCount = 7;
+    const tailCount = 5;
     const tailSprites: THREE.Sprite[] = [];
     for (let i = 0; i < tailCount; i++) {
       const tailMat = new THREE.SpriteMaterial({
-        map: headTexture,
+        map: streakTexture,
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
         opacity: 0,
       });
       const tail = new THREE.Sprite(tailMat);
-      const scale = 0.72 - i * 0.07;
-      tail.scale.set(scale, scale, 1);
+      const width = 2.8 - i * 0.35;
+      const height = 0.5 - i * 0.05;
+      tail.scale.set(width, height, 1);
       tail.position.copy(from);
       this.scene.add(tail);
       tailSprites.push(tail);
@@ -337,8 +360,13 @@ export class EffectFactory {
             head.material.opacity = 1;
           }
 
+          const tangentStart = curve.getPoint(Math.max(0, t - 0.015));
+          const tangentEnd = curve.getPoint(Math.min(1, t + 0.015));
+          const rotation = this._getProjectedRotation(tangentStart, tangentEnd);
+          head.material.rotation = rotation;
+
           tailSprites.forEach((tail, index) => {
-            const trailT = Math.max(0, t - (index + 1) * 0.028);
+            const trailT = Math.max(0, t - (index + 1) * 0.038);
             const visible = trailT > 0 && t < 1.02;
             if (!visible) {
               tail.material.opacity = 0;
@@ -346,7 +374,8 @@ export class EffectFactory {
             }
 
             tail.position.copy(curve.getPoint(trailT));
-            tail.material.opacity = Math.max(0, 0.55 - index * 0.07) * Math.min(1, t * 3.5);
+            tail.material.rotation = rotation;
+            tail.material.opacity = Math.max(0, 0.42 - index * 0.08) * Math.min(1, t * 3.2);
           });
 
           if (t >= 1) {
@@ -539,6 +568,12 @@ export class EffectFactory {
 
   private _isVectorValid(v: THREE.Vector3): boolean {
     return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
+  }
+
+  private _getProjectedRotation(from: THREE.Vector3, to: THREE.Vector3): number {
+    const a = from.clone().project(this.camera);
+    const b = to.clone().project(this.camera);
+    return Math.atan2(b.y - a.y, b.x - a.x);
   }
 
   private _disposeObject(obj: THREE.Object3D): void {
