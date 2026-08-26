@@ -47,3 +47,7 @@
 1. 明确并统一本地开发与 Docker 的端口说明
 2. 做星图性能优化，比如 LOD、视锥剔除、实例化
 3. 完成 hover tooltip 和筛选类交互
+
+## Product Planning
+
+- Version roadmap: [docs/product-roadmap.md](docs/product-roadmap.md)
