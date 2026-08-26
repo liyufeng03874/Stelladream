@@ -321,6 +321,22 @@ const handleResize = () => {
 let lastRaycastTime = 0;
 const RAYCAST_THROTTLE = 100;
 
+const getAnnotationSprites = (): THREE.Sprite[] => {
+  return scene.children.filter((child): child is THREE.Sprite => (
+    child instanceof THREE.Sprite && Boolean(child.userData?.interactiveStar)
+  ));
+};
+
+const getInteractiveStar = (object: THREE.Object3D): StarPoint | null => {
+  if (object.userData?.interactiveStar) {
+    return object.userData.interactiveStar as StarPoint;
+  }
+  if (object.userData?.chunk_id) {
+    return object.userData as StarPoint;
+  }
+  return null;
+};
+
 const handleMouseMove = (event: MouseEvent) => {
   if (!containerRef.value) return;
   const rect = containerRef.value.getBoundingClientRect();
@@ -332,10 +348,14 @@ const handleMouseMove = (event: MouseEvent) => {
   lastRaycastTime = now;
 
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(starSprites);
+  const annotationIntersects = raycaster.intersectObjects(getAnnotationSprites());
+  const intersects = annotationIntersects.length > 0
+    ? annotationIntersects
+    : raycaster.intersectObjects(starSprites);
 
   if (intersects.length > 0) {
-    emit('star-hover', intersects[0].object.userData as StarPoint);
+    const star = getInteractiveStar(intersects[0].object);
+    emit('star-hover', star);
     document.body.style.cursor = 'pointer';
   } else {
     emit('star-hover', null);
@@ -351,10 +371,16 @@ const handleClick = (event: MouseEvent) => {
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(starSprites);
+  const annotationIntersects = raycaster.intersectObjects(getAnnotationSprites());
+  const intersects = annotationIntersects.length > 0
+    ? annotationIntersects
+    : raycaster.intersectObjects(starSprites);
 
   if (intersects.length > 0) {
-    emit('star-click', intersects[0].object.userData as StarPoint);
+    const star = getInteractiveStar(intersects[0].object);
+    if (star) {
+      emit('star-click', star);
+    }
   }
 };
 

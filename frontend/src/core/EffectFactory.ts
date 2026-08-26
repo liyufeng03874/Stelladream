@@ -31,6 +31,11 @@ export interface AnnotationLabelOptions {
   opacity?: number;
   rise?: number;
   scale?: { width: number; height: number };
+  interaction?: {
+    starData: unknown;
+    chunkId: string;
+    kind?: string;
+  };
 }
 
 /** 创建辉光纹理的共享函�?*/
@@ -423,14 +428,22 @@ export class EffectFactory {
       opacity: 0,
     });
     const sprite = new THREE.Sprite(material);
-    const width = options.scale?.width ?? 11.5;
-    const height = options.scale?.height ?? 5.4;
+    const width = options.scale?.width ?? 9.6;
+    const height = options.scale?.height ?? 4.6;
     const rise = options.rise ?? 0.85;
     const maxOpacity = options.opacity ?? 0.96;
+    const initialScale = 0.78;
+    const baseDistance = Math.max(this.camera.position.distanceTo(position), 1);
 
     sprite.position.copy(position).add(new THREE.Vector3(0, -rise, 0));
-    sprite.scale.set(width * 0.78, height * 0.78, 1);
+    sprite.scale.set(width * initialScale, height * initialScale, 1);
     sprite.renderOrder = 40;
+    sprite.userData = {
+      ...sprite.userData,
+      interactiveType: options.interaction?.kind ?? 'annotation',
+      interactiveChunkId: options.interaction?.chunkId,
+      interactiveStar: options.interaction?.starData,
+    };
     this.scene.add(sprite);
 
     const managedId = genAnnotationId();
@@ -484,6 +497,20 @@ export class EffectFactory {
       duration: 0.28,
       ease: 'power2.out',
     });
+
+    const updateScale = () => {
+      if (effect.status !== 'active') return;
+      const currentDistance = Math.max(this.camera.position.distanceTo(sprite.position), 1);
+      const factor = THREE.MathUtils.clamp(currentDistance / baseDistance, 0.42, 1);
+      sprite.scale.set(width * factor, height * factor, 1);
+      requestAnimationFrame(updateScale);
+    };
+
+    window.setTimeout(() => {
+      if (effect.status === 'active') {
+        updateScale();
+      }
+    }, 380);
 
     return effect;
   }

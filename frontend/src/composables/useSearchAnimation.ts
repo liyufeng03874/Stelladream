@@ -69,9 +69,9 @@ const PHASE_BADGES: Record<string, string> = {
   knn: 'kNN',
   rrf: 'RRF',
 };
-const FINAL_STAR_SCALE_MULTIPLIER = 2.7;
-const FINAL_STAR_OPACITY = 0.72;
-const FINAL_STAR_GLOW_OPACITY = 0.48;
+const FINAL_STAR_SCALE_MULTIPLIER = 3.4;
+const FINAL_STAR_OPACITY = 0.82;
+const FINAL_STAR_GLOW_OPACITY = 0.4;
 const FINAL_STAR_FLIGHT_DURATION = 1.5;
 const FINAL_NEIGHBOR_RADIUS = 5.5;
 const ANNOTATION_MIN_SPACING = 5.5;
@@ -124,38 +124,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     material: THREE.SpriteMaterial;
   }>();
   let annotationAnchors: THREE.Vector3[] = [];
-
-  // 从 difference.log 提取：query 阶段所有辉光（叠加到 jumpToStar 目标星上）
-  const FINAL_STAR_QUERY_GLOWS = [
-    // bm25 辉光（10个）
-    { color: 16766720, size: 1.7856828 },
-    { color: 16766720, size: 1.4432484 },
-    { color: 16766720, size: 1.4432484 },
-    { color: 16766720, size: 1.4432484 },
-    { color: 16766720, size: 1.217634 },
-    { color: 16766720, size: 1.4432484 },
-    { color: 16766720, size: 1.271127 },
-    { color: 16766720, size: 1.6337178 },
-    { color: 16766720, size: 1.5380772 },
-    { color: 16766720, size: 1.1890956 },
-    // knn 辉光（10个）
-    { color: 6333946, size: 1.4432484 },
-    { color: 6333946, size: 1.4432484 },
-    { color: 6333946, size: 1.4432484 },
-    { color: 6333946, size: 1.4432484 },
-    { color: 6333946, size: 1.5936228 },
-    { color: 6333946, size: 1.7064036 },
-    { color: 6333946, size: 1.5974244 },
-    { color: 6333946, size: 1.655115 },
-    { color: 6333946, size: 1.3979526 },
-    { color: 6333946, size: 1.2611544 },
-    // rrf 辉光（5个）
-    { color: 10980346, size: 1.9185936 },
-    { color: 10980346, size: 1.9185936 },
-    { color: 10980346, size: 1.9185936 },
-    { color: 10980346, size: 1.9185936 },
-    { color: 10980346, size: 2.1717864 },
-  ];
 
   function isVectorValid(v: THREE.Vector3): boolean {
     return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
@@ -247,6 +215,11 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         title: buildStarTitle(starInfo.data),
         subtitle: distanceLabel ? `${compactId(chunkId)}  ${distanceLabel}` : `ID ${compactId(chunkId)}`,
         accentColor: color,
+        interaction: {
+          starData: starInfo.data,
+          chunkId,
+          kind: 'search-hit',
+        },
       },
       `annotation_${phase}_${chunkId}`,
       'animateSearch',
@@ -269,12 +242,22 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         title: buildStarTitle(starInfo.data),
         subtitle: `ID ${compactId(starInfo.data.chunk_id)}`,
         accentColor: color,
-        scale: { width: 12.8, height: 5.8 },
+        scale: { width: 10.8, height: 5.0 },
+        interaction: {
+          starData: starInfo.data,
+          chunkId: starInfo.data.chunk_id,
+          kind: 'final-hit',
+        },
       },
       `annotation_final_${starInfo.data.chunk_id}`,
       'animateSearch',
       'finalStar',
     );
+  }
+
+  function disposeAllAnnotations() {
+    factory.disposeByType('annotation');
+    annotationAnchors = [];
   }
 
   function disposeFinalAnnotations() {
@@ -420,6 +403,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     finalStarGlowSprites = [];
     annotationAnchors = [];
     highlightedSprites.forEach((original, sprite) => {
+      const currentMaterial = sprite.material as THREE.SpriteMaterial;
       const trueOrig = trueOriginals.get(sprite);
       if (trueOrig) {
         sprite.material = trueOrig.material;
@@ -434,6 +418,9 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         });
       }
       gsap.killTweensOf(sprite.scale);
+      if (currentMaterial !== sprite.material) {
+        currentMaterial.dispose();
+      }
     });
     highlightedSprites.clear();
     trueOriginals.clear();
@@ -547,7 +534,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   function getFinalStarVisuals(trueOriginalScale: THREE.Vector3) {
     return {
       scaleMultiplier: FINAL_STAR_SCALE_MULTIPLIER,
-      glowSize: THREE.MathUtils.clamp(trueOriginalScale.x * 10, 4.5, 9),
+      glowSize: THREE.MathUtils.clamp(trueOriginalScale.x * 8.4, 4.2, 7.8),
       cameraDistance: THREE.MathUtils.clamp(22 + trueOriginalScale.x * 10, 20, 30),
       opacity: FINAL_STAR_OPACITY,
       glowOpacity: FINAL_STAR_GLOW_OPACITY,
@@ -570,7 +557,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const oldOpacity = oldMat.opacity;
     const finalMat = oldMat.clone();
     finalMat.color.setHex(0xFFFFFF);
-    finalMat.opacity = 0.92;
+    finalMat.opacity = 1;
     finalMat.blending = THREE.AdditiveBlending;
     finalMat.needsUpdate = true;
     sprite.material = finalMat;
@@ -842,11 +829,11 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       disposeFinalAnnotations();
       createFinalAnnotation(finalStar, promoted.domainColor);
 
-      if (isVectorValid(promoted.targetPos)) {
-        const finalMeteor = shootMeteors([promoted.targetPos], promoted.domainColor, 0, 'animateSearch', 'finalStar');
-        await sleep(120);
-        await Promise.all([
-          finalMeteor,
+    if (isVectorValid(promoted.targetPos)) {
+      const finalMeteor = shootMeteors([promoted.targetPos], promoted.domainColor, 0, 'animateSearch', 'finalStar');
+      await sleep(120);
+      await Promise.all([
+        finalMeteor,
           flyToStar(promoted.targetPos, promoted.visuals.flightDuration, 'animateSearch', 'finalStar', {
             cameraDistance: promoted.visuals.cameraDistance,
             arcLift: 5,
@@ -860,286 +847,40 @@ export function useSearchAnimation(context: SearchAnimationContext) {
    * 星跃：旧最终星恢复原样，新星星继承最终星样式，相机飞过去
    */
   async function jumpToStar(targetSprite: THREE.Sprite) {
-    // 打印搜索动画中最终星的光晕信息
-    // 从 sprite.userData 获取原始数据（StarField 创建时已存）
     const targetOrig = targetSprite.userData.trueOriginals;
-
     if (!targetOrig) return;
     const targetOrigScale = targetOrig.scale.clone();
     const targetOrigMat = targetOrig.material;
-    const finalVisuals = getFinalStarVisuals(targetOrigScale);
+    const targetData = targetSprite.userData as StarPoint;
 
-    // 情况1：没有最终星（还没搜索过），使用默认样式
-    if (!finalStarInfo || !finalStarInfo.sprite) {
-      const targetPos = targetSprite.position;
-      const targetId = `coreStar_${targetSprite.userData.chunk_id || 'unknown'}`;
-      const source = 'jumpToStar';
-      const phase = 'jumpToStar';
+    cleanup();
+    disposeAllAnnotations();
 
-      // 辉光铺垫：先对目标星调用 highlightAndGrow，让它获得白色核心和辉光
-      // const chunkId = targetSprite.userData.chunk_id;
-      // if (chunkId) {
-      //   const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
-      //   // 等一小段时间让辉光创建完成
-      //   await new Promise<void>(r => setTimeout(r, 200));
-      // }
+    const promoted = applyFinalStarVisual(
+      targetSprite,
+      targetData,
+      targetOrigScale,
+      targetOrigMat,
+      'jumpToStar',
+      'finalStar',
+    );
+    createFinalAnnotation({
+      sprite: targetSprite,
+      data: targetData,
+      originalScale: targetOrigScale,
+    }, promoted.domainColor);
 
-      // 立即换材质（白核心）
-      gsap.killTweensOf(targetSprite.scale);
-      gsap.killTweensOf(targetSprite.material);
+    if (!isVectorValid(promoted.targetPos)) return;
 
-      const oldMat = targetSprite.material as THREE.SpriteMaterial;
-      const oldColor = '#' + oldMat.color.getHexString();
-      const oldOpacity = oldMat.opacity;
-      const newMat = oldMat.clone();
-      newMat.color.setHex(0xFFFFFF);
-      newMat.opacity = 0.92;
-      newMat.blending = THREE.AdditiveBlending;
-      newMat.needsUpdate = true;
-      targetSprite.material = newMat;
-
-      // 注册变更
-      registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#FFFFFF', source, phase });
-      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: finalVisuals.opacity, source, phase });
-      const oldScale = targetSprite.scale.clone();
-      registry.add({
-        targetId,
-        effectType: 'scale',
-        property: 'scale',
-        prevValue: { x: oldScale.x, y: oldScale.y, z: oldScale.z },
-        value: {
-          x: targetOrigScale.x * finalVisuals.scaleMultiplier,
-          y: targetOrigScale.y * finalVisuals.scaleMultiplier,
-          z: targetOrigScale.z * finalVisuals.scaleMultiplier,
-        },
-        source,
-        phase
-      });
-
-      // 辉光：根据目标星领域色
-      const targetChunkId = targetSprite.userData.chunk_id;
-      const domainColor = getDomainColor(targetSprite.userData.domain || targetChunkId);
-      const glow = createGlow(targetPos, domainColor, finalVisuals.glowSize, targetId, source, phase);
-      if (glow) {
-        glow.material.opacity = finalVisuals.glowOpacity;
-        finalStarGlowSprites.push(glow);
-      }
-
-      // 2) 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
-      void FINAL_STAR_QUERY_GLOWS.length;
-
-      // 放大动画 — 和 query 完全一致 0.6，让辉光完全包裹核心
-      const uniformFinalScale = targetOrigScale.x * finalVisuals.scaleMultiplier;
-      const uniformFinalScaleY = targetOrigScale.y * finalVisuals.scaleMultiplier;
-      const uniformFinalScaleZ = targetOrigScale.z * finalVisuals.scaleMultiplier;
-      console.log('[jumpToStar-情况1] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
-      console.log('[jumpToStar-情况1] target BEFORE:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
-
-      gsap.to(targetSprite.scale, {
-        x: uniformFinalScale,
-        y: uniformFinalScaleY,
-        z: uniformFinalScaleZ,
-        duration: finalVisuals.flightDuration,
-        ease: 'power3.out',
-        onComplete: () => {
-          console.log('[jumpToStar-情况1] target AFTER tween:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
-          console.log('[jumpToStar-情况1] target material:', {
-            color: '#' + targetSprite.material.color.getHexString(),
-            opacity: targetSprite.material.opacity,
-            blending: targetSprite.material.blending
-          });
-          console.log('[jumpToStar-情况1] targetOrigScale:', targetOrigScale.x.toFixed(3), targetOrigScale.y.toFixed(3), targetOrigScale.z.toFixed(3));
-          console.log('[jumpToStar-情况1] camera pos:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
-          console.log('[jumpToStar-情况1] target pos:', targetPos.x.toFixed(2), targetPos.y.toFixed(2), targetPos.z.toFixed(2));
-          const camDist = camera.position.distanceTo(targetPos);
-          console.log('[jumpToStar-情况1] camera distance to target:', camDist.toFixed(2));
-          console.log('[jumpToStar-情况1] glows:', finalStarGlowSprites.length);
-          finalStarGlowSprites.forEach((g, i) => {
-            console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
-          });
-        },
-      });
-
-      breathingTween = gsap.to(newMat, {
-        opacity: finalVisuals.opacity,
-        duration: 0.95,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1,
-      });
-
-      finalStarInfo = {
-        sprite: targetSprite,
-        data: targetSprite.userData as StarPoint,
-        trueOriginalScale: targetOrigScale,
-        trueOriginalMaterial: targetOrigMat,
-        domainColor: '#' + domainColor.toString(16).padStart(6, '0'),
-        appliedStyle: {
-          coreColor: '#ffffff',
-          opacity: finalVisuals.opacity,
-          blending: THREE.AdditiveBlending,
-          scaleMultiplier: finalVisuals.scaleMultiplier,
-          glowColor: domainColor,
-          glowSize: finalVisuals.glowSize,
-          breathingActive: true,
-        },
-      };
-
-      // 先等流星飞完再移动相机（和搜索动画一致）
-      disposeFinalAnnotations();
-      createFinalAnnotation({
-        sprite: targetSprite,
-        data: targetSprite.userData as StarPoint,
-        originalScale: targetOrigScale,
-      }, domainColor);
-
-      const meteorPromise = isVectorValid(targetPos) ? shootMeteors([targetPos], domainColor, 0, source, phase) : Promise.resolve();
-      meteorPromise.then(() => {
-        flyToStar(targetPos, finalVisuals.flightDuration, source, phase, {
-          cameraDistance: finalVisuals.cameraDistance,
-          arcLift: 5,
-        });
-      });
-      return;
-    }
-
-    // 情况2：有最终星，转移样式
-    console.log('[jumpToStar-情况2] 开始星跃，有旧最终星');
-    const targetId = `coreStar_${targetSprite.userData.chunk_id || 'unknown'}`;
-    const source = 'jumpToStar';
-    const phase = 'jumpToStar';
-
-    // 1. 清除最终星的辉光
-    clearAllGlows();
-
-    // 2. 恢复最终星
-    resetFinalStar();
-
-    // 3. 辉光铺垫：先对目标星调用 highlightAndGrow，让它获得白色核心和辉光
-    // const chunkId = targetSprite.userData.chunk_id;
-    // if (chunkId) {
-    //   const sprites = highlightAndGrow([chunkId], 0xFFFFFF, 2.2, phase);
-    //   // 等一小段时间让辉光创建完成
-    //   await new Promise<void>(r => setTimeout(r, 200));
-    // }
-
-    // 4. 目标星
-    const targetPos = targetSprite.position;
-
-    // 和 query 一致：先改材质 + 创建辉光 + 再启动 tween
-    gsap.killTweensOf(targetSprite.scale);
-    gsap.killTweensOf(targetSprite.material);
-
-    const oldMat2 = targetSprite.material as THREE.SpriteMaterial;
-    const oldColor2 = '#' + oldMat2.color.getHexString();
-    const oldOpacity2 = oldMat2.opacity;
-    const newMat = oldMat2.clone();
-    newMat.color.setHex(0xFFFFFF);
-    newMat.opacity = 0.92;
-    newMat.blending = THREE.AdditiveBlending;
-    newMat.needsUpdate = true;
-    targetSprite.material = newMat;
-
-    registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor2, value: '#FFFFFF', source, phase });
-    registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity2, value: finalVisuals.opacity, source, phase });
-    const oldScale2 = targetOrigScale.clone();
-    registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: oldScale2.x, y: oldScale2.y, z: oldScale2.z }, value: { x: oldScale2.x * 2.2, y: oldScale2.y * 2.2, z: oldScale2.z * 2.2 }, source, phase });
-
-    // 和 query 完全一致：改完材质后先创建领域色辉光，再启动 tween
-    const targetChunkId2 = targetSprite.userData.chunk_id;
-    const domainColor2 = getDomainColor(targetSprite.userData.domain || targetChunkId2);
-    const glow = createGlow(targetSprite.position, domainColor2, finalVisuals.glowSize, targetId, source, phase);
-    if (glow) {
-      glow.material.opacity = finalVisuals.glowOpacity;
-      finalStarGlowSprites.push(glow);
-    }
-
-    // 复现 query 阶段最终星的 bm25/knn/rrf 辉光（从 difference.log 提取）
-    void FINAL_STAR_QUERY_GLOWS.length;
-
-    gsap.to(targetSprite.scale, {
-      x: targetOrigScale.x * 2.2,
-      y: targetOrigScale.y * 2.2,
-      z: targetOrigScale.z * 2.2,
-      duration: 0.8,
-      ease: 'power2.out',
-      delay: 0.3,
-    });
-
-    // 第二步：0.8s 后再 GSAP 到最终尺寸
-    setTimeout(() => {
-      const uniformFinalX = targetOrigScale.x * finalVisuals.scaleMultiplier;
-      const uniformFinalY = targetOrigScale.y * finalVisuals.scaleMultiplier;
-      const uniformFinalZ = targetOrigScale.z * finalVisuals.scaleMultiplier;
-
-      registry.add({ targetId, effectType: 'scale', property: 'scale', prevValue: { x: targetOrigScale.x * 2.2, y: targetOrigScale.y * 2.2, z: targetOrigScale.z * 2.2 }, value: { x: uniformFinalX, y: uniformFinalY, z: uniformFinalZ }, source, phase });
-
-      gsap.to(targetSprite.scale, {
-        x: uniformFinalX,
-        y: uniformFinalY,
-        z: uniformFinalZ,
-        duration: finalVisuals.flightDuration,
-        ease: 'power3.out',
-        onComplete: () => {
-          console.log('[jumpToStar-情况2] target AFTER tween:', targetSprite.scale.x.toFixed(3), targetSprite.scale.y.toFixed(3), targetSprite.scale.z.toFixed(3));
-          console.log('[jumpToStar-情况2] target material:', {
-            color: '#' + targetSprite.material.color.getHexString(),
-            opacity: targetSprite.material.opacity,
-            blending: targetSprite.material.blending
-          });
-          console.log('[jumpToStar-情况2] glows:', finalStarGlowSprites.length);
-          finalStarGlowSprites.forEach((g, i) => {
-            console.log(`  glow[${i}] scale=${g.scale.x.toFixed(1)}x${g.scale.y.toFixed(1)}, color=0x${g.material.color.getHexString().toUpperCase()}`);
-          });
-          console.log('[jumpToStar-情况2] camera pos:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
-          const camDist = camera.position.distanceTo(targetPos);
-          console.log('[jumpToStar-情况2] camera distance to target:', camDist.toFixed(2));
-        },
-      });
-
-      breathingTween = gsap.to(newMat, {
-        opacity: finalVisuals.opacity,
-        duration: 0.95,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1,
-      });
-
-      finalStarInfo = {
-        sprite: targetSprite,
-        data: targetSprite.userData as StarPoint,
-        trueOriginalScale: targetOrigScale,
-        trueOriginalMaterial: targetOrigMat,
-        domainColor: domainColorFromSprite(targetOrigMat),
-        appliedStyle: {
-          coreColor: '#ffffff',
-          opacity: finalVisuals.opacity,
-          blending: THREE.AdditiveBlending,
-          scaleMultiplier: finalVisuals.scaleMultiplier,
-          glowColor: domainColor2,
-          glowSize: finalVisuals.glowSize,
-          breathingActive: true,
-        },
-      };
-
-      disposeFinalAnnotations();
-      createFinalAnnotation({
-        sprite: targetSprite,
-        data: targetSprite.userData as StarPoint,
-        originalScale: targetOrigScale,
-      }, domainColor2);
-
-      (isVectorValid(targetPos) ? shootMeteors([targetPos], domainColor2, 0, source, phase) : Promise.resolve()).then(() => {
-        flyToStar(targetPos, finalVisuals.flightDuration, source, phase, {
-          cameraDistance: finalVisuals.cameraDistance,
-          arcLift: 5,
-        });
-      });
-    }, 1100);
-  }
-
-  function domainColorFromSprite(mat: THREE.SpriteMaterial): string {
-    return '#' + mat.color.getHexString();
+    const finalMeteor = shootMeteors([promoted.targetPos], promoted.domainColor, 0, 'jumpToStar', 'finalStar');
+    await sleep(120);
+    await Promise.all([
+      finalMeteor,
+      flyToStar(promoted.targetPos, promoted.visuals.flightDuration, 'jumpToStar', 'finalStar', {
+        cameraDistance: promoted.visuals.cameraDistance,
+        arcLift: 5,
+      }),
+    ]);
   }
 
   function resetFinalStar() {
