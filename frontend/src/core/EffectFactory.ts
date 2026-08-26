@@ -22,6 +22,16 @@ export interface EffectFactoryContext {
   scene: THREE.Scene;
 }
 
+export interface AnnotationLabelOptions {
+  badge: string;
+  title: string;
+  subtitle: string;
+  accentColor: number;
+  opacity?: number;
+  rise?: number;
+  scale?: { width: number; height: number };
+}
+
 /** 创建辉光纹理的共享函�?*/
 function createGlowTexture(color: number, size: number = 64): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
@@ -59,10 +69,87 @@ function createMeteorHeadTexture(color: number): THREE.CanvasTexture {
   return texture;
 }
 
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+}
+
+function createAnnotationTexture(options: AnnotationLabelOptions): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 256;
+
+  const ctx = canvas.getContext('2d')!;
+  const accent = new THREE.Color(options.accentColor);
+  const accentRgb = `${Math.round(accent.r * 255)},${Math.round(accent.g * 255)},${Math.round(accent.b * 255)}`;
+  const bubbleX = 24;
+  const bubbleY = 20;
+  const bubbleW = 464;
+  const bubbleH = 184;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.shadowColor = `rgba(${accentRgb},0.28)`;
+  ctx.shadowBlur = 20;
+  ctx.fillStyle = 'rgba(5, 10, 18, 0.88)';
+  roundRect(ctx, bubbleX, bubbleY, bubbleW, bubbleH, 28);
+  ctx.fill();
+
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = `rgba(${accentRgb},0.9)`;
+  ctx.lineWidth = 3;
+  roundRect(ctx, bubbleX, bubbleY, bubbleW, bubbleH, 28);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(228, 204);
+  ctx.lineTo(256, 238);
+  ctx.lineTo(284, 204);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(5, 10, 18, 0.88)';
+  ctx.fill();
+  ctx.strokeStyle = `rgba(${accentRgb},0.75)`;
+  ctx.stroke();
+
+  const badgeText = options.badge.toUpperCase();
+  ctx.font = '600 22px Inter, Arial, sans-serif';
+  const badgeW = Math.max(92, ctx.measureText(badgeText).width + 28);
+  ctx.fillStyle = `rgba(${accentRgb},0.16)`;
+  roundRect(ctx, 46, 40, badgeW, 36, 18);
+  ctx.fill();
+  ctx.strokeStyle = `rgba(${accentRgb},0.45)`;
+  ctx.lineWidth = 2;
+  roundRect(ctx, 46, 40, badgeW, 36, 18);
+  ctx.stroke();
+
+  ctx.fillStyle = `rgba(${accentRgb},1)`;
+  ctx.textBaseline = 'middle';
+  ctx.fillText(badgeText, 60, 58);
+
+  ctx.fillStyle = '#F8FAFC';
+  ctx.font = '600 32px Inter, Arial, sans-serif';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText(options.title, 46, 126);
+
+  ctx.fillStyle = 'rgba(191, 219, 254, 0.9)';
+  ctx.font = '24px ui-monospace, SFMono-Regular, Consolas, monospace';
+  ctx.fillText(options.subtitle, 46, 168);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}
+
 let _glowSeq = 0;
 function genGlowId(): string { return `glow_${++_glowSeq}`; }
 let _meteorSeq = 0;
 function genMeteorId(): string { return `meteor_${++_meteorSeq}`; }
+let _annotationSeq = 0;
+function genAnnotationId(): string { return `annotation_${++_annotationSeq}`; }
 
 export class EffectFactory {
   private registry: EffectRegistry;
@@ -291,6 +378,87 @@ export class EffectFactory {
     });
   }
   /** 销毁单�?ManagedEffect */
+  createAnnotationLabel(
+    position: THREE.Vector3,
+    options: AnnotationLabelOptions,
+    targetId: string,
+    source: string,
+    phase: string,
+  ): ManagedEffect {
+    const texture = createAnnotationTexture(options);
+    const material = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      opacity: 0,
+    });
+    const sprite = new THREE.Sprite(material);
+    const width = options.scale?.width ?? 11.5;
+    const height = options.scale?.height ?? 5.4;
+    const rise = options.rise ?? 0.85;
+    const maxOpacity = options.opacity ?? 0.96;
+
+    sprite.position.copy(position).add(new THREE.Vector3(0, -rise, 0));
+    sprite.scale.set(width * 0.78, height * 0.78, 1);
+    sprite.renderOrder = 40;
+    this.scene.add(sprite);
+
+    const managedId = genAnnotationId();
+    this.registry.add({
+      targetId,
+      effectType: 'annotation',
+      property: 'content',
+      prevValue: null,
+      value: {
+        badge: options.badge,
+        title: options.title,
+        subtitle: options.subtitle,
+      },
+      source,
+      phase,
+    });
+    this.registry.add({
+      targetId,
+      effectType: 'annotation',
+      property: 'position',
+      prevValue: null,
+      value: { x: position.x, y: position.y, z: position.z },
+      source,
+      phase,
+    });
+
+    this.registry.registerObject(managedId, sprite);
+
+    const effect: ManagedEffect = {
+      id: managedId,
+      targetId,
+      type: 'annotation',
+      threeObjects: [sprite],
+      status: 'active',
+    };
+    this.managed.set(managedId, effect);
+
+    gsap.to(sprite.position, {
+      y: position.y,
+      duration: 0.35,
+      ease: 'power2.out',
+    });
+    gsap.to(sprite.scale, {
+      x: width,
+      y: height,
+      duration: 0.35,
+      ease: 'back.out(1.3)',
+    });
+    gsap.to(material, {
+      opacity: maxOpacity,
+      duration: 0.28,
+      ease: 'power2.out',
+    });
+
+    return effect;
+  }
+
   dispose(id: string): void {
     const effect = this.managed.get(id);
     if (!effect || effect.status === 'disposed') return;

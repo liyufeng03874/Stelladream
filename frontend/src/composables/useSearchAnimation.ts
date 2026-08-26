@@ -58,9 +58,42 @@ interface HighlightOptions {
   glowScaleMultiplier?: number;
   glowMaxSize?: number;
   glowDelayMs?: number;
+  materialOpacity?: number;
 }
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const METEOR_FLIGHT_DURATION = 0.8;
+const PHASE_BADGES: Record<string, string> = {
+  bm25: 'BM25',
+  knn: 'kNN',
+  rrf: 'RRF',
+};
+
+function compactText(value: string, maxLength: number): string {
+  const normalized = value.replace(/\s+/g, ' ').trim();
+  if (normalized.length <= maxLength) return normalized;
+  return `${normalized.slice(0, Math.max(0, maxLength - 3)).trimEnd()}...`;
+}
+
+function compactId(value: string, head: number = 8, tail: number = 6): string {
+  if (value.length <= head + tail + 1) return value;
+  return `${value.slice(0, head)}...${value.slice(-tail)}`;
+}
+
+function buildStarTitle(data: StarPoint): string {
+  const sourceName = data.source.split(/[\\/]/).pop() ?? '';
+  const sourceTitle = sourceName
+    .replace(/\.[a-z0-9]+$/i, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (sourceTitle && sourceTitle.length >= 4) {
+    return compactText(sourceTitle, 28);
+  }
+
+  return compactText(data.content || data.chunk_id, 28);
+}
 
 export function useSearchAnimation(context: SearchAnimationContext) {
   const { scene, camera, controls, starDataMap } = context;
@@ -134,7 +167,72 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     if (!isVectorValid(from) || !isVectorValid(to)) {
       return Promise.resolve();
     }
-    return factory.createMeteor(from, to, color, targetId, source, phase, delayMs).then(() => {});
+    return factory.createMeteor(from, to, color, targetId, source, phase, delayMs, METEOR_FLIGHT_DURATION).then(() => {});
+  }
+
+  function createImpactAnnotation(chunkId: string, phase: string, color: number, index: number) {
+    const starInfo = starDataMap.get(chunkId);
+    if (!starInfo) return;
+
+    const labelPosition = starInfo.sprite.position.clone().add(new THREE.Vector3(
+      (index % 2 === 0 ? -1 : 1) * (1 + Math.floor(index / 2) * 0.75),
+      Math.max(3.4, starInfo.originalScale.y * 9) + (index % 3) * 0.35,
+      0,
+    ));
+
+    factory.createAnnotationLabel(
+      labelPosition,
+      {
+        badge: PHASE_BADGES[phase] ?? phase.toUpperCase(),
+        title: buildStarTitle(starInfo.data),
+        subtitle: `ID ${compactId(chunkId)}`,
+        accentColor: color,
+      },
+      `annotation_${phase}_${chunkId}`,
+      'animateSearch',
+      phase,
+    );
+  }
+
+  function applyWaveImpact(chunkId: string, color: number, phase: string, options: { scale: number; glowMaxSize: number; labelCount: number; index: number }) {
+    highlightAndGrow([chunkId], color, options.scale, phase, {
+      withGlow: true,
+      glowScaleMultiplier: 1.15,
+      glowMaxSize: options.glowMaxSize,
+      glowDelayMs: 50,
+      materialOpacity: 0.88,
+    });
+
+    if (options.index < options.labelCount) {
+      createImpactAnnotation(chunkId, phase, color, options.index);
+    }
+  }
+
+  function fadeOutAnnotations(duration: number = 0.32) {
+    const annotationEffects = factory.getActive().filter(effect => effect.type === 'annotation');
+    if (!annotationEffects.length) return;
+
+    annotationEffects.forEach(effect => {
+      effect.threeObjects.forEach(obj => {
+        if (!(obj instanceof THREE.Sprite)) return;
+
+        const mat = obj.material as THREE.SpriteMaterial;
+        gsap.to(mat, {
+          opacity: 0,
+          duration,
+          ease: 'power1.in',
+        });
+        gsap.to(obj.position, {
+          y: obj.position.y + 0.5,
+          duration,
+          ease: 'power1.in',
+        });
+      });
+    });
+
+    setTimeout(() => {
+      factory.disposeByType('annotation');
+    }, duration * 1000 + 80);
   }
 
   function highlightAndGrow(
@@ -151,6 +249,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       glowScaleMultiplier = 1.8,
       glowMaxSize = 10,
       glowDelayMs = 240,
+      materialOpacity = 1,
     } = options;
 
     chunkIds.forEach(chunkId => {
@@ -183,13 +282,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
       const newMaterial = oldMat.clone();
       newMaterial.color.setHex(color);
-      newMaterial.opacity = 1;
+      newMaterial.opacity = materialOpacity;
       newMaterial.blending = THREE.AdditiveBlending;
       sprite.material = newMaterial;
 
       // 注册材质变更
       registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#' + new THREE.Color(color).getHexString(), source, phase });
-      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: 1, source, phase });
+      registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: materialOpacity, source, phase });
       registry.add({ targetId, effectType: 'material', property: 'blending', prevValue: oldBlending, value: THREE.AdditiveBlending, source, phase });
 
       const origScale = sprite.scale.clone();
@@ -422,27 +521,33 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       maxTargets: number;
       scale: number;
       staggerMs: number;
-      withGlow?: boolean;
-      glowMaxSize?: number;
+      glowMaxSize: number;
       holdMs?: number;
+      labelCount: number;
     },
   ) {
     const ids = chunkIds.slice(0, options.maxTargets);
-    const sprites = highlightAndGrow(ids, color, options.scale, phase, {
-      withGlow: options.withGlow ?? false,
-      glowScaleMultiplier: 1.5,
-      glowMaxSize: options.glowMaxSize ?? 5,
-      glowDelayMs: 180,
+    if (!ids.length) return;
+
+    const positions = collectPositions(ids, ids.length);
+    if (!positions.length) return;
+
+    const sequenceToken = flightToken;
+    ids.forEach((chunkId, index) => {
+      const impactDelayMs = index * options.staggerMs + Math.round(METEOR_FLIGHT_DURATION * 1000) - 80;
+      setTimeout(() => {
+        if (sequenceToken !== flightToken) return;
+        applyWaveImpact(chunkId, color, phase, {
+          scale: options.scale,
+          glowMaxSize: options.glowMaxSize,
+          labelCount: options.labelCount,
+          index,
+        });
+      }, impactDelayMs);
     });
 
-    if (!sprites.length) return;
-
-    const positions = sprites
-      .map(sprite => sprite.position.clone())
-      .filter((pos): pos is THREE.Vector3 => isVectorValid(pos));
-
     await shootMeteors(positions, color, options.staggerMs, 'animateSearch', phase);
-    await sleep(options.holdMs ?? 120);
+    await sleep(options.holdMs ?? 220);
   }
 
   async function animateSearch(results: {
@@ -470,27 +575,29 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     await playMeteorWave(bm25Ids, 0xFFD700, 'bm25', {
       maxTargets: 6,
-      scale: 1.75,
+      scale: 1.4,
       staggerMs: 70,
-      withGlow: false,
-      holdMs: 90,
+      glowMaxSize: 2.7,
+      labelCount: 3,
+      holdMs: 240,
     });
 
     await playMeteorWave(knnIds, 0x60A5FA, 'knn', {
       maxTargets: 6,
-      scale: 1.75,
+      scale: 1.4,
       staggerMs: 70,
-      withGlow: false,
-      holdMs: 90,
+      glowMaxSize: 2.7,
+      labelCount: 3,
+      holdMs: 240,
     });
 
     await playMeteorWave(rrfIds, 0xA78BFA, 'rrf', {
       maxTargets: 5,
-      scale: 2.1,
+      scale: 1.6,
       staggerMs: 90,
-      withGlow: true,
-      glowMaxSize: 4.2,
-      holdMs: 120,
+      glowMaxSize: 3.2,
+      labelCount: 4,
+      holdMs: 280,
     });
 
     if (results.reranker_final) {
@@ -503,11 +610,11 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
       highlightedSprites.forEach((original, sprite) => {
         if (sprite !== finalStar.sprite) {
-          gsap.to(sprite.material, { opacity: 0.15, duration: 0.4 });
+          gsap.to(sprite.material, { opacity: 0.32, duration: 0.4 });
           gsap.to(sprite.scale, {
-            x: original.originalScale.x * 1.2,
-            y: original.originalScale.y * 1.2,
-            z: original.originalScale.z * 1.2,
+            x: original.originalScale.x * 1.28,
+            y: original.originalScale.y * 1.28,
+            z: original.originalScale.z * 1.28,
             duration: 0.4
           });
         }
@@ -522,7 +629,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       if (!trueOrig) {
         return;
       }
-      clearAllGlows();
 
       const trueOriginalScale = trueOrig.scale.clone();
       const trueOriginalMaterial = trueOrig.material;
@@ -601,6 +707,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       };
 
       if (isVectorValid(targetPos)) {
+        await sleep(260);
+        fadeOutAnnotations(0.3);
         const finalMeteor = shootMeteors([targetPos], domainColor, 0, 'animateSearch', 'finalStar');
         await sleep(120);
         await Promise.all([
