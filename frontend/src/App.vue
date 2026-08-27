@@ -42,6 +42,11 @@
         </button>
       </div>
 
+      <RetrievalSummary
+        :result="latestSearchResult"
+        :query="latestQuery"
+      />
+
       <InfoPanel
         v-if="selectedStar"
         :star="selectedStar"
@@ -88,23 +93,23 @@ import { ref, onMounted } from 'vue';
 import * as THREE from 'three';
 import StarField from './components/StarField.vue';
 import SearchBar from './components/SearchBar.vue';
+import RetrievalSummary from './components/RetrievalSummary.vue';
 import InfoPanel from './components/InfoPanel.vue';
 import DebugPanel from './components/DebugPanel.vue';
 import EvalReplay from './components/EvalReplay.vue';
 import MetricsTrendChart from './components/MetricsTrendChart.vue';
 import type { FinalStarInfo, PhaseTimelineItem, SearchPhaseFilter } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
+import type { SearchResult } from './api';
 import { useSearchAnimation } from './composables/useSearchAnimation';
 import { useEvalVisual } from './composables/useEvalVisual';
 import { GUI } from 'lil-gui';
 
 // 星场上下文（用于构建调试信息）
-let starSprites: THREE.Sprite[] = [];
 let starDataMap: Map<string, { sprite: THREE.Sprite; data: StarPoint }> = new Map();
 let animContext: ReturnType<typeof useSearchAnimation> | null = null;
 let evalVisual: ReturnType<typeof useEvalVisual> | null = null;
 let camera: THREE.Camera | null = null;
-let scene: THREE.Scene | null = null;
 
 const starData = ref<StarPoint[]>([]);
 const config = ref<any>({});
@@ -118,6 +123,8 @@ const evalMetricsHistory = ref<Array<{ step: number; currentMetrics: Record<stri
 let evalMaxSteps = 500;
 const phaseTimeline = ref<PhaseTimelineItem[]>([]);
 const phaseFilter = ref<SearchPhaseFilter>('all');
+const latestSearchResult = ref<SearchResult | null>(null);
+const latestQuery = ref('');
 
 // 调试面板
 const showDebugPanel = ref(false);
@@ -171,6 +178,10 @@ function snapshotState(label: string): any {
   const coreSprite = finalStar.sprite;
   const coreMat = coreSprite.material as THREE.SpriteMaterial;
   const glows = animContext?.getFinalStarGlows?.() || [];
+  const textureSize = (image: unknown) => {
+    const texture = image as { width?: number; height?: number } | undefined;
+    return texture?.width && texture?.height ? `${texture.width}x${texture.height}` : 'none';
+  };
 
   const snap = {
     label,
@@ -187,7 +198,7 @@ function snapshotState(label: string): any {
         transparent: coreMat.transparent,
       },
       renderOrder: coreSprite.renderOrder,
-      textureSize: coreMat.map?.image ? `${coreMat.map.image.width}x${coreMat.map.image.height}` : 'none',
+      textureSize: textureSize(coreMat.map?.image),
     },
     glows: glows.map((g, i) => ({
       index: i,
@@ -202,9 +213,9 @@ function snapshotState(label: string): any {
         transparent: g.material.transparent,
       },
       renderOrder: g.renderOrder,
-      textureSize: g.material.map?.image ? `${g.material.map.image.width}x${g.material.map.image.height}` : 'none',
+      textureSize: textureSize(g.material.map?.image),
     })),
-    camera: { x: camera?.position.x, y: camera?.position.y, z: camera?.position.z },
+    camera: { x: camera?.position.x ?? 0, y: camera?.position.y ?? 0, z: camera?.position.z ?? 0 },
   };
   console.log(`[snapshot ${label}]`, snap);
   return snap;
@@ -344,7 +355,9 @@ function openDebugGui() {
   // 相机
   const camFolder = debugGui.addFolder('📷 相机');
   guiControls.cameraZ = camFolder.add(guiParams, 'cameraZ', 10, 500, 1).name('Z 距离').onChange((v: number) => {
-    camera.position.z = v;
+    if (camera) {
+      camera.position.z = v;
+    }
   });
 
   // 呼吸动画
@@ -504,13 +517,22 @@ function buildFinalStarInfo(star: StarPoint): FinalStarInfo | null {
   return {
     sprite: info.sprite,
     data: info.data,
-    originalScale: new THREE.Vector3(star.size * 0.06, star.size * 0.06, 1),
-    originalMaterial: origMat,
+    trueOriginalScale: new THREE.Vector3(star.size * 0.06, star.size * 0.06, 1),
+    trueOriginalMaterial: origMat,
     domainColor,
+    appliedStyle: {
+      coreColor: '#ffffff',
+      opacity: 0.82,
+      blending: THREE.AdditiveBlending,
+      scaleMultiplier: 3.4,
+      glowColor: null,
+      glowSize: null,
+      breathingActive: false,
+    },
   };
 }
 
-const handleStarHover = (star: StarPoint | null) => {
+const handleStarHover = (_star: StarPoint | null) => {
   // TODO: 显示 tooltip
 };
 
@@ -519,7 +541,9 @@ const handleSearch = async (query: string) => {
 
   try {
     isSearching.value = true;
+    latestQuery.value = query;
     const results = await search(query);
+    latestSearchResult.value = results;
 
     await animContext.animateSearch(results);
     phaseTimeline.value = animContext.getPhaseTimeline?.() ?? [];
@@ -544,10 +568,8 @@ const handleSearch = async (query: string) => {
 };
 
 const handleStarFieldReady = (context: any) => {
-  starSprites = context.starSprites;
   starDataMap = context.starDataMap;
   camera = context.camera;
-  scene = context.scene;
   animContext = useSearchAnimation(context);
   evalVisual = useEvalVisual(context);
 
@@ -675,6 +697,10 @@ onMounted(async () => {
   z-index: 45;
 }
 
+.retrieval-summary + .info-panel {
+  top: 13rem;
+}
+
 .phase-chip {
   display: inline-flex;
   align-items: center;
@@ -748,7 +774,7 @@ onMounted(async () => {
 .gui-toggle {
   position: absolute;
   bottom: 1.35rem;
-  right: 1.35rem;
+  right: 1.15rem;
   padding: 0.55rem 0.9rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -768,7 +794,7 @@ onMounted(async () => {
 .eval-toggle {
   position: absolute;
   bottom: 1.35rem;
-  right: 8.2rem;
+  right: 8rem;
   padding: 0.55rem 0.9rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);

@@ -133,7 +133,6 @@ export function useEvalVisual(context: EvalVisualContext) {
       if (positions.length === 0) return;
 
       const color = DOMAIN_COLORS[domain] || new THREE.Color(0xaabbdd);
-      const count = positions.length / 3;
       const positionsArr = new Float32Array(positions);
 
       const geometry = new THREE.BufferGeometry();

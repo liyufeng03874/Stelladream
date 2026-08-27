@@ -1,5 +1,5 @@
 <template>
-  <div class="metrics-trend" ref="containerRef">
+  <div class="metrics-trend">
     <canvas ref="canvasRef" :width="width" :height="height"></canvas>
   </div>
 </template>
@@ -16,7 +16,6 @@ const props = defineProps<{
   maxSteps: number;
 }>();
 
-const containerRef = ref<HTMLDivElement>();
 const canvasRef = ref<HTMLCanvasElement>();
 
 const width = 420;
@@ -35,14 +34,6 @@ const metricDefs = [
   { key: 'recall_5', label: 'Recall@5', color: '#A78BFA', glowColor: 'rgba(167,139,250,' },
   { key: 'precision_5', label: 'P@5', color: '#F472B6', glowColor: 'rgba(244,114,182,' },
 ];
-
-const METRIC_COLORS = {
-  ndcg_5: '#60A5FA',
-  hr_5: '#34D399',
-  mrr_5: '#F5A623',
-  recall_5: '#A78BFA',
-  precision_5: '#F472B6',
-};
 
 const PADDING = { top: 50, right: 30, bottom: 50, left: 60 };
 const chartWidth = width - PADDING.left - PADDING.right;
@@ -216,7 +207,6 @@ function drawAutoTooltip() {
   if (!entry) return;
 
   const x = PADDING.left + (entry.step / maxSteps) * chartWidth;
-  const y = PADDING.top + (1 - (entry.cumulativeMetrics['ndcg_5'] ?? 0)) * chartHeight;
 
   // 流光扫描线
   const scanGrad = ctx.createLinearGradient(x - 3, 0, x + 3, 0);

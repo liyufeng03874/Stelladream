@@ -316,11 +316,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     );
   }
 
-  function disposeAllAnnotations() {
-    factory.disposeByType('annotation');
-    annotationAnchors = [];
-  }
-
   function disposeFinalAnnotations() {
     factory.getActive().forEach(effect => {
       if (effect.type === 'annotation' && effect.targetId.startsWith('annotation_final_')) {
@@ -609,6 +604,31 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       glowOpacity: FINAL_STAR_GLOW_OPACITY,
       flightDuration: FINAL_STAR_FLIGHT_DURATION,
     };
+  }
+
+  function getFinalStar(): FinalStarInfo | null {
+    if (!finalStarInfo) return null;
+    return {
+      ...finalStarInfo,
+      trueOriginalScale: finalStarInfo.trueOriginalScale.clone(),
+      trueOriginalMaterial: finalStarInfo.trueOriginalMaterial,
+      appliedStyle: { ...finalStarInfo.appliedStyle },
+    };
+  }
+
+  function getFinalStarGlows(): THREE.Sprite[] {
+    return finalStarGlowSprites.slice();
+  }
+
+  function setBreathingActive(active: boolean) {
+    if (!finalStarInfo) return;
+    finalStarInfo.appliedStyle.breathingActive = active;
+    if (!breathingTween) return;
+    if (active) {
+      breathingTween.resume?.();
+    } else {
+      breathingTween.pause?.();
+    }
   }
 
   function applyFinalStarVisual(
@@ -1016,8 +1036,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     finalStarInfo = null;
 
     console.log('[reset] final star restored');
-  }
-    }
   }
 
   // ===== 鐠囧嫪鍙婇崶鐐存杹閼辨柨濮?=====

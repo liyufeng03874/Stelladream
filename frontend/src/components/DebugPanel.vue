@@ -143,7 +143,7 @@ function applyRecorded() {
 
   mat.color.set(appliedStyle.coreColor);
   mat.opacity = 1;
-  mat.blending = appliedStyle.blending;
+  mat.blending = appliedStyle.blending as THREE.Blending;
   mat.needsUpdate = true;
 
   sprite.scale.set(

@@ -36,7 +36,7 @@ export function detectGPUProfile(): GPUProfile {
   try {
     // 创建离屏 canvas 检测 WebGL 渲染器
     const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    const gl = (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
 
     if (!gl) {
       // 不支持 WebGL，完全降级
