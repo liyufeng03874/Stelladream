@@ -31,6 +31,13 @@ export interface SearchResult {
 }
 
 export interface EvalData {
+  dataset?: string;
+  run?: string;
+  index?: string;
+  method?: string;
+  summary?: Record<string, number>;
+  metric_keys?: string[];
+  query_id?: string;
   query: string;
   results: string[];
   is_correct: boolean;
@@ -39,6 +46,8 @@ export interface EvalData {
   total_samples: number;
   current_step: number;
   retrieved_ids: string[];
+  parent_ids?: string[];
+  grades?: number[];
   correct_ids: string[];
   ranks: number[];
 }

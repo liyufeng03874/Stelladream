@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue';
 
 const props = defineProps<{
   history: Array<{
@@ -14,6 +14,7 @@ const props = defineProps<{
     cumulativeMetrics: Record<string, number>;
   }>;
   maxSteps: number;
+  metricKeys?: string[];
 }>();
 
 const canvasRef = ref<HTMLCanvasElement>();
@@ -26,14 +27,32 @@ let animationId: number;
 let glowPhase = 0;
 let autoTooltipStep = 0;
 
-// 指标配置（与 EvalReplay 对齐）
-const metricDefs = [
-  { key: 'ndcg_5', label: 'NDCG@5', color: '#60A5FA', glowColor: 'rgba(96,165,250,' },
-  { key: 'hr_5', label: 'HR@5', color: '#34D399', glowColor: 'rgba(52,211,153,' },
-  { key: 'mrr_5', label: 'MRR@5', color: '#F5A623', glowColor: 'rgba(245,166,35,' },
-  { key: 'recall_5', label: 'Recall@5', color: '#A78BFA', glowColor: 'rgba(167,139,250,' },
-  { key: 'precision_5', label: 'P@5', color: '#F472B6', glowColor: 'rgba(244,114,182,' },
+const metricColors = [
+  { color: '#60A5FA', glowColor: 'rgba(96,165,250,' },
+  { color: '#34D399', glowColor: 'rgba(52,211,153,' },
+  { color: '#F5A623', glowColor: 'rgba(245,166,35,' },
+  { color: '#A78BFA', glowColor: 'rgba(167,139,250,' },
+  { color: '#F472B6', glowColor: 'rgba(244,114,182,' },
+  { color: '#FBBF24', glowColor: 'rgba(251,191,36,' },
 ];
+
+const metricLabel = (key: string) => {
+  const labels: Record<string, string> = {
+    ndcg_5: 'NDCG@5', ndcg_10: 'NDCG@10', ndcg_20: 'NDCG@20', ndcg_30: 'NDCG@30',
+    hr_1: 'HR@1', hr_3: 'HR@3', hr_5: 'HR@5', hr_10: 'HR@10',
+    recall_5: 'Recall@5', recall_10: 'Recall@10', precision_5: 'P@5', p_5: 'P@5',
+    mrr_5: 'MRR@5', mrr_10: 'MRR@10', map: 'MAP',
+  };
+  return labels[key] ?? key.replace('_', '@').toUpperCase();
+};
+
+const metricDefs = computed(() => (props.metricKeys?.length ? props.metricKeys : [
+  'ndcg_5', 'hr_5', 'mrr_5', 'recall_5', 'precision_5',
+]).map((key, index) => ({
+  key,
+  label: metricLabel(key),
+  ...(metricColors[index % metricColors.length]),
+})));
 
 const PADDING = { top: 50, right: 30, bottom: 50, left: 60 };
 const chartWidth = width - PADDING.left - PADDING.right;
@@ -127,7 +146,7 @@ function drawLines() {
   const maxSteps = props.maxSteps;
 
   // 平滑绘制：三次贝塞尔
-  for (const def of metricDefs) {
+  for (const def of metricDefs.value) {
     const points: { x: number; y: number }[] = [];
     for (const entry of history) {
       const val = entry.cumulativeMetrics[def.key] ?? 0;
@@ -217,13 +236,13 @@ function drawAutoTooltip() {
   ctx.fillRect(x - 20, PADDING.top, 40, chartHeight);
 
   // 各指标点
-  for (const def of metricDefs) {
+  for (const def of metricDefs.value) {
     const val = entry.cumulativeMetrics[def.key] ?? 0;
     const y = PADDING.top + (1 - val) * chartHeight;
 
     // 外发光
     ctx.save();
-    ctx.shadowBlur = 12 + Math.sin(glowPhase + metricDefs.indexOf(def)) * 4;
+    ctx.shadowBlur = 12 + Math.sin(glowPhase + metricDefs.value.indexOf(def)) * 4;
     ctx.shadowColor = def.color;
     ctx.beginPath();
     ctx.arc(x, y, 5, 0, Math.PI * 2);
@@ -242,8 +261,8 @@ function drawAutoTooltip() {
   if (!isPaused) {
     const tooltipX = x + 15 > width - 180 ? x - 165 : x + 15;
     const tooltipW = 155;
-    const tooltipH = 30 + metricDefs.length * 20;
-    const lastMetricY = PADDING.top + (1 - (entry.cumulativeMetrics[metricDefs[metricDefs.length - 1].key] ?? 0)) * chartHeight;
+    const tooltipH = 30 + metricDefs.value.length * 20;
+    const lastMetricY = PADDING.top + (1 - (entry.cumulativeMetrics[metricDefs.value[metricDefs.value.length - 1].key] ?? 0)) * chartHeight;
     const tooltipY = Math.max(PADDING.top, Math.min(lastMetricY - tooltipH / 2, PADDING.top + chartHeight - tooltipH));
 
     // 卡片背景
@@ -263,7 +282,7 @@ function drawAutoTooltip() {
 
     // 指标值
     ctx.font = '10px "JetBrains Mono", monospace';
-    metricDefs.forEach((def, i) => {
+    metricDefs.value.forEach((def, i) => {
       const val = entry.cumulativeMetrics[def.key] ?? 0;
       const yy = tooltipY + 26 + i * 18;
       // 颜色点
@@ -288,7 +307,7 @@ function drawLegend() {
 
   ctx.font = '10px "JetBrains Mono", monospace';
   const itemWidth = 75;
-  metricDefs.forEach((def, i) => {
+  metricDefs.value.forEach((def, i) => {
     const x = startX + i * itemWidth;
     ctx.beginPath();
     ctx.arc(x + 4, startY + 4, 3, 0, Math.PI * 2);

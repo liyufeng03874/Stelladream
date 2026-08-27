@@ -88,6 +88,7 @@
         v-if="showTrendChart && evalMetricsHistory.length > 0"
         :history="evalMetricsHistory"
         :max-steps="evalMaxSteps"
+        :metric-keys="evalMetricKeys"
       />
     </div>
   </div>
@@ -126,6 +127,7 @@ const isSearching = ref(false);
 const showEvalPanel = ref(false);
 const showTrendChart = ref(false);
 const evalMetricsHistory = ref<Array<{ step: number; currentMetrics: Record<string, number>; cumulativeMetrics: Record<string, number> }>>([]);
+const evalMetricKeys = ref<string[]>([]);
 let evalMaxSteps = 500;
 const phaseTimeline = ref<PhaseTimelineItem[]>([]);
 const phaseFilter = ref<SearchPhaseFilter>('all');
@@ -417,7 +419,10 @@ const handleEvalHighlight = (payload: any) => {
 
   // 正常模式：逐步处理
   if (payload.chunkIds?.length) {
-    evalVisual.processStep(payload.chunkIds.slice(0, 5));  // 只取 Top-5
+    evalVisual.processStep(
+      payload.chunkIds.slice(0, 5),
+      (payload.grades ?? []).slice(0, 5),
+    );  // 只取 Top-5 作为主动画目标
   }
 };
 
@@ -426,8 +431,11 @@ const handleEvalFlyToDomain = (domain: string) => {
   if (!animContext || !starDataMap) return;
 
   // 计算该领域所有星的平均位置
+  // LeCaRD is the real law index, so its replay key intentionally differs
+  // from the legacy law replay source.
+  const starDomain = domain === 'lecard' ? 'law' : domain;
   const domainStars = Array.from(starDataMap.entries()).filter(
-    ([_, { data }]) => data.domain === domain
+    ([_, { data }]) => data.domain === starDomain
   );
 
   if (domainStars.length === 0) return;
@@ -454,11 +462,18 @@ const handleEvalReset = () => {
     console.log('[eval] 重置评估数据');
   }
   evalMetricsHistory.value = [];
+  evalMetricKeys.value = [];
   showTrendChart.value = false;
 };
 
-const handleMetricsUpdate = (payload: { step: number; currentMetrics: Record<string, number>; cumulativeMetrics: Record<string, number> }) => {
+const handleMetricsUpdate = (payload: { step: number; currentMetrics: Record<string, number>; cumulativeMetrics: Record<string, number>; metricKeys?: string[]; totalSamples?: number }) => {
   showTrendChart.value = true;
+  if (payload.totalSamples) {
+    evalMaxSteps = payload.totalSamples;
+  }
+  if (payload.metricKeys?.length) {
+    evalMetricKeys.value = payload.metricKeys.map(key => key.replace('@', '_'));
+  }
   evalMetricsHistory.value.push({
     step: payload.step,
     currentMetrics: payload.currentMetrics,

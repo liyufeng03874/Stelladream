@@ -20,12 +20,14 @@ interface EvalVisualContext {
 function getDomainFromChunkId(chunkId: string): string {
   if (chunkId.startsWith('cmrc_')) return 'general';
   if (chunkId.startsWith('doc_')) return 'medical';
+  if (chunkId.includes('::')) return 'law';
   return 'game';
 }
 
 const DOMAIN_COLORS: Record<string, THREE.Color> = {
   'general': new THREE.Color(0x2ECC71),
   'medical': new THREE.Color(0x4A9AF5),
+  'law': new THREE.Color(0xE74C3C),
   'game': new THREE.Color(0xF5A623),
 };
 
@@ -33,6 +35,7 @@ export function useEvalVisual(context: EvalVisualContext) {
   const { scene, starDataMap } = context;
 
   const hitCounts = new Map<string, number>();
+  const maxGrades = new Map<string, number>();
   const coHitCounts = new Map<string, number>();
   let totalSteps = 0;
 
@@ -95,12 +98,13 @@ export function useEvalVisual(context: EvalVisualContext) {
       if (!starInfo) return;
 
       const sprite = starInfo.sprite;
-      // 颜色拉到白色
+      const grade = maxGrades.get(chunkId) ?? 3;
+      const gradeFactor = grade <= 0 ? 0.72 : 0.82 + grade * 0.06;
       sprite.material.color.set(0xffffff);
-      sprite.material.opacity = 1.0;
-      // 放大：原始大小的 3-5 倍
+      sprite.material.opacity = gradeFactor;
       const baseScale = starInfo.originalScale.x;
-      const scale = baseScale * (3 + Math.min(count, 3) * 0.5);
+      const gradeScale = grade <= 0 ? 2.2 : 2.4 + grade * 0.35;
+      const scale = baseScale * (gradeScale + Math.min(count, 3) * 0.35);
       sprite.scale.set(scale, scale, 1);
       sprite.material.needsUpdate = true;
     });
@@ -187,15 +191,20 @@ export function useEvalVisual(context: EvalVisualContext) {
   }
 
   function applyAllEffects() {
-    totalSteps = 500;
     brightenStars();
     updateBridges();
     // 不再重复生粒子——每步已经生过了
   }
 
-  function processStep(chunkIds: string[]) {
+  function processStep(chunkIds: string[], grades: number[] = []) {
     totalSteps++;
     recordHits(chunkIds);
+    chunkIds.forEach((id, index) => {
+      const grade = grades[index];
+      if (typeof grade === 'number') {
+        maxGrades.set(id, Math.max(maxGrades.get(id) ?? 0, grade));
+      }
+    });
     brightenStars();
     spawnSpiralParticles(chunkIds);
     updateBridges();
@@ -223,6 +232,7 @@ export function useEvalVisual(context: EvalVisualContext) {
     });
 
     hitCounts.clear();
+    maxGrades.clear();
     coHitCounts.clear();
     totalSteps = 0;
   }

@@ -11,6 +11,17 @@
       </button>
     </div>
 
+    <div v-if="datasetLabel" class="replay-meta">
+      <span class="replay-dataset">{{ datasetLabel }}</span>
+      <span v-if="runLabel">{{ runLabel }}</span>
+      <span v-if="methodLabel">{{ methodLabel }}</span>
+    </div>
+
+    <div v-if="currentQuery" class="replay-query">
+      <span class="replay-query-label">当前查询{{ currentQueryId ? ` · #${currentQueryId}` : '' }}</span>
+      <span class="replay-query-text">{{ currentQuery }}</span>
+    </div>
+
     <div class="controls">
       <button @click="togglePlay" class="play-button">
         {{ isPlaying ? '⏸' : '▶' }}
@@ -45,10 +56,12 @@ const emit = defineEmits<{
   highlight: [payload: {
     chunkIds: string[];
     ranks: number[];
+    grades: number[];
     correctIds: string[];
     currentMetrics: Record<string, number>;
     cumulativeMetrics: Record<string, number>;
     query: string;
+    queryId: string;
     domain: string;
     isBatch: boolean;
   }];
@@ -58,11 +71,18 @@ const emit = defineEmits<{
     step: number;
     currentMetrics: Record<string, number>;
     cumulativeMetrics: Record<string, number>;
+    metricKeys: string[];
+    totalSamples: number;
   }];
 }>();
 
-// 指标定义
-const metricDefs = [
+interface MetricDefinition {
+  key: string;
+  label: string;
+  color: string;
+}
+
+const defaultMetricDefs: MetricDefinition[] = [
   { key: 'ndcg_5', label: 'NDCG@5', color: '#60A5FA' },
   { key: 'hr_5', label: 'HR@5', color: '#34D399' },
   { key: 'mrr_5', label: 'MRR@5', color: '#F5A623' },
@@ -71,19 +91,63 @@ const metricDefs = [
   { key: 'hr_1', label: 'HR@1', color: '#FBBF24' },
 ];
 
+const metricColors = ['#60A5FA', '#34D399', '#F5A623', '#A78BFA', '#F472B6', '#FBBF24', '#FB7185'];
+const metricDefs = ref<MetricDefinition[]>(defaultMetricDefs);
+
+const metricLabel = (key: string) => {
+  const labels: Record<string, string> = {
+    ndcg_5: 'NDCG@5',
+    ndcg_10: 'NDCG@10',
+    ndcg_20: 'NDCG@20',
+    ndcg_30: 'NDCG@30',
+    hr_1: 'HR@1',
+    hr_3: 'HR@3',
+    hr_5: 'HR@5',
+    hr_10: 'HR@10',
+    recall_5: 'Recall@5',
+    recall_10: 'Recall@10',
+    precision_5: 'P@5',
+    p_5: 'P@5',
+    precision_10: 'P@10',
+    p_10: 'P@10',
+    mrr_5: 'MRR@5',
+    mrr_10: 'MRR@10',
+    map: 'MAP',
+  };
+  return labels[key] ?? key.replace('_', '@').toUpperCase();
+};
+
+const updateMetricDefs = (keys: string[] | undefined) => {
+  if (!keys?.length) {
+    metricDefs.value = defaultMetricDefs;
+    return;
+  }
+  metricDefs.value = keys.map((key, index) => ({
+    key: key.replace('@', '_'),
+    label: metricLabel(key.replace('@', '_')),
+    color: metricColors[index % metricColors.length],
+  }));
+};
+
 const domains = [
+  { key: 'lecard', name: 'LeCaRD 专家评测 (Run 010)' },
   { key: 'medical', name: '医疗 (Run 007)' },
   { key: 'law', name: '法律 (Run 008)' },
-  { key: 'general', name: '百科 (Run 009)' }
+  { key: 'general', name: '百科 (Run 009)' },
 ];
 
-const currentDomain = ref('medical');
+const currentDomain = ref('lecard');
 const currentStep = ref(0);
 const maxSteps = ref(500);
 const isPlaying = ref(false);
 
 const currentMetrics = ref<Record<string, number>>({});
 const cumulativeMetrics = ref<Record<string, number>>({});
+const datasetLabel = ref('');
+const runLabel = ref('');
+const methodLabel = ref('');
+const currentQuery = ref('');
+const currentQueryId = ref('');
 
 let playInterval: number | null = null;
 
@@ -99,6 +163,12 @@ const switchDomain = (domain: string) => {
   currentStep.value = 0;
   currentMetrics.value = {};
   cumulativeMetrics.value = {};
+  metricDefs.value = defaultMetricDefs;
+  datasetLabel.value = '';
+  runLabel.value = '';
+  methodLabel.value = '';
+  currentQuery.value = '';
+  currentQueryId.value = '';
   loadEvalData();
 };
 
@@ -131,10 +201,12 @@ const togglePlay = () => {
       emit('highlight', {
         chunkIds: [],
         ranks: [],
+        grades: [],
         correctIds: [],
         currentMetrics: currentMetrics.value,
         cumulativeMetrics: cumulativeMetrics.value,
         query: '',
+        queryId: '',
         domain: currentDomain.value,
         isBatch: true,
       });
@@ -153,12 +225,20 @@ const loadEvalData = async () => {
     const data = await getEvalData(currentDomain.value, currentStep.value);
     currentMetrics.value = data.current_metrics ?? {};
     cumulativeMetrics.value = data.cumulative_metrics ?? {};
+    currentQuery.value = data.query ?? '';
+    currentQueryId.value = data.query_id ?? '';
+    updateMetricDefs(data.metric_keys);
+    datasetLabel.value = data.dataset ?? '';
+    runLabel.value = data.run ? `Run ${data.run}` : '';
+    methodLabel.value = data.method ?? '';
 
     // 发出指标更新事件
     emit('metrics-update', {
       step: data.current_step,
       currentMetrics: data.current_metrics ?? {},
       cumulativeMetrics: data.cumulative_metrics ?? {},
+      metricKeys: data.metric_keys ?? [],
+      totalSamples: data.total_samples ?? 0,
     });
 
     if (data.total_samples) {
@@ -171,10 +251,12 @@ const loadEvalData = async () => {
       emit('highlight', {
         chunkIds: data.retrieved_ids,
         ranks: data.ranks ?? [1, 2, 3, 4, 5].slice(0, data.retrieved_ids.length),
+        grades: data.grades ?? [],
         correctIds: data.correct_ids ?? [],
         currentMetrics: data.current_metrics ?? {},
         cumulativeMetrics: data.cumulative_metrics ?? {},
         query: data.query ?? '',
+        queryId: data.query_id ?? '',
         domain: currentDomain.value,
         isBatch: false,
       });
@@ -241,6 +323,46 @@ onMounted(() => {
   align-items: center;
   gap: 0.8rem;
   margin-bottom: 0.85rem;
+}
+
+.replay-meta {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  margin: -0.25rem 0 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replay-dataset {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 700;
+}
+
+.replay-query {
+  display: flex;
+  gap: 0.55rem;
+  align-items: baseline;
+  margin: -0.15rem 0 0.75rem;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.72rem;
+}
+
+.replay-query-label {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 700;
+}
+
+.replay-query-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .play-button {

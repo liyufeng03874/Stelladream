@@ -120,7 +120,11 @@ async def get_eval_data(domain: str, step: int = 0):
     step = min(max(step, 0), len(samples) - 1) if samples else 0
     current_sample = samples[step] if samples else {}
 
-    metric_keys = ["hr@1", "hr@3", "hr@5", "recall@5", "precision@5", "mrr@5", "ndcg@5"]
+    # Each evaluation source owns its metric vocabulary.  Older replay files
+    # use @5 metrics while LeCaRD Run 010 uses @10 metrics plus MAP.
+    metric_keys = list(eval_data.get("metric_keys", [])) or list(summary.keys())
+    if not metric_keys and samples:
+        metric_keys = list(samples[0].get("metrics", {}).keys())
 
     # 当前样本指标
     current_metrics = {k.replace("@", "_"): current_sample.get("metrics", {}).get(k, 0) for k in metric_keys}
@@ -132,11 +136,20 @@ async def get_eval_data(domain: str, step: int = 0):
         cumulative_metrics[k.replace("@", "_")] = sum(values) / len(values) if values else 0
 
     return {
+        "dataset": eval_data.get("dataset", domain),
+        "run": eval_data.get("run"),
+        "index": eval_data.get("index"),
+        "method": eval_data.get("method"),
+        "summary": summary,
+        "metric_keys": metric_keys,
         "current_metrics": current_metrics,
         "cumulative_metrics": cumulative_metrics,
         "total_samples": len(samples),
         "current_step": step,
+        "query_id": current_sample.get("id", current_sample.get("qid", "")),
         "retrieved_ids": current_sample.get("retrieved_ids", []),
+        "parent_ids": current_sample.get("parent_ids", []),
+        "grades": current_sample.get("grades", []),
         "correct_ids": current_sample.get("correct_ids", []),
         "query": current_sample.get("query", ""),
         "ranks": current_sample.get("ranks", list(range(1, len(current_sample.get("retrieved_ids", [])) + 1))),
