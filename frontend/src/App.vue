@@ -22,6 +22,26 @@
 
       <SearchBar @search="handleSearch" />
 
+      <div v-if="phaseTimeline.length > 0" class="phase-timeline">
+        <button
+          v-for="item in phaseTimeline"
+          :key="item.phase"
+          class="phase-chip"
+          :class="{ active: phaseFilter === item.phase }"
+          @click="handlePhaseFilter(item.phase)"
+        >
+          <span class="phase-chip-label">{{ item.label }}</span>
+          <span class="phase-chip-count">{{ item.count }}</span>
+        </button>
+        <button
+          class="phase-chip phase-chip-all"
+          :class="{ active: phaseFilter === 'all' }"
+          @click="handlePhaseFilter('all')"
+        >
+          ALL
+        </button>
+      </div>
+
       <InfoPanel
         v-if="selectedStar"
         :star="selectedStar"
@@ -72,7 +92,7 @@ import InfoPanel from './components/InfoPanel.vue';
 import DebugPanel from './components/DebugPanel.vue';
 import EvalReplay from './components/EvalReplay.vue';
 import MetricsTrendChart from './components/MetricsTrendChart.vue';
-import type { FinalStarInfo } from './composables/useSearchAnimation';
+import type { FinalStarInfo, PhaseTimelineItem, SearchPhaseFilter } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
 import { useSearchAnimation } from './composables/useSearchAnimation';
 import { useEvalVisual } from './composables/useEvalVisual';
@@ -96,6 +116,8 @@ const showEvalPanel = ref(false);
 const showTrendChart = ref(false);
 const evalMetricsHistory = ref<Array<{ step: number; currentMetrics: Record<string, number>; cumulativeMetrics: Record<string, number> }>>([]);
 let evalMaxSteps = 500;
+const phaseTimeline = ref<PhaseTimelineItem[]>([]);
+const phaseFilter = ref<SearchPhaseFilter>('all');
 
 // 调试面板
 const showDebugPanel = ref(false);
@@ -500,6 +522,8 @@ const handleSearch = async (query: string) => {
     const results = await search(query);
 
     await animContext.animateSearch(results);
+    phaseTimeline.value = animContext.getPhaseTimeline?.() ?? [];
+    phaseFilter.value = animContext.getPhaseFilter?.() ?? 'all';
 
     if (results.reranker_final) {
       const finalStar = starData.value.find(
@@ -537,6 +561,11 @@ const handleStarFieldReady = (context: any) => {
     openDebugGui,
     closeDebugGui,
   };
+};
+
+const handlePhaseFilter = (filter: SearchPhaseFilter) => {
+  phaseFilter.value = filter;
+  animContext?.setPhaseFilter?.(filter);
 };
 
 onMounted(async () => {
@@ -632,6 +661,57 @@ onMounted(async () => {
   margin: 0.3rem 0 0 0;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.phase-timeline {
+  position: absolute;
+  top: 5.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  z-index: 45;
+}
+
+.phase-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.18s ease;
+}
+
+.phase-chip:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.phase-chip.active {
+  color: #fff;
+  border-color: rgba(96, 165, 250, 0.55);
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.phase-chip-label {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.phase-chip-count {
+  color: rgba(255, 255, 255, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+.phase-chip-all {
+  padding-inline: 0.8rem;
 }
 
 .debug-toggle {

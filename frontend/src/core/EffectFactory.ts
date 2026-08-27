@@ -13,6 +13,7 @@ export interface ManagedEffect {
   id: string;            // EffectRegistry 中注册的 ID
   targetId: string;      // 所属目标标�?
   type: string;          // 'glow' | 'meteor' | 'trail'
+  phase: string;
   threeObjects: THREE.Object3D[];
   status: 'active' | 'disposed';
 }
@@ -248,6 +249,7 @@ export class EffectFactory {
       id: managedId,
       targetId,
       type: 'glow',
+      phase,
       threeObjects: [glow],
       status: 'active',
     };
@@ -338,6 +340,7 @@ export class EffectFactory {
       id: managedId,
       targetId,
       type: 'meteor',
+      phase,
       threeObjects: [head, ...tailSprites],
       status: 'active',
     };
@@ -476,6 +479,7 @@ export class EffectFactory {
       id: managedId,
       targetId,
       type: 'annotation',
+      phase,
       threeObjects: [sprite],
       status: 'active',
     };
@@ -555,13 +559,20 @@ export class EffectFactory {
   disposeByPhase(phase: string): void {
     const toDispose: string[] = [];
     this.managed.forEach((effect, id) => {
-      const entries = this.registry.getHistory(effect.targetId);
-      const hasPhase = entries.some(e => e.phase === phase);
-      if (hasPhase && effect.status === 'active') {
+      if (effect.phase === phase && effect.status === 'active') {
         toDispose.push(id);
       }
     });
     toDispose.forEach(id => this.dispose(id));
+  }
+
+  setPhaseVisibility(phase: string, visible: boolean): void {
+    this.managed.forEach(effect => {
+      if (effect.phase !== phase || effect.status !== 'active') return;
+      effect.threeObjects.forEach(obj => {
+        obj.visible = visible;
+      });
+    });
   }
 
   /** 场景级兜底：移除所有大尺寸 sprite（光晕残留） */

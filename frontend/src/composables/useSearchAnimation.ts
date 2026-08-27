@@ -75,6 +75,13 @@ const FINAL_STAR_GLOW_OPACITY = 0.4;
 const FINAL_STAR_FLIGHT_DURATION = 1.5;
 const FINAL_NEIGHBOR_RADIUS = 5.5;
 const ANNOTATION_MIN_SPACING = 5.5;
+export type SearchPhaseFilter = 'all' | 'bm25' | 'knn' | 'rrf' | 'finalStar';
+
+export interface PhaseTimelineItem {
+  phase: SearchPhaseFilter;
+  label: string;
+  count: number;
+}
 
 function compactText(value: string, maxLength: number): string {
   const normalized = value.replace(/\s+/g, ' ').trim();
@@ -124,6 +131,38 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     material: THREE.SpriteMaterial;
   }>();
   let annotationAnchors: THREE.Vector3[] = [];
+  let currentPhaseFilter: SearchPhaseFilter = 'all';
+  let phaseTimeline: PhaseTimelineItem[] = [
+    { phase: 'bm25', label: 'BM25', count: 0 },
+    { phase: 'knn', label: 'kNN', count: 0 },
+    { phase: 'rrf', label: 'RRF', count: 0 },
+    { phase: 'finalStar', label: 'FINAL', count: 0 },
+  ];
+
+  function applyPhaseFilter(filter: SearchPhaseFilter) {
+    currentPhaseFilter = filter;
+    const visibleSet = filter === 'all' ? null : new Set<SearchPhaseFilter>([filter]);
+    const phases: SearchPhaseFilter[] = ['bm25', 'knn', 'rrf', 'finalStar'];
+    phases.forEach(phase => {
+      const visible = !visibleSet || visibleSet.has(phase);
+      factory.setPhaseVisibility(phase, visible);
+    });
+
+    if (finalStarInfo?.sprite) {
+      finalStarInfo.sprite.visible = filter === 'all' || filter === 'finalStar';
+    }
+    finalStarGlowSprites.forEach(sprite => {
+      sprite.visible = filter === 'all' || filter === 'finalStar';
+    });
+  }
+
+  function setPhaseFilter(filter: SearchPhaseFilter) {
+    applyPhaseFilter(filter);
+  }
+
+  function getPhaseTimeline(): PhaseTimelineItem[] {
+    return phaseTimeline.map(item => ({ ...item }));
+  }
 
   function isVectorValid(v: THREE.Vector3): boolean {
     return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
@@ -430,6 +469,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     // 新系统：通过 factory 清理所有活跃对象
     finalStarInfo = null;
+    currentPhaseFilter = 'all';
+    phaseTimeline = [
+      { phase: 'bm25', label: 'BM25', count: 0 },
+      { phase: 'knn', label: 'kNN', count: 0 },
+      { phase: 'rrf', label: 'RRF', count: 0 },
+      { phase: 'finalStar', label: 'FINAL', count: 0 },
+    ];
   }
 
   /** 相机飞向目标（通过 registry 记录相机变更） */
@@ -738,6 +784,13 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const bm25Ids = results.bm25.map(r => r.chunk_id);
     const knnIds = results.knn.map(r => r.chunk_id);
     const rrfIds = results.rrf_top5.map(r => r.chunk_id);
+    phaseTimeline = [
+      { phase: 'bm25', label: 'BM25', count: bm25Ids.length },
+      { phase: 'knn', label: 'kNN', count: knnIds.length },
+      { phase: 'rrf', label: 'RRF', count: rrfIds.length },
+      { phase: 'finalStar', label: 'FINAL', count: results.reranker_final ? 1 : 0 },
+    ];
+    applyPhaseFilter(currentPhaseFilter);
     const finalAnchor = results.reranker_final
       ? starDataMap.get(results.reranker_final.chunk_id)?.sprite.position.clone() ?? null
       : null;
@@ -831,6 +884,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       );
       disposeFinalAnnotations();
       createFinalAnnotation(finalStar, promoted.domainColor);
+      applyPhaseFilter(currentPhaseFilter);
 
     if (isVectorValid(promoted.targetPos)) {
       const finalMeteor = shootMeteors([promoted.targetPos], promoted.domainColor, 0, 'animateSearch', 'finalStar');
@@ -872,6 +926,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       data: targetData,
       originalScale: targetOrigScale,
     }, promoted.domainColor);
+    applyPhaseFilter(currentPhaseFilter);
 
     if (!isVectorValid(promoted.targetPos)) return;
 
@@ -1066,5 +1121,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     flyToStar,
     getRegistry: () => registry,
     getFactory: () => factory,
+    getPhaseTimeline,
+    setPhaseFilter,
+    getPhaseFilter: () => currentPhaseFilter,
   };
 }
