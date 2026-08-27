@@ -84,6 +84,7 @@ As of 2026-08-27, the single-query explainability layer is no longer just animat
 - a retrieval summary strip that exposes counts and top documents by phase
 - a detail panel that explains whether the selected star was hit in each stage, plus rank and score when available
 - automatic `FINAL` activation after a successful query so the timeline state matches the visible final-hit panel
+- the active star dataset is now rebuilt from the real `lecard_m3_doc` Elasticsearch index instead of the original demo-only star map
 
 It also already has an important experimental direction:
 

@@ -14,6 +14,9 @@ export interface StarPoint {
   z: number;
   domain: string;
   chunk_id: string;
+  doc_id?: string;
+  chunk_index?: number;
+  source_path?: string;
   content: string;
   source: string;
   size: number;

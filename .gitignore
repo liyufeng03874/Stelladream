@@ -25,6 +25,8 @@ build/
 data/*.json
 data/*.npy
 data/*.pkl
+!data/star_data.json
+!data/star_data.meta.json
 
 # Models (should reference external paths)
 models/
