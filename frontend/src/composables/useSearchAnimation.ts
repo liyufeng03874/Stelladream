@@ -10,12 +10,12 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import type { StarPoint } from '../api';
 
-// 领域颜色（与 useEvalVisual 保持一致）
+// 妫板棗鐓欐０婊嗗閿涘牅绗?useEvalVisual 娣囨繃瀵旀稉鈧懛杈剧礆
 function getDomainColor(value: string): number {
-  if (value === 'general' || value.startsWith('cmrc_')) return 0x34D399; // 百科：绿
-  if (value === 'medical' || value.startsWith('doc_')) return 0x4A9AF5;  // 医疗：蓝
+  if (value === 'general' || value.startsWith('cmrc_')) return 0x34D399; // 閻у墽顫栭敍姘辫雹
+  if (value === 'medical' || value.startsWith('doc_')) return 0x4A9AF5;  // 閸栬崵鏋熼敍姘虫憫
   if (value === 'law') return 0xE74C3C;
-  return 0xF5A623;                                  // 游戏/小说：橙
+  return 0xF5A623;                                  // 濞撳憡鍨?鐏忓繗顕╅敍姘煻
 }
 import { EffectRegistry } from '../core/EffectRegistry';
 import { EffectFactory } from '../core/EffectFactory';
@@ -47,8 +47,8 @@ export interface FinalStarAppliedStyle {
 export interface FinalStarInfo {
   sprite: THREE.Sprite;
   data: StarPoint;
-  trueOriginalScale: THREE.Vector3;     // 在 highlightAndGrow 之前的真实原始 scale
-  trueOriginalMaterial: THREE.SpriteMaterial; // 在 highlightAndGrow 之前的真实原始 material
+  trueOriginalScale: THREE.Vector3;     // 閸?highlightAndGrow 娑斿澧犻惃鍕埂鐎圭偛甯慨?scale
+  trueOriginalMaterial: THREE.SpriteMaterial; // 閸?highlightAndGrow 娑斿澧犻惃鍕埂鐎圭偛甯慨?material
   domainColor: string;
   appliedStyle: FinalStarAppliedStyle;
 }
@@ -112,11 +112,11 @@ function buildStarTitle(data: StarPoint): string {
 export function useSearchAnimation(context: SearchAnimationContext) {
   const { scene, camera, controls, starDataMap } = context;
 
-  // ===== 状态管理基础设施 =====
+  // ===== 閻樿埖鈧胶顓搁悶鍡楃唨绾偓鐠佺偓鏌?=====
   const registry = new EffectRegistry();
   const factory = new EffectFactory({ registry, scene, camera });
 
-  // 旧系统数组（过渡期保留，确保向后兼容）
+  // 閺冄呴兇缂佺喐鏆熺紒鍕剁礄鏉╁洦娴張鐔剁箽閻ｆ瑱绱濈涵顔荤箽閸氭垵鎮楅崗鐓庮啇閿?
   let glowSprites: THREE.Sprite[] = [];
   let highlightedSprites = new Map<THREE.Sprite, {
     originalScale: THREE.Vector3;
@@ -187,16 +187,16 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return isFinite(v.x) && isFinite(v.y) && isFinite(v.z);
   }
 
-  /** 创建辉光（通过 EffectFactory，同时兼容旧系统） */
+  /** 閸掓稑缂撴潏澶婂帨閿涘牓鈧俺绻?EffectFactory閿涘苯鎮撻弮璺哄悑鐎硅妫化鑽ょ埠閿?*/
   function createGlow(position: THREE.Vector3, color: number, size: number, targetId: string = 'default', source: string = 'createGlow', phase: string = 'default'): THREE.Sprite | null {
     const effect = factory.createGlow(position, color, size, targetId, source, phase);
     const glow = effect.threeObjects[0] as THREE.Sprite;
-    // 兼容旧系统：同时加入 glowSprites 数组
+    // 閸忕厧顔愰弮褏閮寸紒鐕傜窗閸氬本妞傞崝鐘插弳 glowSprites 閺佹壆绮?
     glowSprites.push(glow);
     return glow;
   }
 
-  /** 创建流星（通过 EffectFactory） */
+  /** 閸掓稑缂撳ù浣规Е閿涘牓鈧俺绻?EffectFactory閿?*/
   function createMeteor(from: THREE.Vector3, to: THREE.Vector3, color: number, delayMs: number = 0, targetId: string = 'default', source: string = 'createMeteor', phase: string = 'default'): Promise<void> {
     if (!isVectorValid(from) || !isVectorValid(to)) {
       return Promise.resolve();
@@ -407,7 +407,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       newMaterial.blending = THREE.AdditiveBlending;
       sprite.material = newMaterial;
 
-      // 注册材质变更
+      // 濞夈劌鍞介弶鎰窛閸欐ɑ娲?
       registry.add({ targetId, effectType: 'material', property: 'color', prevValue: oldColor, value: '#' + new THREE.Color(color).getHexString(), source, phase });
       registry.add({ targetId, effectType: 'material', property: 'opacity', prevValue: oldOpacity, value: materialOpacity, source, phase });
       registry.add({ targetId, effectType: 'material', property: 'blending', prevValue: oldBlending, value: THREE.AdditiveBlending, source, phase });
@@ -440,17 +440,17 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     return sprites;
   }
 
-  /** 清理辉光（通过 registry + factory，保留旧系统兼容） */
+  /** 濞撳懐鎮婃潏澶婂帨閿涘牓鈧俺绻?registry + factory閿涘奔绻氶悾娆愭＋缁崵绮洪崗鐓庮啇閿?*/
   function clearAllGlows() {
-    // 旧系统：手动清理数组
+    // 閺冄呴兇缂佺噦绱伴幍瀣З濞撳懐鎮婇弫鎵矋
     factory.disposeByType('glow');
     glowSprites = [];
     finalStarGlowSprites = [];
 
-    // 新系统：通过 factory 场景级兜底
+    // 閺傛壆閮寸紒鐕傜窗闁俺绻?factory 閸︾儤娅欑痪褍鍘规惔?
   }
 
-  /** 清理（通过 registry 恢复 + factory 清理，保留旧系统兼容） */
+  /** 濞撳懐鎮婇敍鍫モ偓姘崇箖 registry 閹垹顦?+ factory 濞撳懐鎮婇敍灞肩箽閻ｆ瑦妫化鑽ょ埠閸忕厧顔愰敍?*/
   function cleanup() {
     flightToken += 1;
     gsap.killTweensOf(camera.position);
@@ -486,7 +486,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     highlightedSprites.clear();
     trueOriginals.clear();
 
-    // 新系统：通过 factory 清理所有活跃对象
+    // 閺傛壆閮寸紒鐕傜窗闁俺绻?factory 濞撳懐鎮婇幍鈧張澶嬫た鐠哄啫顕挒?
     finalStarInfo = null;
     currentPhaseFilter = 'all';
     phaseTimeline = [
@@ -498,8 +498,8 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     phaseFocusTargets = new Map();
   }
 
-  /** 相机飞向目标（通过 registry 记录相机变更） */
-  /** 相机飞向目标（通过 registry 记录相机变更） */
+  /** 閻╁憡婧€妞嬬偛鎮滈惄顔界垼閿涘牓鈧俺绻?registry 鐠佹澘缍嶉惄鍛婃簚閸欐ɑ娲块敍?*/
+  /** 閻╁憡婧€妞嬬偛鎮滈惄顔界垼閿涘牓鈧俺绻?registry 鐠佹澘缍嶉惄鍛婃簚閸欐ɑ娲块敍?*/
   function flyToStar(
     targetPos: THREE.Vector3,
     duration: number = 2.0,
@@ -514,7 +514,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       return Promise.resolve();
     }
 
-    // 注册相机起始状态
+    // 濞夈劌鍞介惄鍛婃簚鐠у嘲顫愰悩鑸碘偓?
     registry.add({
       targetId: '_camera',
       effectType: 'camera',
@@ -796,7 +796,6 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     rrf_top5: Array<{ chunk_id: string }>;
     reranker_final: { chunk_id: string } | null;
   }) {
-    cleanup();
     clearAllGlows();
 
     await sleep(120);
@@ -927,7 +926,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
   }
 
   /**
-   * 星跃：旧最终星恢复原样，新星星继承最终星样式，相机飞过去
+   * 閺勭喕绌敍姘＋閺堚偓缂佸牊妲﹂幁銏狀槻閸樼喐鐗遍敍灞炬煀閺勭喐妲︾紒褎澹欓張鈧紒鍫熸Е閺嶅嘲绱￠敍宀€娴夐張娲棧鏉╁洤骞?
    */
   async function jumpToStar(targetSprite: THREE.Sprite) {
     const targetOrig = targetSprite.userData.trueOriginals;
@@ -936,8 +935,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const targetOrigMat = targetOrig.material;
     const targetData = targetSprite.userData as StarPoint;
 
-    cleanup();
-    disposeAllAnnotations();
+    if (finalStarInfo?.sprite && finalStarInfo.sprite !== targetSprite) {
+      resetFinalStar(true);
+      disposeFinalAnnotations();
+    }
 
     const promoted = applyFinalStarVisual(
       targetSprite,
@@ -967,91 +968,72 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     ]);
   }
 
-  function resetFinalStar() {
+  function resetFinalStar(preserveQueryArtifacts: boolean = false) {
     if (!finalStarInfo) return;
     const { sprite, trueOriginalScale, trueOriginalMaterial } = finalStarInfo;
 
     const oldMat = sprite.material as THREE.SpriteMaterial;
 
-    // 先杀死旧材质上的所有tween（特别是无限循环的呼吸动画）
     gsap.killTweensOf(oldMat);
     gsap.killTweensOf(oldMat.color);
     gsap.killTweensOf(sprite.scale);
     gsap.killTweensOf(sprite);
 
-    // 强制重置scale
     sprite.scale.set(trueOriginalScale.x, trueOriginalScale.y, trueOriginalScale.z);
 
-    // 清理所有已知光晕
-    clearAllGlows();
-
-    // 场景级清扫：移除所有大尺寸sprite（光晕）
-    scene.children.forEach(child => {
-      if (child instanceof THREE.Sprite && child !== sprite) {
-        const maxDim = Math.max(child.scale.x, child.scale.y);
-        if (maxDim > 10) {
-          scene.remove(child);
-          (child.material as THREE.Material).dispose();
-          if (child.material instanceof THREE.SpriteMaterial && child.material.map) {
-            child.material.map.dispose();
+    if (preserveQueryArtifacts) {
+      finalStarGlowSprites.forEach(glow => {
+        scene.remove(glow);
+        const mat = glow.material as THREE.SpriteMaterial;
+        mat.map?.dispose();
+        mat.dispose();
+      });
+      finalStarGlowSprites = [];
+    } else {
+      clearAllGlows();
+      scene.children.forEach(child => {
+        if (child instanceof THREE.Sprite && child !== sprite) {
+          const maxDim = Math.max(child.scale.x, child.scale.y);
+          if (maxDim > 10) {
+            scene.remove(child);
+            (child.material as THREE.Material).dispose();
+            if (child.material instanceof THREE.SpriteMaterial && child.material.map) {
+              child.material.map.dispose();
+            }
           }
         }
-      }
-    });
+      });
+    }
 
-    // 替换为原始材质
     sprite.material = trueOriginalMaterial;
-
-    // 确保原始材质的属性正确
-    trueOriginalMaterial.opacity = trueOriginalMaterial.opacity; // 触发setter
+    trueOriginalMaterial.opacity = trueOriginalMaterial.opacity;
     trueOriginalMaterial.needsUpdate = true;
 
-    // 销毁旧材质（防止内存泄漏和tween残留）
     if (oldMat !== trueOriginalMaterial) {
-      // 不dispose map，因为可能被缓存共享
       oldMat.dispose();
     }
 
     finalStarInfo = null;
 
-    console.log('[reset] 最终星已恢复到原始状态');
+    console.log('[reset] final star restored');
   }
-
-  function getFinalStar(): FinalStarInfo | null {
-    return finalStarInfo;
-  }
-
-  function getFinalStarGlows(): THREE.Sprite[] {
-    return [...finalStarGlowSprites];
-  }
-
-  function setBreathingActive(active: boolean) {
-    if (breathingTween) {
-      if (active) {
-        breathingTween.resume();
-      } else {
-        breathingTween.pause();
-      }
-    }
-    if (finalStarInfo?.appliedStyle) {
-      finalStarInfo.appliedStyle.breathingActive = active;
     }
   }
 
-  // ===== 评估回放联动 =====
+  // ===== 鐠囧嫪鍙婇崶鐐存杹閼辨柨濮?=====
   let evalHighlightedSprites = new Map<THREE.Sprite, {
     originalMaterial: THREE.SpriteMaterial;
     originalScale: THREE.Vector3;
   }>();
 
-  /** 评估高亮：传入 UUID chunk_id 列表，按排名着色 */
+  /** 鐠囧嫪鍙婃妯瑰瘨閿涙矮绱堕崗?UUID chunk_id 閸掓銆冮敍灞惧瘻閹烘帒鎮曢惈鈧懝?*/
   function evalHighlight(chunkIds: string[], color: number, scale: number = 2) {
-    // 先清理之前的高亮
+    // 閸忓牊绔婚悶鍡曠閸撳秶娈戞妯瑰瘨
     clearEvalHighlight();
 
     chunkIds.forEach(chunkId => {
       const starInfo = starDataMap.get(chunkId);
-      if (!starInfo) return; // 静默跳过（评估ID可能不在渲染的星点中）
+      if (!starInfo) return; // 闂堟瑩绮捄瀹犵箖閿涘牐鐦庢导鐧怐閸欘垵鍏樻稉宥呮躬濞撳弶鐓嬮惃鍕Е閻愰€涜厬閿?
 
       const sprite = starInfo.sprite;
       if (!sprite || !isVectorValid(sprite.position)) return;
@@ -1096,31 +1078,31 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         ease: 'back.out'
       });
 
-      // 领域色光晕表示正确召回
+      // 妫板棗鐓欓懝鎻掑帨閺呮洝銆冪粈鐑橆劀绾喖褰崶?
       setTimeout(() => {
         createGlow(sprite.position, color, sprite.scale.x * 2, targetId, 'evalHighlight', 'eval');
       }, 300);
     });
   }
 
-  /** 清除评估高亮，恢复原样 */
+  /** 濞撳懘娅庣拠鍕強妤傛ü瀵掗敍灞句划婢跺秴甯弽?*/
   function clearEvalHighlight() {
     evalHighlightedSprites.forEach((original, sprite) => {
       gsap.killTweensOf(sprite.scale);
       gsap.killTweensOf(sprite.material);
 
-      // 恢复原始材质和缩放
+      // 閹垹顦查崢鐔奉潗閺夋劘宸濋崪宀€缂夐弨?
       sprite.material = original.originalMaterial;
       sprite.scale.copy(original.originalScale);
 
-      // 场景级清扫该 sprite 的所有光晕
+      // 閸︾儤娅欑痪褎绔婚幍顐ヮ嚉 sprite 閻ㄥ嫭澧嶉張澶婂帨閺?
       scene.children.forEach(child => {
         if (child instanceof THREE.Sprite && child !== sprite) {
           const maxDim = Math.max(child.scale.x, child.scale.y);
-          if (maxDim > 5 && maxDim < 50) { // 光晕范围
+          if (maxDim > 5 && maxDim < 50) { // 閸忓妾块懠鍐ㄦ纯
             const childPos = child.position;
             const spritePos = sprite.position;
-            if (childPos.distanceTo(spritePos) < 3) { // 距离近的视为光晕
+            if (childPos.distanceTo(spritePos) < 3) { // 鐠烘繄顬囨潻鎴犳畱鐟欏棔璐熼崗澶嬫
               scene.remove(child);
               (child.material as THREE.Material).dispose();
               if (child.material instanceof THREE.SpriteMaterial && child.material.map) {
