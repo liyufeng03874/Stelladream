@@ -138,6 +138,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     { phase: 'rrf', label: 'RRF', count: 0 },
     { phase: 'finalStar', label: 'FINAL', count: 0 },
   ];
+  let phaseFocusTargets = new Map<SearchPhaseFilter, THREE.Vector3[]>();
 
   function applyPhaseFilter(filter: SearchPhaseFilter) {
     currentPhaseFilter = filter;
@@ -162,6 +163,24 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
   function getPhaseTimeline(): PhaseTimelineItem[] {
     return phaseTimeline.map(item => ({ ...item }));
+  }
+
+  async function focusPhase(filter: SearchPhaseFilter) {
+    if (filter === 'all') return;
+
+    const positions = phaseFocusTargets.get(filter) || [];
+    if (!positions.length) {
+      if (filter === 'finalStar' && finalStarInfo?.sprite) {
+        const pos = finalStarInfo.sprite.position.clone();
+        await flyToStar(pos, 0.85, 'phaseFilter', 'phaseFilter', {
+          cameraDistance: getFinalStarVisuals(finalStarInfo.trueOriginalScale).cameraDistance,
+          arcLift: 2,
+        });
+      }
+      return;
+    }
+
+    await frameTargetCluster(positions, 0.65);
   }
 
   function isVectorValid(v: THREE.Vector3): boolean {
@@ -476,6 +495,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       { phase: 'rrf', label: 'RRF', count: 0 },
       { phase: 'finalStar', label: 'FINAL', count: 0 },
     ];
+    phaseFocusTargets = new Map();
   }
 
   /** 相机飞向目标（通过 registry 记录相机变更） */
@@ -794,6 +814,12 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const finalAnchor = results.reranker_final
       ? starDataMap.get(results.reranker_final.chunk_id)?.sprite.position.clone() ?? null
       : null;
+    phaseFocusTargets = new Map([
+      ['bm25', collectPositions(bm25Ids, 6)],
+      ['knn', collectPositions(knnIds, 6)],
+      ['rrf', collectPositions(rrfIds, 5)],
+      ['finalStar', finalAnchor ? [finalAnchor.clone()] : []],
+    ]);
 
     const framingPositions = [
       ...collectPositions(bm25Ids, 6),
@@ -1123,6 +1149,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     getFactory: () => factory,
     getPhaseTimeline,
     setPhaseFilter,
+    focusPhase,
     getPhaseFilter: () => currentPhaseFilter,
   };
 }

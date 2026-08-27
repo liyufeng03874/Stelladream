@@ -197,69 +197,73 @@ onMounted(() => {
   transform: translateX(-50%);
   width: 85%;
   max-width: 1100px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  padding: 1.2rem 1.5rem;
+  padding: 1rem 1.1rem;
   z-index: 50;
 }
 
 .tabs {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .tab {
   flex: 1;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
+  min-width: 0;
+  padding: 0.46rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.85rem;
 }
 
 .tab:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 .tab.active {
-  background: rgba(96, 165, 250, 0.3);
-  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.16);
+  border-color: rgba(96, 165, 250, 0.55);
   color: white;
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.8rem;
+  gap: 0.8rem;
+  margin-bottom: 0.85rem;
 }
 
 .play-button {
   width: 36px;
   height: 36px;
-  background: #60a5fa;
-  border: none;
+  background: rgba(96, 165, 250, 0.15);
+  border: 1px solid rgba(96, 165, 250, 0.45);
   border-radius: 50%;
   color: white;
   font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
 }
 
 .play-button:hover {
   transform: scale(1.1);
+  background: rgba(96, 165, 250, 0.24);
 }
 
 .progress-slider {
   flex: 1;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 2px;
   outline: none;
   -webkit-appearance: none;
@@ -269,9 +273,10 @@ onMounted(() => {
   -webkit-appearance: none;
   width: 14px;
   height: 14px;
-  background: #60a5fa;
+  background: #93c5fd;
   border-radius: 50%;
   cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.16);
 }
 
 .step-indicator {
@@ -286,6 +291,7 @@ onMounted(() => {
   display: flex;
   gap: 1.5rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .metric-item {

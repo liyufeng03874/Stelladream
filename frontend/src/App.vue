@@ -566,6 +566,7 @@ const handleStarFieldReady = (context: any) => {
 const handlePhaseFilter = (filter: SearchPhaseFilter) => {
   phaseFilter.value = filter;
   animContext?.setPhaseFilter?.(filter);
+  void animContext?.focusPhase?.(filter);
 };
 
 onMounted(async () => {
@@ -665,7 +666,7 @@ onMounted(async () => {
 
 .phase-timeline {
   position: absolute;
-  top: 5.1rem;
+  top: 6.3rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -746,13 +747,13 @@ onMounted(async () => {
 
 .gui-toggle {
   position: absolute;
-  bottom: 1.5rem;
-  right: 8rem;
-  padding: 8px 16px;
+  bottom: 1.35rem;
+  right: 1.35rem;
+  padding: 0.55rem 0.9rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(12px);
   color: #a78bfa;
   font-size: 13px;
   cursor: pointer;
@@ -760,7 +761,33 @@ onMounted(async () => {
 }
 
 .gui-toggle:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.58);
   color: #c4b5fd;
+}
+
+.eval-toggle {
+  position: absolute;
+  bottom: 1.35rem;
+  right: 8.2rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(12px);
+  color: #f59e0b;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.eval-toggle:hover {
+  background: rgba(0, 0, 0, 0.58);
+  color: #fbbf24;
+}
+
+.eval-toggle.active {
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
 }
 </style>
