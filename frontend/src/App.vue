@@ -45,6 +45,9 @@
       <RetrievalSummary
         :result="latestSearchResult"
         :query="latestQuery"
+        :active-phase="phaseFilter"
+        @phase-select="handleSummaryPhaseSelect"
+        @result-select="handleSummaryResultSelect"
       />
 
       <InfoPanel
@@ -596,6 +599,16 @@ const handlePhaseFilter = (filter: SearchPhaseFilter) => {
       ? starData.value.find(star => star.chunk_id === finalId) ?? null
       : null;
   }
+};
+
+const handleSummaryPhaseSelect = (filter: SearchPhaseFilter) => {
+  handlePhaseFilter(filter);
+};
+
+const handleSummaryResultSelect = (chunkId: string) => {
+  const targetStar = starData.value.find(star => star.chunk_id === chunkId) ?? null;
+  if (!targetStar) return;
+  selectedStar.value = targetStar;
 };
 
 onMounted(async () => {

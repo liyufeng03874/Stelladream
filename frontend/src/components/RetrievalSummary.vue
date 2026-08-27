@@ -6,7 +6,13 @@
     </div>
 
     <div class="summary-grid">
-      <div v-for="stage in stages" :key="stage.key" class="summary-card">
+      <div
+        v-for="stage in stages"
+        :key="stage.key"
+        class="summary-card"
+        :class="{ active: activePhase === stage.phase }"
+        @click="emit('phase-select', stage.phase)"
+      >
         <div class="summary-card-head">
           <span class="summary-stage">{{ stage.label }}</span>
           <span class="summary-count">命中 {{ stage.count }}</span>
@@ -21,6 +27,13 @@
             <div class="summary-score">{{ stage.top.score }}</div>
           </div>
         </div>
+        <button
+          v-if="stage.top"
+          class="summary-action"
+          @click.stop="emit('result-select', stage.top.chunkId)"
+        >
+          查看 Top1 文档
+        </button>
         <div v-else class="summary-empty">暂无命中</div>
       </div>
     </div>
@@ -30,13 +43,19 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { SearchResult } from '../api';
+import type { SearchPhaseFilter } from '../composables/useSearchAnimation';
 
 interface Props {
   result: SearchResult | null;
   query: string;
+  activePhase: SearchPhaseFilter;
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  'phase-select': [phase: SearchPhaseFilter];
+  'result-select': [chunkId: string];
+}>();
 
 const fmtScore = (value: number) => value.toFixed(4);
 const compactId = (value: string) => (value.length > 20 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value);
@@ -44,34 +63,54 @@ const compactId = (value: string) => (value.length > 20 ? `${value.slice(0, 10)}
 const stages = computed(() => [
   {
     key: 'bm25',
+    phase: 'bm25' as SearchPhaseFilter,
     label: 'BM25',
     count: props.result?.bm25.length ?? 0,
     top: props.result?.bm25[0]
-      ? { id: compactId(props.result.bm25[0].chunk_id), score: fmtScore(props.result.bm25[0].score) }
+      ? {
+          id: compactId(props.result.bm25[0].chunk_id),
+          chunkId: props.result.bm25[0].chunk_id,
+          score: fmtScore(props.result.bm25[0].score),
+        }
       : null,
   },
   {
     key: 'knn',
+    phase: 'knn' as SearchPhaseFilter,
     label: 'kNN',
     count: props.result?.knn.length ?? 0,
     top: props.result?.knn[0]
-      ? { id: compactId(props.result.knn[0].chunk_id), score: fmtScore(props.result.knn[0].score) }
+      ? {
+          id: compactId(props.result.knn[0].chunk_id),
+          chunkId: props.result.knn[0].chunk_id,
+          score: fmtScore(props.result.knn[0].score),
+        }
       : null,
   },
   {
     key: 'rrf',
+    phase: 'rrf' as SearchPhaseFilter,
     label: 'RRF',
     count: props.result?.rrf_top5.length ?? 0,
     top: props.result?.rrf_top5[0]
-      ? { id: compactId(props.result.rrf_top5[0].chunk_id), score: fmtScore(props.result.rrf_top5[0].rrf_score) }
+      ? {
+          id: compactId(props.result.rrf_top5[0].chunk_id),
+          chunkId: props.result.rrf_top5[0].chunk_id,
+          score: fmtScore(props.result.rrf_top5[0].rrf_score),
+        }
       : null,
   },
   {
     key: 'final',
+    phase: 'finalStar' as SearchPhaseFilter,
     label: 'FINAL',
     count: props.result?.reranker_final ? 1 : 0,
     top: props.result?.reranker_final
-      ? { id: compactId(props.result.reranker_final.chunk_id), score: fmtScore(props.result.reranker_final.rerank_score) }
+      ? {
+          id: compactId(props.result.reranker_final.chunk_id),
+          chunkId: props.result.reranker_final.chunk_id,
+          score: fmtScore(props.result.reranker_final.rerank_score),
+        }
       : null,
   },
 ]);
@@ -125,6 +164,20 @@ const stages = computed(() => [
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.035);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.summary-card:hover {
+  border-color: rgba(147, 197, 253, 0.36);
+  background: rgba(255, 255, 255, 0.055);
+  transform: translateY(-1px);
+}
+
+.summary-card.active {
+  border-color: rgba(96, 165, 250, 0.75);
+  background: rgba(59, 130, 246, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.12);
 }
 
 .summary-card-head {
@@ -187,6 +240,20 @@ const stages = computed(() => [
 .summary-empty {
   color: rgba(255, 255, 255, 0.38);
   font-size: 0.8rem;
+}
+
+.summary-action {
+  margin-top: 0.55rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(147, 197, 253, 0.95);
+  font-size: 0.73rem;
+  cursor: pointer;
+}
+
+.summary-action:hover {
+  color: rgba(191, 219, 254, 1);
 }
 
 @media (max-width: 900px) {
