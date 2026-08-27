@@ -1,6 +1,6 @@
 # Stelladream Product Roadmap
 
-Last updated: 2026-08-26
+Last updated: 2026-08-27
 
 ## Overview
 
@@ -74,6 +74,16 @@ The project already has a strong foundation:
 - star detail panel and jump interaction
 - evaluation replay
 - metrics trend chart
+
+As of 2026-08-27, the single-query explainability layer is no longer just animation. It now includes:
+
+- a retrieval phase timeline for `BM25 / kNN / RRF / FINAL`
+- phase filtering and phase-aware camera focus
+- meteor-style intermediate hit animations with persistent hit labels
+- preserved query artifacts after `星跃`, so users can continue inspecting the same query path
+- a retrieval summary strip that exposes counts and top documents by phase
+- a detail panel that explains whether the selected star was hit in each stage, plus rank and score when available
+- automatic `FINAL` activation after a successful query so the timeline state matches the visible final-hit panel
 
 It also already has an important experimental direction:
 
@@ -149,6 +159,26 @@ Goal:
 - move away from dense hard connection lines
 - use cluster center, soft particle fog, and restrained glow boundaries
 - make the active region legible first, beautiful second
+
+### Status on 2026-08-27
+
+Already in place:
+
+- retrieval stage timeline
+- stage filtering
+- automatic final-stage focus after query completion
+- retrieval summary panel
+- per-document stage explanation inside the detail panel
+- query-result preservation across `星跃`
+- evaluation replay controls baseline
+
+Still missing or incomplete:
+
+- overlap / difference comparison views across stages
+- explicit explanation of why nearby candidates lost to the final star
+- richer distance-based comparison around the final star neighborhood
+- stronger product polish for nebula-style eval playback
+- tighter layout integration between top controls, summary strip, and detail panel
 
 ### Exit Criteria
 
