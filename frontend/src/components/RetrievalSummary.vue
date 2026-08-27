@@ -1,21 +1,27 @@
 <template>
   <div v-if="result" class="retrieval-summary">
     <div class="summary-header">
-      <span class="summary-title">Search Results</span>
-      <span class="summary-query">{{ query }}</span>
+      <span class="summary-title">检索结果</span>
+      <span class="summary-query">查询：{{ query }}</span>
     </div>
 
     <div class="summary-grid">
       <div v-for="stage in stages" :key="stage.key" class="summary-card">
         <div class="summary-card-head">
           <span class="summary-stage">{{ stage.label }}</span>
-          <span class="summary-count">{{ stage.count }}</span>
+          <span class="summary-count">命中 {{ stage.count }}</span>
         </div>
         <div v-if="stage.top" class="summary-top">
-          <div class="summary-id">{{ stage.top.id }}</div>
-          <div class="summary-score">{{ stage.top.score }}</div>
+          <div class="summary-id-block">
+            <div class="summary-meta-label">Top1 文档</div>
+            <div class="summary-id">{{ stage.top.id }}</div>
+          </div>
+          <div class="summary-score-block">
+            <div class="summary-meta-label">分数</div>
+            <div class="summary-score">{{ stage.top.score }}</div>
+          </div>
         </div>
-        <div v-else class="summary-empty">No hit</div>
+        <div v-else class="summary-empty">暂无命中</div>
       </div>
     </div>
   </div>
@@ -143,7 +149,23 @@ const stages = computed(() => [
   display: flex;
   justify-content: space-between;
   gap: 0.6rem;
-  font-family: monospace;
+  align-items: flex-end;
+}
+
+.summary-id-block,
+.summary-score-block {
+  min-width: 0;
+}
+
+.summary-score-block {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.summary-meta-label {
+  margin-bottom: 0.18rem;
+  font-size: 0.67rem;
+  color: rgba(255, 255, 255, 0.42);
 }
 
 .summary-id {
@@ -152,11 +174,14 @@ const stages = computed(() => [
   text-overflow: ellipsis;
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.9);
+  font-family: monospace;
+  font-size: 0.84rem;
 }
 
 .summary-score {
   color: rgba(147, 197, 253, 0.95);
-  flex-shrink: 0;
+  font-family: monospace;
+  font-size: 0.84rem;
 }
 
 .summary-empty {

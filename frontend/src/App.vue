@@ -31,7 +31,7 @@
           @click="handlePhaseFilter(item.phase)"
         >
           <span class="phase-chip-label">{{ item.label }}</span>
-          <span class="phase-chip-count">{{ item.count }}</span>
+          <span class="phase-chip-count">{{ item.count }} 条</span>
         </button>
         <button
           class="phase-chip phase-chip-all"
@@ -589,6 +589,13 @@ const handlePhaseFilter = (filter: SearchPhaseFilter) => {
   phaseFilter.value = filter;
   animContext?.setPhaseFilter?.(filter);
   void animContext?.focusPhase?.(filter);
+
+  if (filter === 'finalStar') {
+    const finalId = latestSearchResult.value?.reranker_final?.chunk_id;
+    selectedStar.value = finalId
+      ? starData.value.find(star => star.chunk_id === finalId) ?? null
+      : null;
+  }
 };
 
 onMounted(async () => {
