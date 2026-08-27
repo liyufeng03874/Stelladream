@@ -76,7 +76,11 @@ async def get_star_data(limit: int = 0):
 @app.post("/api/search")
 async def search(request: SearchRequest) -> SearchResponse:
     """RAG 搜索接口"""
-    from rag_search import get_search_engine
+    # Support both project-root module startup and direct server.py execution.
+    if __package__:
+        from .rag_search import get_search_engine
+    else:
+        from rag_search import get_search_engine
 
     try:
         engine = get_search_engine()

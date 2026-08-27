@@ -816,7 +816,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     rrf_top5: Array<{ chunk_id: string }>;
     reranker_final: { chunk_id: string } | null;
   }) {
-    clearAllGlows();
+    cleanup();
 
     await sleep(120);
 
@@ -906,15 +906,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         }
       });
 
-      const original = highlightedSprites.get(finalStar.sprite);
-      if (!original) {
-        return;
-      }
-
-      const trueOrig = trueOriginals.get(finalStar.sprite);
-      if (!trueOrig) {
-        return;
-      }
+      const trueOrig = trueOriginals.get(finalStar.sprite) ?? {
+        scale: finalStar.originalScale.clone(),
+        material: finalStar.originalMaterial.clone(),
+      };
 
       const trueOriginalScale = trueOrig.scale.clone();
       const trueOriginalMaterial = trueOrig.material;
