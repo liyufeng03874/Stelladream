@@ -28,7 +28,7 @@
           </div>
         </div>
         <button
-          v-if="stage.top"
+          v-if="stage.top && stage.phase !== 'finalStar'"
           class="summary-action"
           @click.stop="emit('result-select', stage.top.chunkId)"
         >

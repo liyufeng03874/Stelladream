@@ -30,6 +30,39 @@
         </span>
       </div>
 
+      <div v-if="retrievalInsight" class="retrieval-section">
+        <div class="retrieval-header">
+          <span class="label">检索路径:</span>
+          <span class="query-chip">{{ retrievalInsight.query }}</span>
+        </div>
+
+        <div class="retrieval-summary" :class="{ 'is-final': retrievalInsight.isCurrentFinal }">
+          {{ retrievalInsight.summary }}
+        </div>
+
+        <div class="retrieval-stage-grid">
+          <div
+            v-for="stage in retrievalInsight.stages"
+            :key="stage.key"
+            class="retrieval-stage-card"
+            :class="{ hit: stage.hit, final: stage.key === 'final' && stage.hit }"
+          >
+            <div class="retrieval-stage-head">
+              <span class="retrieval-stage-name">{{ stage.label }}</span>
+              <span class="retrieval-stage-status">{{ stage.hit ? '命中' : '未命中' }}</span>
+            </div>
+
+            <div v-if="stage.hit" class="retrieval-stage-meta">
+              <span>排名 #{{ stage.rank }} / {{ stage.total }}</span>
+              <span>{{ stage.scoreLabel }} {{ formatScore(stage.score) }}</span>
+            </div>
+            <div v-else class="retrieval-stage-meta retrieval-stage-meta-muted">
+              {{ stage.total > 0 ? `候选池 ${stage.total} 条` : '本阶段无结果' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="content-section">
         <span class="label">内容:</span>
         <div class="content-text">{{ star.content }}</div>
@@ -44,9 +77,12 @@
 
 <script setup lang="ts">
 import type { StarPoint } from '../api';
+import type { RetrievalInsight } from '../types/retrieval';
 
 interface Props {
   star: StarPoint;
+  query?: string;
+  retrievalInsight?: RetrievalInsight | null;
 }
 
 const props = defineProps<Props>();
@@ -72,6 +108,7 @@ const domainNames: Record<string, string> = {
 
 const getDomainColor = (domain: string) => domainColors[domain] || '#ffffff';
 const getDomainName = (domain: string) => domainNames[domain] || domain;
+const formatScore = (value: number | null) => (value == null ? '--' : value.toFixed(4));
 </script>
 
 <style scoped>
@@ -162,6 +199,105 @@ const getDomainName = (domain: string) => domainNames[domain] || domain;
 .mono {
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
+}
+
+.retrieval-section {
+  margin-top: 1.4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.retrieval-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.8rem;
+}
+
+.query-chip {
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.74rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.retrieval-summary {
+  padding: 0.72rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+  font-size: 0.84rem;
+}
+
+.retrieval-summary.is-final {
+  border-color: rgba(96, 165, 250, 0.36);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.retrieval-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+
+.retrieval-stage-card {
+  min-width: 0;
+  padding: 0.7rem 0.78rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.retrieval-stage-card.hit {
+  border-color: rgba(52, 211, 153, 0.24);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.retrieval-stage-card.final {
+  border-color: rgba(96, 165, 250, 0.38);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.retrieval-stage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.retrieval-stage-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.retrieval-stage-status {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.retrieval-stage-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+
+.retrieval-stage-meta-muted {
+  color: rgba(255, 255, 255, 0.44);
 }
 
 .content-section {

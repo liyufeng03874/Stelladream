@@ -53,6 +53,8 @@
       <InfoPanel
         v-if="selectedStar"
         :star="selectedStar"
+        :query="latestQuery"
+        :retrieval-insight="selectedStarInsight"
         @close="selectedStar = null"
         @jump="handleStarJump"
       />
@@ -92,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import * as THREE from 'three';
 import StarField from './components/StarField.vue';
 import SearchBar from './components/SearchBar.vue';
@@ -104,6 +106,7 @@ import MetricsTrendChart from './components/MetricsTrendChart.vue';
 import type { FinalStarInfo, PhaseTimelineItem, SearchPhaseFilter } from './composables/useSearchAnimation';
 import { getStarData, getConfig, search, type StarPoint } from './api';
 import type { SearchResult } from './api';
+import type { RetrievalInsight, RetrievalStageInsight } from './types/retrieval';
 import { useSearchAnimation } from './composables/useSearchAnimation';
 import { useEvalVisual } from './composables/useEvalVisual';
 import { GUI } from 'lil-gui';
@@ -128,6 +131,9 @@ const phaseTimeline = ref<PhaseTimelineItem[]>([]);
 const phaseFilter = ref<SearchPhaseFilter>('all');
 const latestSearchResult = ref<SearchResult | null>(null);
 const latestQuery = ref('');
+const selectedStarInsight = computed(() =>
+  buildRetrievalInsight(selectedStar.value, latestSearchResult.value, latestQuery.value)
+);
 
 // 调试面板
 const showDebugPanel = ref(false);
@@ -532,6 +538,86 @@ function buildFinalStarInfo(star: StarPoint): FinalStarInfo | null {
       glowSize: null,
       breathingActive: false,
     },
+  };
+}
+
+function buildStageInsight<T extends { chunk_id: string }>(
+  items: T[],
+  chunkId: string,
+  label: string,
+  scoreLabel: string,
+  getScore: (item: T) => number,
+  key: RetrievalStageInsight['key'],
+): RetrievalStageInsight {
+  const index = items.findIndex(item => item.chunk_id === chunkId);
+  if (index === -1) {
+    return {
+      key,
+      label,
+      hit: false,
+      rank: null,
+      total: items.length,
+      score: null,
+      scoreLabel,
+    };
+  }
+
+  return {
+    key,
+    label,
+    hit: true,
+    rank: index + 1,
+    total: items.length,
+    score: getScore(items[index]),
+    scoreLabel,
+  };
+}
+
+function buildRetrievalInsight(
+  star: StarPoint | null,
+  result: SearchResult | null,
+  query: string,
+): RetrievalInsight | null {
+  if (!star || !result || !query) return null;
+
+  const stages: RetrievalStageInsight[] = [
+    buildStageInsight(result.bm25, star.chunk_id, 'BM25', 'BM25 分数', item => item.score, 'bm25'),
+    buildStageInsight(result.knn, star.chunk_id, 'kNN', 'kNN 分数', item => item.score, 'knn'),
+    buildStageInsight(result.rrf_top5, star.chunk_id, 'RRF', 'RRF 分数', item => item.rrf_score, 'rrf'),
+    result.reranker_final?.chunk_id === star.chunk_id
+      ? {
+          key: 'final',
+          label: 'FINAL',
+          hit: true,
+          rank: 1,
+          total: 1,
+          score: result.reranker_final.rerank_score,
+          scoreLabel: '重排分数',
+        }
+      : {
+          key: 'final',
+          label: 'FINAL',
+          hit: false,
+          rank: null,
+          total: result.reranker_final ? 1 : 0,
+          score: null,
+          scoreLabel: '重排分数',
+        },
+  ];
+
+  const hitStages = stages.filter(stage => stage.hit);
+  const summary = stages[3].hit
+    ? '当前文档是本轮检索的最终命中结果。'
+    : hitStages.length > 0
+      ? `当前文档进入了 ${hitStages.length} 个检索阶段：${hitStages.map(stage => stage.label).join(' / ')}。`
+      : '当前文档未进入本轮检索的召回或重排结果。';
+
+  return {
+    query,
+    isCurrentFinal: stages[3].hit,
+    hitStageCount: hitStages.length,
+    summary,
+    stages,
   };
 }
 
