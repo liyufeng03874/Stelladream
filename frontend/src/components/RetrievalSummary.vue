@@ -34,7 +34,7 @@
         >
           查看 Top1 文档
         </button>
-        <div v-else class="summary-empty">暂无命中</div>
+        <div v-else-if="stage.phase !== 'finalStar'" class="summary-empty">暂无命中</div>
       </div>
     </div>
   </div>

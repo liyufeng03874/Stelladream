@@ -485,7 +485,6 @@ const handleStarJump = () => {
   if (!targetInfo) return;
   console.log('[handleStarJump] targetSprite:', !!targetInfo.sprite);
   animContext.jumpToStar(targetInfo.sprite);
-  selectedStar.value = null;
 };
 
 const toggleDebugPanel = () => {
@@ -636,9 +635,10 @@ const handleSearch = async (query: string) => {
 
     await animContext.animateSearch(results);
     phaseTimeline.value = animContext.getPhaseTimeline?.() ?? [];
-    phaseFilter.value = animContext.getPhaseFilter?.() ?? 'all';
 
     if (results.reranker_final) {
+      phaseFilter.value = 'finalStar';
+      animContext.setPhaseFilter?.('finalStar');
       const finalStar = starData.value.find(
         s => s.chunk_id === results.reranker_final!.chunk_id
       );
@@ -647,6 +647,8 @@ const handleSearch = async (query: string) => {
         debugFinalStar.value = animContext.getFinalStar();
         showDebugPanel.value = false;
       }
+    } else {
+      phaseFilter.value = animContext.getPhaseFilter?.() ?? 'all';
     }
   } catch (error) {
     console.error('搜索失败:', error);
