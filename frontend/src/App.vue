@@ -78,7 +78,7 @@
       </button>
 
       <!-- 评估回放面板 -->
-      <button class="eval-toggle" @click="showEvalPanel = !showEvalPanel" :class="{ active: showEvalPanel }">
+      <button class="eval-toggle" @click="toggleEvalPanel" :class="{ active: showEvalPanel }">
         {{ showEvalPanel ? '关闭回放' : '📊 评估回放' }}
       </button>
 
@@ -509,6 +509,15 @@ const handleEvalFlyToDomain = (domain: string) => {
     cameraDistance,
     arcLift: Math.min(6, radius * 0.12),
   });
+};
+
+const toggleEvalPanel = () => {
+  if (showEvalPanel.value) {
+    handleEvalReset();
+    showEvalPanel.value = false;
+    return;
+  }
+  showEvalPanel.value = true;
 };
 
 const handleEvalReset = () => {

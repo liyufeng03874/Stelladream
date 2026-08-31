@@ -51,9 +51,9 @@ export function useEvalVisual(context: EvalVisualContext) {
   const bridgeLines = new THREE.LineSegments(
     new THREE.BufferGeometry(),
     new THREE.LineBasicMaterial({
-      color: 0x66aacc,
+      color: 0x8fe9ff,
       transparent: true,
-      opacity: 0.016,
+      opacity: 0.04,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
@@ -164,7 +164,7 @@ export function useEvalVisual(context: EvalVisualContext) {
   /** 极弱连线 */
   function updateBridges() {
     const positions: number[] = [];
-    const distanceThreshold = 6.6;
+    const distanceThreshold = 7.2;
     const maxSegments = 520;
     const candidates: { a: THREE.Vector3; b: THREE.Vector3; count: number; distance: number }[] = [];
 

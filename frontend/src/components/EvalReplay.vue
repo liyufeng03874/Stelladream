@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { getEvalData, getEvalSamples, type EvalSampleSummary } from '../api';
 
 const emit = defineEmits<{
@@ -437,6 +437,10 @@ const loadEvalData = async (options: { emitHighlight?: boolean } = {}) => {
 onMounted(() => {
   loadSampleIndex();
   loadEvalData({ emitHighlight: false });
+});
+
+onUnmounted(() => {
+  stopPlayback();
 });
 </script>
 
