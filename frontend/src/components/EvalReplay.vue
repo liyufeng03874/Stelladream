@@ -227,6 +227,9 @@ const currentCorrectIds = ref<string[]>([]);
 const currentGrades = ref<number[]>([]);
 
 let playInterval: number | null = null;
+let playLaunchToken = 0;
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const currentSampleSummary = computed(() =>
   sampleSummaries.value.find(sample => sample.step === currentStep.value) ?? null
@@ -290,18 +293,19 @@ const switchDomain = (domain: string) => {
   currentCorrectIds.value = [];
   currentGrades.value = [];
   loadSampleIndex();
-  loadEvalData();
+  loadEvalData({ emitHighlight: false });
 };
 
 const stopPlayback = () => {
   isPlaying.value = false;
+  playLaunchToken += 1;
   if (playInterval) {
     clearInterval(playInterval);
     playInterval = null;
   }
 };
 
-const togglePlay = () => {
+const togglePlay = async () => {
   if (isPlaying.value) {
     stopPlayback();
     return;
@@ -309,6 +313,10 @@ const togglePlay = () => {
 
   if (currentStep.value === 0) {
     emit('fly-to-domain', currentDomain.value);
+    const launchToken = ++playLaunchToken;
+    await sleep(1800);
+    if (launchToken !== playLaunchToken) return;
+    await loadEvalData({ emitHighlight: true });
   }
 
   isPlaying.value = true;
@@ -377,7 +385,7 @@ const loadSampleIndex = async () => {
   }
 };
 
-const loadEvalData = async () => {
+const loadEvalData = async (options: { emitHighlight?: boolean } = {}) => {
   try {
     const data = await getEvalData(currentDomain.value, currentStep.value);
     currentMetrics.value = data.current_metrics ?? {};
@@ -407,7 +415,7 @@ const loadEvalData = async () => {
         currentStep.value = data.total_samples - 1;
       }
     }
-    if (data.retrieved_ids && Array.isArray(data.retrieved_ids) && data.retrieved_ids.length > 0) {
+    if (options.emitHighlight !== false && data.retrieved_ids && Array.isArray(data.retrieved_ids) && data.retrieved_ids.length > 0) {
       emit('highlight', {
         chunkIds: data.retrieved_ids,
         ranks: data.ranks ?? [1, 2, 3, 4, 5].slice(0, data.retrieved_ids.length),
@@ -428,7 +436,7 @@ const loadEvalData = async () => {
 
 onMounted(() => {
   loadSampleIndex();
-  loadEvalData();
+  loadEvalData({ emitHighlight: false });
 });
 </script>
 

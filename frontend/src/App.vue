@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div id="app">
     <StarField
       v-if="starData.length > 0"
@@ -432,11 +432,65 @@ const handleEvalResultSelect = (chunkId: string) => {
   selectedStar.value = targetStar;
 };
 
+function findDenseClusterCenter(points: THREE.Vector3[]) {
+  if (!points.length) {
+    return { center: new THREE.Vector3(), radius: 1 };
+  }
+
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  points.forEach(point => {
+    minX = Math.min(minX, point.x);
+    maxX = Math.max(maxX, point.x);
+    minY = Math.min(minY, point.y);
+    maxY = Math.max(maxY, point.y);
+    minZ = Math.min(minZ, point.z);
+    maxZ = Math.max(maxZ, point.z);
+  });
+
+  const maxSpan = Math.max(maxX - minX, maxY - minY, maxZ - minZ, 1);
+  const cellSize = Math.max(maxSpan / 18, 1);
+  const grid = new Map<string, THREE.Vector3[]>();
+
+  points.forEach(point => {
+    const key = [
+      Math.floor((point.x - minX) / cellSize),
+      Math.floor((point.y - minY) / cellSize),
+      Math.floor((point.z - minZ) / cellSize),
+    ].join(',');
+    if (!grid.has(key)) grid.set(key, []);
+    grid.get(key)!.push(point);
+  });
+
+  let densestKey = '';
+  let densestCount = -1;
+  grid.forEach((bucket, key) => {
+    if (bucket.length > densestCount) {
+      densestCount = bucket.length;
+      densestKey = key;
+    }
+  });
+
+  const [baseCx, baseCy, baseCz] = densestKey.split(',').map(value => Number(value));
+  const neighborhood: THREE.Vector3[] = [];
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dz = -1; dz <= 1; dz++) {
+        const bucket = grid.get(`${baseCx + dx},${baseCy + dy},${baseCz + dz}`);
+        if (bucket) neighborhood.push(...bucket);
+      }
+    }
+  }
+
+  const source = neighborhood.length ? neighborhood : points;
+  const center = source.reduce((sum, point) => sum.add(point), new THREE.Vector3()).divideScalar(source.length);
+  const radius = Math.max(...source.map(point => point.distanceTo(center)), 1);
+  return { center, radius };
+}
+
 // 评估开始时相机飞向对应领域簇
 const handleEvalFlyToDomain = (domain: string) => {
   if (!animContext || !starDataMap) return;
 
-  // 计算该领域所有星的平均位置
   // LeCaRD is the real law index, so its replay key intentionally differs
   // from the legacy law replay source.
   const starDomain = domain === 'lecard' ? 'law' : domain;
@@ -446,20 +500,15 @@ const handleEvalFlyToDomain = (domain: string) => {
 
   if (domainStars.length === 0) return;
 
-  let cx = 0, cy = 0, cz = 0;
-  for (const [_, { sprite }] of domainStars) {
-    cx += sprite.position.x;
-    cy += sprite.position.y;
-    cz += sprite.position.z;
-  }
-  cx /= domainStars.length;
-  cy /= domainStars.length;
-  cz /= domainStars.length;
+  const positions = domainStars.map(([_, { sprite }]) => sprite.position.clone());
+  const { center, radius } = findDenseClusterCenter(positions);
+  const cameraDistance = THREE.MathUtils.clamp(radius * 2.8, 45, 160);
 
-  // 飞到领域中心上方一定距离
-  const targetPos = new THREE.Vector3(cx, cy + 50, cz + 100);
-  console.log(`[eval] 飞向 ${domain} 簇中心: (${cx.toFixed(1)}, ${cy.toFixed(1)}, ${cz.toFixed(1)})`);
-  animContext.flyToStar(targetPos, 2.0, 'eval-fly', 'initial');
+  console.log(`[eval] 飞向 ${domain} 簇中心: (${center.x.toFixed(1)}, ${center.y.toFixed(1)}, ${center.z.toFixed(1)})`);
+  animContext.flyToStar(center, 2.0, 'eval-fly', 'initial', {
+    cameraDistance,
+    arcLift: Math.min(6, radius * 0.12),
+  });
 };
 
 const handleEvalReset = () => {

@@ -25,10 +25,10 @@ function getDomainFromChunkId(chunkId: string): string {
 }
 
 const DOMAIN_COLORS: Record<string, THREE.Color> = {
-  'general': new THREE.Color(0x2ECC71),
-  'medical': new THREE.Color(0x4A9AF5),
-  'law': new THREE.Color(0xE74C3C),
-  'game': new THREE.Color(0xF5A623),
+  'general': new THREE.Color(0x6FD7FF),
+  'medical': new THREE.Color(0x4AA8FF),
+  'law': new THREE.Color(0x23C9E6),
+  'game': new THREE.Color(0x89D7FF),
 };
 
 const PAIR_KEY_SEPARATOR = '\u001f';
@@ -53,7 +53,7 @@ export function useEvalVisual(context: EvalVisualContext) {
     new THREE.LineBasicMaterial({
       color: 0x66aacc,
       transparent: true,
-      opacity: 0.012,
+      opacity: 0.016,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
@@ -102,7 +102,7 @@ export function useEvalVisual(context: EvalVisualContext) {
       const sprite = starInfo.sprite;
       const grade = maxGrades.get(chunkId) ?? 3;
       const gradeFactor = grade <= 0 ? 0.72 : 0.82 + grade * 0.06;
-      sprite.material.color.set(0xffffff);
+      sprite.material.color.set(0xf2fdff);
       sprite.material.opacity = gradeFactor;
       const baseScale = starInfo.originalScale.x;
       const gradeScale = grade <= 0 ? 2.2 : 2.4 + grade * 0.35;
@@ -164,8 +164,8 @@ export function useEvalVisual(context: EvalVisualContext) {
   /** 极弱连线 */
   function updateBridges() {
     const positions: number[] = [];
-    const distanceThreshold = 5.8;
-    const maxSegments = 420;
+    const distanceThreshold = 6.6;
+    const maxSegments = 520;
     const candidates: { a: THREE.Vector3; b: THREE.Vector3; count: number; distance: number }[] = [];
 
     coHitCounts.forEach((count, key) => {
