@@ -82,7 +82,7 @@
         {{ showEvalPanel ? '关闭回放' : '📊 评估回放' }}
       </button>
 
-      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" @reset="handleEvalReset" @fly-to-domain="handleEvalFlyToDomain" @metrics-update="handleMetricsUpdate" />
+      <EvalReplay v-if="showEvalPanel" @highlight="handleEvalHighlight" @reset="handleEvalReset" @fly-to-domain="handleEvalFlyToDomain" @metrics-update="handleMetricsUpdate" @result-select="handleEvalResultSelect" />
 
       <MetricsTrendChart
         v-if="showTrendChart && evalMetricsHistory.length > 0"
@@ -424,6 +424,12 @@ const handleEvalHighlight = (payload: any) => {
       (payload.grades ?? []).slice(0, 5),
     );  // 只取 Top-5 作为主动画目标
   }
+};
+
+const handleEvalResultSelect = (chunkId: string) => {
+  const targetStar = starData.value.find(star => star.chunk_id === chunkId) ?? null;
+  if (!targetStar) return;
+  selectedStar.value = targetStar;
 };
 
 // 评估开始时相机飞向对应领域簇

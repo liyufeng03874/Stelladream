@@ -52,6 +52,30 @@ export interface EvalData {
   ranks: number[];
 }
 
+export interface EvalSampleSummary {
+  step: number;
+  query_id: string;
+  query: string;
+  retrieved_count: number;
+  relevant_count: number;
+  first_relevant_rank: number | null;
+  hit_key?: string | null;
+  hit?: boolean | null;
+  ndcg_key?: string | null;
+  ndcg?: number | null;
+  metrics: Record<string, number>;
+}
+
+export interface EvalSamplesResponse {
+  dataset?: string;
+  run?: string;
+  index?: string;
+  method?: string;
+  metric_keys: string[];
+  total_samples: number;
+  samples: EvalSampleSummary[];
+}
+
 // API 方法
 export const getStarData = async (): Promise<StarPoint[]> => {
   const response = await api.get('/api/star-data');
@@ -69,6 +93,11 @@ export const search = async (query: string): Promise<SearchResult> => {
 
 export const getEvalData = async (domain: string, step: number): Promise<EvalData> => {
   const response = await api.get(`/api/eval/${domain}`, { params: { step } });
+  return response.data;
+};
+
+export const getEvalSamples = async (domain: string): Promise<EvalSamplesResponse> => {
+  const response = await api.get(`/api/eval/${domain}/samples`);
   return response.data;
 };
 
