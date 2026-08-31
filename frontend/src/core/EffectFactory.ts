@@ -143,7 +143,7 @@ function createAnnotationTexture(options: AnnotationLabelOptions): THREE.CanvasT
 
   const badgeText = options.badge.toUpperCase();
   ctx.font = '600 22px Inter, Arial, sans-serif';
-  const badgeW = Math.max(92, ctx.measureText(badgeText).width + 28);
+  const badgeW = Math.max(120, ctx.measureText(badgeText).width + 28);
   ctx.fillStyle = `rgba(${accentRgb},0.16)`;
   roundRect(ctx, 46, 40, badgeW, 36, 18);
   ctx.fill();

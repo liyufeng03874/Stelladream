@@ -340,7 +340,7 @@ const togglePlay = async () => {
         isBatch: true,
       });
     }
-  }, 50);
+  }, 800);
 };
 
 const handleStepChange = (event: Event) => {
