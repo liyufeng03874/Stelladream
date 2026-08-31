@@ -31,6 +31,8 @@ const DOMAIN_COLORS: Record<string, THREE.Color> = {
   'game': new THREE.Color(0xF5A623),
 };
 
+const PAIR_KEY_SEPARATOR = '\u001f';
+
 export function useEvalVisual(context: EvalVisualContext) {
   const { scene, starDataMap } = context;
 
@@ -51,7 +53,7 @@ export function useEvalVisual(context: EvalVisualContext) {
     new THREE.LineBasicMaterial({
       color: 0x66aacc,
       transparent: true,
-      opacity: 0.015,
+      opacity: 0.012,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
@@ -85,7 +87,7 @@ export function useEvalVisual(context: EvalVisualContext) {
     for (let i = 0; i < chunkIds.length; i++) {
       for (let j = i + 1; j < chunkIds.length; j++) {
         const [a, b] = chunkIds[i] < chunkIds[j] ? [chunkIds[i], chunkIds[j]] : [chunkIds[j], chunkIds[i]];
-        const key = `${a}:${b}`;
+        const key = `${a}${PAIR_KEY_SEPARATOR}${b}`;
         coHitCounts.set(key, (coHitCounts.get(key) || 0) + 1);
       }
     }
@@ -162,25 +164,33 @@ export function useEvalVisual(context: EvalVisualContext) {
   /** 极弱连线 */
   function updateBridges() {
     const positions: number[] = [];
-    const distanceThreshold = 5;
+    const distanceThreshold = 5.8;
+    const maxSegments = 420;
+    const candidates: { a: THREE.Vector3; b: THREE.Vector3; count: number; distance: number }[] = [];
 
-    const hitStars: { id: string; pos: THREE.Vector3 }[] = [];
-    hitCounts.forEach((_, chunkId) => {
-      const info = starDataMap.get(chunkId);
-      if (info) hitStars.push({ id: chunkId, pos: info.sprite.position });
+    coHitCounts.forEach((count, key) => {
+      const [aId, bId] = key.split(PAIR_KEY_SEPARATOR);
+      const a = starDataMap.get(aId);
+      const b = starDataMap.get(bId);
+      if (!a || !b) return;
+
+      const distance = a.sprite.position.distanceTo(b.sprite.position);
+      if (distance <= distanceThreshold) {
+        candidates.push({
+          a: a.sprite.position,
+          b: b.sprite.position,
+          count,
+          distance,
+        });
+      }
     });
 
-    for (let i = 0; i < hitStars.length; i++) {
-      for (let j = i + 1; j < hitStars.length; j++) {
-        const d = hitStars[i].pos.distanceTo(hitStars[j].pos);
-        if (d < distanceThreshold) {
-          positions.push(
-            hitStars[i].pos.x, hitStars[i].pos.y, hitStars[i].pos.z,
-            hitStars[j].pos.x, hitStars[j].pos.y, hitStars[j].pos.z
-          );
-        }
-      }
-    }
+    candidates
+      .sort((left, right) => right.count - left.count || left.distance - right.distance)
+      .slice(0, maxSegments)
+      .forEach(({ a, b }) => {
+        positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
+      });
 
     const geometry = new THREE.BufferGeometry();
     if (positions.length > 0) {

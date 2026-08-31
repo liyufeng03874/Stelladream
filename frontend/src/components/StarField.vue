@@ -50,6 +50,8 @@ let bloomPass: UnrealBloomPass | undefined;
 
 // 底层星尘（16000 个极微小粒子）
 let starDust: THREE.Points | null = null;
+let ambientConnections: THREE.LineSegments | null = null;
+let galaxyCoreSprites: THREE.Sprite[] = [];
 
 // Texture cache
 const textureCache = new Map<string, THREE.CanvasTexture>();
@@ -61,6 +63,32 @@ const starDataMap = new Map<string, {
   originalMaterial: THREE.SpriteMaterial;
   originalScale: THREE.Vector3;
 }>();
+
+interface GalaxyMetrics {
+  center: THREE.Vector3;
+  maxRadius: number;
+  span: number;
+}
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const hash01 = (value: string) => {
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) / 4294967295;
+};
+
+const getRadialFactor = (position: THREE.Vector3, metrics: GalaxyMetrics) => {
+  const distance = position.distanceTo(metrics.center);
+  const edge = clamp(distance / Math.max(metrics.maxRadius, 1), 0, 1);
+  return {
+    edge,
+    core: Math.pow(1 - edge, 1.7),
+  };
+};
 
 // 星星纹理：中心纯白够亮才能触发 Bloom
 const createStarTexture = (color: string): THREE.CanvasTexture => {
@@ -77,13 +105,10 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
   const center = textureSize / 2;
 
   const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
-  // 中心纯白高亮 → 触发 Bloom 阈值 (0.4)
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-  gradient.addColorStop(0.05, 'rgba(255, 255, 255, 1)');
-  gradient.addColorStop(0.1, 'rgba(255, 255, 255, 0.9)');
-  // 向外渐变色
-  gradient.addColorStop(0.2, color);
-  gradient.addColorStop(0.5, color + '44');
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
+  gradient.addColorStop(0.08, 'rgba(255, 255, 255, 0.72)');
+  gradient.addColorStop(0.24, color);
+  gradient.addColorStop(0.58, color + '36');
   gradient.addColorStop(1, 'transparent');
 
   ctx.fillStyle = gradient;
@@ -96,51 +121,120 @@ const createStarTexture = (color: string): THREE.CanvasTexture => {
   return texture;
 };
 
-// 创建底层星尘（16000 个极微小暗色粒子）
-const createStarDust = () => {
+const createSoftPointTexture = (key: string, size = 64): THREE.CanvasTexture => {
+  if (textureCache.has(key)) {
+    return textureCache.get(key)!;
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  const center = size / 2;
+  const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+  gradient.addColorStop(0, 'rgba(255,255,255,0.95)');
+  gradient.addColorStop(0.35, 'rgba(255,255,255,0.42)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  textureCache.set(key, texture);
+  return texture;
+};
+
+const calculateGalaxyMetrics = (stars: StarPoint[] = props.stars): GalaxyMetrics | null => {
+  if (!stars.length) return null;
+
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  const center = new THREE.Vector3();
+  stars.forEach(star => {
+    center.add(new THREE.Vector3(star.x, star.y, star.z));
+    minX = Math.min(minX, star.x);
+    maxX = Math.max(maxX, star.x);
+    minY = Math.min(minY, star.y);
+    maxY = Math.max(maxY, star.y);
+    minZ = Math.min(minZ, star.z);
+    maxZ = Math.max(maxZ, star.z);
+  });
+  center.divideScalar(stars.length);
+
+  let maxRadius = 1;
+  stars.forEach(star => {
+    maxRadius = Math.max(maxRadius, new THREE.Vector3(star.x, star.y, star.z).distanceTo(center));
+  });
+
+  return {
+    center,
+    maxRadius,
+    span: Math.max(maxX - minX, maxY - minY, maxZ - minZ, 1),
+  };
+};
+
+const createGalaxyCore = (metrics: GalaxyMetrics) => {
+  const texture = createSoftPointTexture('galaxy-core', 128);
+  const color = new THREE.Color(0x8edfff);
+  const layers = [
+    { size: metrics.maxRadius * 0.22, opacity: 0.045 },
+    { size: metrics.maxRadius * 0.11, opacity: 0.085 },
+  ];
+
+  layers.forEach((layer, index) => {
+    const material = new THREE.SpriteMaterial({
+      map: texture,
+      color,
+      transparent: true,
+      opacity: layer.opacity,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      depthTest: true,
+    });
+    const sprite = new THREE.Sprite(material);
+    sprite.position.copy(metrics.center);
+    sprite.scale.set(layer.size, layer.size, 1);
+    sprite.renderOrder = -5 + index;
+    scene.add(sprite);
+    galaxyCoreSprites.push(sprite);
+  });
+};
+
+// 创建底层星尘（极微小暗色粒子）
+const createStarDust = (metrics: GalaxyMetrics) => {
   if (!starDataMap.size) return;
 
   const count = gpuProfile.starDustCount;
   if (count === 0) return; // 无 GPU 时完全关闭星尘
   const positions = new Float32Array(count * 3);
-
-  // 从所有星星的范围中采样
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, minZ = Infinity, maxZ = -Infinity;
-  starDataMap.forEach(({ sprite }) => {
-    minX = Math.min(minX, sprite.position.x);
-    maxX = Math.max(maxX, sprite.position.x);
-    minY = Math.min(minY, sprite.position.y);
-    maxY = Math.max(maxY, sprite.position.y);
-    minZ = Math.min(minZ, sprite.position.z);
-    maxZ = Math.max(maxZ, sprite.position.z);
-  });
-
-  // 稍微扩大范围
-  const rangeX = (maxX - minX) * 0.8;
-  const rangeY = (maxY - minY) * 0.3;
-  const rangeZ = (maxZ - minZ) * 0.8;
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  const centerZ = (minZ + maxZ) / 2;
+  const colors = new Float32Array(count * 3);
 
   for (let i = 0; i < count; i++) {
-    // 指数分布，让中心更密
     const radius = Math.pow(Math.random(), 1.2);
     const angle = Math.random() * Math.PI * 2;
+    const armAngle = angle + radius * 4.2 + (Math.random() - 0.5) * 0.75;
+    const spread = metrics.maxRadius * (0.14 + radius * 0.9);
+    const thickness = metrics.maxRadius * clamp(0.16 - radius * 0.1, 0.02, 0.16);
 
-    positions[i * 3] = centerX + Math.cos(angle) * radius * rangeX + (Math.random() - 0.5) * rangeX * 0.3;
-    positions[i * 3 + 1] = centerY + (Math.random() - 0.5) * rangeY;
-    positions[i * 3 + 2] = centerZ + Math.sin(angle) * radius * rangeZ + (Math.random() - 0.5) * rangeZ * 0.3;
+    positions[i * 3] = metrics.center.x + Math.cos(armAngle) * spread + (Math.random() - 0.5) * metrics.maxRadius * 0.18;
+    positions[i * 3 + 1] = metrics.center.y + Math.sin(armAngle) * spread * 0.58 + (Math.random() - 0.5) * metrics.maxRadius * 0.08;
+    positions[i * 3 + 2] = metrics.center.z + (Math.random() - 0.5) * thickness;
+
+    const color = new THREE.Color().setHSL(0.58, 0.58, 0.28 + (1 - radius) * 0.18 + Math.random() * 0.08);
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
   }
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    color: 0x334466, // 暗蓝灰色
-    size: 0.15, // 极微小
+    map: createSoftPointTexture('star-dust', 32),
+    vertexColors: true,
+    size: 0.12,
     transparent: true,
-    opacity: 0.3,
+    opacity: 0.34,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
     sizeAttenuation: true,
@@ -148,6 +242,86 @@ const createStarDust = () => {
 
   starDust = new THREE.Points(geometry, material);
   scene.add(starDust);
+};
+
+const createAmbientConnections = (metrics: GalaxyMetrics) => {
+  if (gpuProfile.level === 'none') return;
+
+  const maxNodes = gpuProfile.level === 'high' ? 680 : 360;
+  const maxSegments = gpuProfile.level === 'high' ? 960 : 420;
+  const allStars = Array.from(starDataMap.values())
+    .filter((_, index) => index % Math.max(1, Math.floor(starDataMap.size / maxNodes)) === 0)
+    .slice(0, maxNodes);
+
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const innerColor = new THREE.Color(0x8edfff);
+  const outerColor = new THREE.Color(0x0c3458);
+
+  for (let i = 0; i < allStars.length && positions.length / 6 < maxSegments; i++) {
+    const a = allStars[i].sprite.position;
+    const aRadial = getRadialFactor(a, metrics);
+    const neighborLimit = aRadial.core > 0.52 ? 3 : aRadial.core > 0.22 ? 2 : 1;
+    const distanceLimit = metrics.maxRadius * (0.045 + aRadial.core * 0.032);
+    const candidates: { index: number; distance: number }[] = [];
+
+    for (let j = i + 1; j < allStars.length; j++) {
+      const b = allStars[j].sprite.position;
+      const distance = a.distanceTo(b);
+      if (distance <= distanceLimit) {
+        candidates.push({ index: j, distance });
+      }
+    }
+
+    candidates.sort((left, right) => left.distance - right.distance);
+    for (const candidate of candidates.slice(0, neighborLimit)) {
+      const b = allStars[candidate.index].sprite.position;
+      const bRadial = getRadialFactor(b, metrics);
+      const centerWeight = (aRadial.core + bRadial.core) * 0.5;
+      const color = outerColor.clone().lerp(innerColor, clamp(centerWeight, 0, 0.58));
+
+      positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
+      colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+  const material = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.028,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+
+  ambientConnections = new THREE.LineSegments(geometry, material);
+  ambientConnections.renderOrder = -8;
+  scene.add(ambientConnections);
+};
+
+const disposeBaseVisualLayers = () => {
+  if (starDust) {
+    scene.remove(starDust);
+    starDust.geometry.dispose();
+    (starDust.material as THREE.Material).dispose();
+    starDust = null;
+  }
+
+  if (ambientConnections) {
+    scene.remove(ambientConnections);
+    ambientConnections.geometry.dispose();
+    (ambientConnections.material as THREE.Material).dispose();
+    ambientConnections = null;
+  }
+
+  galaxyCoreSprites.forEach(sprite => {
+    scene.remove(sprite);
+    sprite.material.dispose();
+  });
+  galaxyCoreSprites = [];
 };
 
 // Init scene
@@ -231,35 +405,41 @@ const renderStars = () => {
   if (!props.stars.length || !props.config.domains) return;
 
   // Clear old
-  starSprites.forEach(sprite => scene.remove(sprite));
+  starSprites.forEach(sprite => {
+    scene.remove(sprite);
+    sprite.material.dispose();
+  });
   starSprites = [];
   starDataMap.clear();
-  if (starDust) {
-    scene.remove(starDust);
-    starDust.geometry.dispose();
-    (starDust.material as THREE.Material).dispose();
-    starDust = null;
-  }
+  disposeBaseVisualLayers();
+
+  const metrics = calculateGalaxyMetrics();
+  if (!metrics) return;
 
   // Build mapping and render ALL stars
   props.stars.forEach((star) => {
     const domainConfig = props.config.domains[star.domain];
     const color = domainConfig?.color || '#ffffff';
+    const position = new THREE.Vector3(star.x, star.y, star.z);
+    const radial = getRadialFactor(position, metrics);
+    const variation = 0.82 + hash01(star.chunk_id) * 0.5;
+    const sizeByRadius = 0.7 + radial.core * 0.7;
+    const brightnessByRadius = 0.36 + radial.core * 0.42;
 
     const texture = createStarTexture(color);
     const material = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      opacity: star.brightness,
+      opacity: clamp(star.brightness * brightnessByRadius, 0.16, 0.78),
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false
     });
 
     const sprite = new THREE.Sprite(material);
-    sprite.position.set(star.x, star.y, star.z);
+    sprite.position.copy(position);
 
-    const scale = star.size * 0.06;
+    const scale = clamp(star.size * 0.055 * variation * sizeByRadius, 0.08, 1.15);
     sprite.scale.set(scale, scale, 1);
 
     const originalMat = material.clone();
@@ -280,7 +460,9 @@ const renderStars = () => {
   });
 
   // 创建底层星尘
-  createStarDust();
+  createGalaxyCore(metrics);
+  createStarDust(metrics);
+  createAmbientConnections(metrics);
 
   controls.update();
 
@@ -457,10 +639,7 @@ onUnmounted(() => {
   textureCache.forEach(texture => texture.dispose());
   textureCache.clear();
 
-  if (starDust) {
-    starDust.geometry.dispose();
-    (starDust.material as THREE.Material).dispose();
-  }
+  disposeBaseVisualLayers();
 
   renderer.dispose();
   controls.dispose();
