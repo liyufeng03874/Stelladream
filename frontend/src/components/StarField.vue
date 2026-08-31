@@ -109,24 +109,24 @@ const getRadialFactor = (position: THREE.Vector3, metrics: GalaxyMetrics) => {
 const getStellarColor = (position: THREE.Vector3, metrics: GalaxyMetrics, seedKey: string) => {
   const radial = getRadialFactor(position, metrics);
   const seed = hash01(seedKey);
-  const hotCore = new THREE.Color(0xfff7d8);
-  const warmGold = new THREE.Color(0xffb36b);
-  const paleBlue = new THREE.Color(0x8fdcff);
-  const deepBlue = new THREE.Color(0x1d4968);
+  const coreBlue = new THREE.Color(0xdffcff);
+  const midBlue = new THREE.Color(0x76ddff);
+  const edgeBlue = new THREE.Color(0x2f7fc2);
+  const deepBlue = new THREE.Color(0x123454);
 
   let color: THREE.Color;
   if (radial.edge < 0.28) {
-    color = hotCore.clone().lerp(warmGold, radial.edge / 0.28 * 0.45);
+    color = coreBlue.clone().lerp(midBlue, radial.edge / 0.28 * 0.55);
   } else if (radial.edge < 0.72) {
-    color = warmGold.clone().lerp(paleBlue, (radial.edge - 0.28) / 0.44);
+    color = midBlue.clone().lerp(edgeBlue, (radial.edge - 0.28) / 0.44);
   } else {
-    color = paleBlue.clone().lerp(deepBlue, (radial.edge - 0.72) / 0.28);
+    color = edgeBlue.clone().lerp(deepBlue, (radial.edge - 0.72) / 0.28);
   }
 
   if (seed > 0.84) {
-    color.lerp(new THREE.Color(0xffffff), 0.18);
+    color.lerp(new THREE.Color(0xf4ffff), 0.14);
   } else if (seed < 0.16) {
-    color.lerp(new THREE.Color(0xffd1a1), 0.14);
+    color.lerp(new THREE.Color(0x8be8ff), 0.1);
   }
 
   return color;
@@ -147,10 +147,10 @@ const createStarTexture = (key: string = 'stellar-star'): THREE.CanvasTexture =>
   const center = textureSize / 2;
 
   const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.96)');
-  gradient.addColorStop(0.12, 'rgba(255, 255, 255, 0.76)');
-  gradient.addColorStop(0.42, 'rgba(255, 245, 220, 0.34)');
-  gradient.addColorStop(0.74, 'rgba(180, 220, 255, 0.08)');
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
+  gradient.addColorStop(0.1, 'rgba(224, 252, 255, 0.74)');
+  gradient.addColorStop(0.32, 'rgba(116, 221, 255, 0.34)');
+  gradient.addColorStop(0.68, 'rgba(32, 126, 198, 0.08)');
   gradient.addColorStop(1, 'transparent');
 
   ctx.fillStyle = gradient;
@@ -174,8 +174,8 @@ const createSoftPointTexture = (key: string, size = 64): THREE.CanvasTexture => 
   const ctx = canvas.getContext('2d')!;
   const center = size / 2;
   const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
-  gradient.addColorStop(0, 'rgba(255,255,255,0.95)');
-  gradient.addColorStop(0.35, 'rgba(255,255,255,0.42)');
+  gradient.addColorStop(0, 'rgba(255,255,255,0.88)');
+  gradient.addColorStop(0.35, 'rgba(150,232,255,0.38)');
   gradient.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
@@ -199,10 +199,10 @@ const createSolarTexture = (): THREE.CanvasTexture => {
   const ctx = canvas.getContext('2d')!;
   const center = size / 2;
   const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
-  gradient.addColorStop(0, 'rgba(255,255,255,1)');
-  gradient.addColorStop(0.13, 'rgba(255,247,214,0.96)');
-  gradient.addColorStop(0.28, 'rgba(255,183,104,0.52)');
-  gradient.addColorStop(0.58, 'rgba(92,198,255,0.15)');
+  gradient.addColorStop(0, 'rgba(255,255,255,0.9)');
+  gradient.addColorStop(0.12, 'rgba(226,252,255,0.84)');
+  gradient.addColorStop(0.3, 'rgba(116,221,255,0.42)');
+  gradient.addColorStop(0.62, 'rgba(23,126,196,0.14)');
   gradient.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
@@ -217,10 +217,8 @@ const calculateGalaxyMetrics = (stars: StarPoint[] = props.stars): GalaxyMetrics
   if (!stars.length) return null;
 
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, minZ = Infinity, maxZ = -Infinity;
-  const mean = new THREE.Vector3();
   const points = stars.map(star => new THREE.Vector3(star.x, star.y, star.z));
   stars.forEach(star => {
-    mean.add(new THREE.Vector3(star.x, star.y, star.z));
     minX = Math.min(minX, star.x);
     maxX = Math.max(maxX, star.x);
     minY = Math.min(minY, star.y);
@@ -228,15 +226,51 @@ const calculateGalaxyMetrics = (stars: StarPoint[] = props.stars): GalaxyMetrics
     minZ = Math.min(minZ, star.z);
     maxZ = Math.max(maxZ, star.z);
   });
-  mean.divideScalar(stars.length);
+  const spanX = Math.max(maxX - minX, 1);
+  const spanY = Math.max(maxY - minY, 1);
+  const spanZ = Math.max(maxZ - minZ, 1);
+  const maxSpan = Math.max(spanX, spanY, spanZ);
+  const cellSize = Math.max(maxSpan / 18, 1);
+  const grid = new Map<string, { count: number; sum: THREE.Vector3; indices: number[] }>();
 
-  const centralPoints = points
-    .map(point => ({ point, distance: point.distanceTo(mean) }))
-    .sort((left, right) => left.distance - right.distance)
-    .slice(0, Math.max(1, Math.floor(points.length * 0.72)));
-  const center = centralPoints
-    .reduce((sum, item) => sum.add(item.point), new THREE.Vector3())
-    .divideScalar(centralPoints.length);
+  points.forEach((point, index) => {
+    const cx = Math.floor((point.x - minX) / cellSize);
+    const cy = Math.floor((point.y - minY) / cellSize);
+    const cz = Math.floor((point.z - minZ) / cellSize);
+    const key = `${cx},${cy},${cz}`;
+    if (!grid.has(key)) {
+      grid.set(key, { count: 0, sum: new THREE.Vector3(), indices: [] });
+    }
+    const cell = grid.get(key)!;
+    cell.count += 1;
+    cell.sum.add(point);
+    cell.indices.push(index);
+  });
+
+  let densestKey = '';
+  let densestCount = -1;
+  grid.forEach((cell, key) => {
+    if (cell.count > densestCount) {
+      densestCount = cell.count;
+      densestKey = key;
+    }
+  });
+
+  const [baseCx, baseCy, baseCz] = densestKey.split(',').map(v => Number(v));
+  const clusterPoints: THREE.Vector3[] = [];
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dz = -1; dz <= 1; dz++) {
+        const neighborKey = `${baseCx + dx},${baseCy + dy},${baseCz + dz}`;
+        const cell = grid.get(neighborKey);
+        if (!cell) continue;
+        cell.indices.forEach(index => clusterPoints.push(points[index]));
+      }
+    }
+  }
+
+  const centerSource = clusterPoints.length ? clusterPoints : points;
+  const center = centerSource.reduce((sum, point) => sum.add(point), new THREE.Vector3()).divideScalar(centerSource.length);
 
   const distances = points
     .map(point => point.distanceTo(center))
@@ -252,17 +286,17 @@ const calculateGalaxyMetrics = (stars: StarPoint[] = props.stars): GalaxyMetrics
     radiusP50,
     radiusP80,
     outerRadius,
-    span: Math.max(maxX - minX, maxY - minY, maxZ - minZ, 1),
+    span: maxSpan,
   };
 };
 
 const createGalaxyCore = (metrics: GalaxyMetrics) => {
   const texture = createSolarTexture();
-  const coreSize = clamp(metrics.radiusP50 * 0.09, 4.2, 8.8);
+  const coreSize = clamp(metrics.radiusP50 * 0.065, 3.0, 6.2);
   const layers = [
-    { size: coreSize * 7.2, opacity: 0.04, color: 0x5bcfff, pulse: 0.08 },
-    { size: coreSize * 3.1, opacity: 0.12, color: 0xffb36b, pulse: 0.06 },
-    { size: coreSize, opacity: 0.92, color: 0xffffff, pulse: 0.035 },
+    { size: coreSize * 6.4, opacity: 0.015, color: 0x2f8fff, pulse: 0.04 },
+    { size: coreSize * 2.6, opacity: 0.045, color: 0x63dbff, pulse: 0.03 },
+    { size: coreSize, opacity: 0.28, color: 0xe6fbff, pulse: 0.02 },
   ];
 
   layers.forEach((layer, index) => {
@@ -301,7 +335,7 @@ const createStarDust = (metrics: GalaxyMetrics) => {
       position: info.sprite.position,
       color: getStellarColor(info.sprite.position, metrics, info.data.chunk_id),
       radial,
-      weight: 0.16 + radial.core * 2.8 + Math.pow(1 - radial.edge, 1.4) * 0.55,
+      weight: 0.14 + radial.core * 3.1 + Math.pow(1 - radial.edge, 1.4) * 0.6,
     };
   });
   let totalWeight = 0;
@@ -333,7 +367,7 @@ const createStarDust = (metrics: GalaxyMetrics) => {
     } else {
       radialDirection.normalize();
     }
-    const dustRadius = clamp(metrics.radiusP50 * (0.012 + anchor.radial.edge * 0.012), 0.45, 4.2);
+    const dustRadius = clamp(metrics.radiusP50 * (0.01 + anchor.radial.edge * 0.01), 0.28, 3.4);
     const offset = randomUnitVector()
       .multiplyScalar(dustRadius * Math.pow(Math.random(), 0.55))
       .add(radialDirection.multiplyScalar(dustRadius * (Math.random() - 0.3) * anchor.radial.core));
@@ -343,8 +377,8 @@ const createStarDust = (metrics: GalaxyMetrics) => {
     positions[i * 3 + 2] = anchor.position.z + offset.z;
 
     const color = anchor.color.clone()
-      .lerp(new THREE.Color(0x6fbde8), anchor.radial.edge * 0.28)
-      .multiplyScalar(0.42 + anchor.radial.core * 0.3 + Math.random() * 0.18);
+      .lerp(new THREE.Color(0x78e8ff), anchor.radial.edge * 0.22)
+      .multiplyScalar(0.3 + anchor.radial.core * 0.24 + Math.random() * 0.12);
     colors[i * 3] = color.r;
     colors[i * 3 + 1] = color.g;
     colors[i * 3 + 2] = color.b;
@@ -357,9 +391,9 @@ const createStarDust = (metrics: GalaxyMetrics) => {
   const material = new THREE.PointsMaterial({
     map: createSoftPointTexture('star-dust', 32),
     vertexColors: true,
-    size: 0.075,
+    size: 0.062,
     transparent: true,
-    opacity: 0.26,
+    opacity: 0.19,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
     sizeAttenuation: true,
@@ -385,8 +419,8 @@ const createAmbientConnections = (metrics: GalaxyMetrics) => {
     const aInfo = allStars[i];
     const a = aInfo.sprite.position;
     const aRadial = getRadialFactor(a, metrics);
-    const neighborLimit = aRadial.core > 0.52 ? 3 : aRadial.core > 0.22 ? 2 : 1;
-    const distanceLimit = metrics.radiusP50 * (0.055 + aRadial.core * 0.055);
+    const neighborLimit = aRadial.core > 0.5 ? 4 : aRadial.core > 0.2 ? 3 : 1;
+    const distanceLimit = metrics.radiusP50 * (0.085 + aRadial.core * 0.1);
     const candidates: { index: number; distance: number }[] = [];
 
     for (let j = i + 1; j < allStars.length; j++) {
@@ -403,12 +437,12 @@ const createAmbientConnections = (metrics: GalaxyMetrics) => {
       const b = bInfo.sprite.position;
       const bRadial = getRadialFactor(b, metrics);
       const centerWeight = (aRadial.core + bRadial.core) * 0.5;
-      const edgeProbability = 0.2 + centerWeight * 0.72;
+      const edgeProbability = 0.28 + centerWeight * 0.58;
       if (hash01(`${aInfo.data.chunk_id}|${bInfo.data.chunk_id}`) > edgeProbability) continue;
 
       const color = getStellarColor(a, metrics, aInfo.data.chunk_id)
         .lerp(getStellarColor(b, metrics, bInfo.data.chunk_id), 0.5)
-        .multiplyScalar(0.34 + centerWeight * 0.3);
+        .multiplyScalar(0.4 + centerWeight * 0.34);
 
       positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
       colors.push(color.r, color.g, color.b, color.r, color.g, color.b);
@@ -422,7 +456,7 @@ const createAmbientConnections = (metrics: GalaxyMetrics) => {
   const material = new THREE.LineBasicMaterial({
     vertexColors: true,
     transparent: true,
-    opacity: 0.024,
+    opacity: 0.03,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
@@ -571,14 +605,14 @@ const renderStars = () => {
     const color = getStellarColor(position, metrics, star.chunk_id);
     const variation = 0.78 + seed * 0.62;
     const sizeByRadius = 0.62 + radial.core * 0.95;
-    const brightnessByRadius = 0.28 + radial.core * 0.56 + (1 - radial.edge) * 0.12;
+    const brightnessByRadius = 0.2 + radial.core * 0.42 + (1 - radial.edge) * 0.08;
 
     const texture = createStarTexture();
     const material = new THREE.SpriteMaterial({
       map: texture,
       color,
       transparent: true,
-      opacity: clamp(star.brightness * brightnessByRadius, 0.1, 0.86),
+      opacity: clamp(star.brightness * brightnessByRadius, 0.06, 0.72),
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false
@@ -587,7 +621,7 @@ const renderStars = () => {
     const sprite = new THREE.Sprite(material);
     sprite.position.copy(position);
 
-    const scale = clamp(star.size * 0.052 * variation * sizeByRadius, 0.07, 1.32);
+    const scale = clamp(star.size * 0.05 * variation * sizeByRadius, 0.06, 1.1);
     sprite.scale.set(scale, scale, 1);
 
     const originalMat = material.clone();
