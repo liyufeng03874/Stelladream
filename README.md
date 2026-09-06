@@ -7,6 +7,7 @@ Stelladream 是一个把检索过程可视化到 3D 星图中的 RAG 解释系�
 - 前端：Vue 3 + Three.js + GSAP
 - 后端：FastAPI + Elasticsearch
 - 当前实际使用的索引：`lecard_m3_doc`
+- 当前星图规模：`9,164` 个星点
 - 支持单次查询的检索可视化、阶段切换、文档详情、星跃
 - 支持评估回放、趋势图、命中关系展示、回放清理
 - 蓝青科技风主题已统一到主界面和回放链路
@@ -77,4 +78,3 @@ docker compose up --build
 - [评估回放优化总结](docs/eval-replay-optimization-summary.md)
 - [评估回放联动说明](docs/eval-replay-linkage.md)
 - [星跃生命周期](docs/star-lifecycle.md)
-
