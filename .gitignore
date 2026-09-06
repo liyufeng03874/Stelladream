@@ -25,6 +25,10 @@ build/
 data/*.json
 data/*.npy
 data/*.pkl
+!data/star_data.json
+!data/star_data.meta.json
+!data/eval/
+!data/eval/eval_lecard.json
 
 # Models (should reference external paths)
 models/

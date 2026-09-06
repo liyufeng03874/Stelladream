@@ -76,7 +76,11 @@ async def get_star_data(limit: int = 0):
 @app.post("/api/search")
 async def search(request: SearchRequest) -> SearchResponse:
     """RAG 搜索接口"""
-    from rag_search import get_search_engine
+    # Support both project-root module startup and direct server.py execution.
+    if __package__:
+        from .rag_search import get_search_engine
+    else:
+        from rag_search import get_search_engine
 
     try:
         engine = get_search_engine()
@@ -116,7 +120,11 @@ async def get_eval_data(domain: str, step: int = 0):
     step = min(max(step, 0), len(samples) - 1) if samples else 0
     current_sample = samples[step] if samples else {}
 
-    metric_keys = ["hr@1", "hr@3", "hr@5", "recall@5", "precision@5", "mrr@5", "ndcg@5"]
+    # Each evaluation source owns its metric vocabulary.  Older replay files
+    # use @5 metrics while LeCaRD Run 010 uses @10 metrics plus MAP.
+    metric_keys = list(eval_data.get("metric_keys", [])) or list(summary.keys())
+    if not metric_keys and samples:
+        metric_keys = list(samples[0].get("metrics", {}).keys())
 
     # 当前样本指标
     current_metrics = {k.replace("@", "_"): current_sample.get("metrics", {}).get(k, 0) for k in metric_keys}
@@ -128,14 +136,105 @@ async def get_eval_data(domain: str, step: int = 0):
         cumulative_metrics[k.replace("@", "_")] = sum(values) / len(values) if values else 0
 
     return {
+        "dataset": eval_data.get("dataset", domain),
+        "run": eval_data.get("run"),
+        "index": eval_data.get("index"),
+        "method": eval_data.get("method"),
+        "summary": summary,
+        "metric_keys": metric_keys,
         "current_metrics": current_metrics,
         "cumulative_metrics": cumulative_metrics,
         "total_samples": len(samples),
         "current_step": step,
+        "query_id": current_sample.get("id", current_sample.get("qid", "")),
         "retrieved_ids": current_sample.get("retrieved_ids", []),
+        "parent_ids": current_sample.get("parent_ids", []),
+        "grades": current_sample.get("grades", []),
         "correct_ids": current_sample.get("correct_ids", []),
         "query": current_sample.get("query", ""),
         "ranks": current_sample.get("ranks", list(range(1, len(current_sample.get("retrieved_ids", [])) + 1))),
+    }
+
+
+@app.get("/api/eval/{domain}/samples")
+async def get_eval_samples(domain: str):
+    """返回评估样本的轻量索引，用于筛选和定位诊断样本。"""
+    eval_path = Path(__file__).parent.parent / "data" / "eval" / f"eval_{domain}.json"
+
+    if not eval_path.exists():
+        raise HTTPException(status_code=404, detail=f"评估数据不存在: {domain}")
+
+    with open(eval_path, "r", encoding="utf-8") as f:
+        eval_data = json.load(f)
+
+    samples = eval_data.get("samples", [])
+    metric_keys = list(eval_data.get("metric_keys", [])) or list(eval_data.get("summary", {}).keys())
+    if not metric_keys and samples:
+        metric_keys = list(samples[0].get("metrics", {}).keys())
+
+    sample_index = []
+    for index, sample in enumerate(samples):
+        metrics = sample.get("metrics", {})
+        retrieved_ids = sample.get("retrieved_ids", [])
+        correct_ids = set(sample.get("correct_ids", []))
+        grades = sample.get("grades", [])
+        relevant_count = sum(
+            1
+            for grade in grades
+            if isinstance(grade, (int, float)) and grade > 0
+        )
+
+        if not relevant_count and correct_ids:
+            relevant_count = len(correct_ids)
+
+        first_relevant_rank = None
+        for rank, chunk_id in enumerate(retrieved_ids, 1):
+            if chunk_id in correct_ids or (
+                rank <= len(grades)
+                and isinstance(grades[rank - 1], (int, float))
+                and grades[rank - 1] > 0
+            ):
+                first_relevant_rank = rank
+                break
+
+        hit_key = next(
+            (key for key in ("hr@10", "hr@5", "hr@3", "hr@1") if key in metrics),
+            None,
+        )
+        ndcg_key = next(
+            (key for key in ("ndcg@10", "ndcg@5", "ndcg@3", "ndcg@1") if key in metrics),
+            None,
+        )
+        hit_value = metrics.get(hit_key) if hit_key else None
+        ndcg_value = metrics.get(ndcg_key) if ndcg_key else None
+
+        sample_index.append(
+            {
+                "step": index,
+                "query_id": str(sample.get("id", sample.get("qid", index))),
+                "query": sample.get("query", ""),
+                "retrieved_count": len(retrieved_ids),
+                "relevant_count": relevant_count,
+                "first_relevant_rank": first_relevant_rank,
+                "hit_key": hit_key,
+                "hit": bool(hit_value) if hit_value is not None else None,
+                "ndcg_key": ndcg_key,
+                "ndcg": ndcg_value,
+                "metrics": {
+                    key.replace("@", "_"): metrics.get(key, 0)
+                    for key in metric_keys
+                },
+            }
+        )
+
+    return {
+        "dataset": eval_data.get("dataset", domain),
+        "run": eval_data.get("run"),
+        "index": eval_data.get("index"),
+        "method": eval_data.get("method"),
+        "metric_keys": metric_keys,
+        "total_samples": len(sample_index),
+        "samples": sample_index,
     }
 
 

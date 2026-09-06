@@ -14,6 +14,9 @@ export interface StarPoint {
   z: number;
   domain: string;
   chunk_id: string;
+  doc_id?: string;
+  chunk_index?: number;
+  source_path?: string;
   content: string;
   source: string;
   size: number;
@@ -28,6 +31,13 @@ export interface SearchResult {
 }
 
 export interface EvalData {
+  dataset?: string;
+  run?: string;
+  index?: string;
+  method?: string;
+  summary?: Record<string, number>;
+  metric_keys?: string[];
+  query_id?: string;
   query: string;
   results: string[];
   is_correct: boolean;
@@ -36,8 +46,34 @@ export interface EvalData {
   total_samples: number;
   current_step: number;
   retrieved_ids: string[];
+  parent_ids?: string[];
+  grades?: number[];
   correct_ids: string[];
   ranks: number[];
+}
+
+export interface EvalSampleSummary {
+  step: number;
+  query_id: string;
+  query: string;
+  retrieved_count: number;
+  relevant_count: number;
+  first_relevant_rank: number | null;
+  hit_key?: string | null;
+  hit?: boolean | null;
+  ndcg_key?: string | null;
+  ndcg?: number | null;
+  metrics: Record<string, number>;
+}
+
+export interface EvalSamplesResponse {
+  dataset?: string;
+  run?: string;
+  index?: string;
+  method?: string;
+  metric_keys: string[];
+  total_samples: number;
+  samples: EvalSampleSummary[];
 }
 
 // API 方法
@@ -57,6 +93,11 @@ export const search = async (query: string): Promise<SearchResult> => {
 
 export const getEvalData = async (domain: string, step: number): Promise<EvalData> => {
   const response = await api.get(`/api/eval/${domain}`, { params: { step } });
+  return response.data;
+};
+
+export const getEvalSamples = async (domain: string): Promise<EvalSamplesResponse> => {
+  const response = await api.get(`/api/eval/${domain}/samples`);
   return response.data;
 };
 

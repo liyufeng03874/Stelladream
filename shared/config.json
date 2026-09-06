@@ -53,7 +53,7 @@
   },
   "elasticsearch": {
     "host": "http://localhost:9200",
-    "index": "unified_rag",
+    "index": "lecard_m3_doc",
     "scroll_size": 2000
   },
   "rrf": {

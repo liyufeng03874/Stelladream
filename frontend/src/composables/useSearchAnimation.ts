@@ -12,10 +12,10 @@ import type { StarPoint } from '../api';
 
 // 妫板棗鐓欐０婊嗗閿涘牅绗?useEvalVisual 娣囨繃瀵旀稉鈧懛杈剧礆
 function getDomainColor(value: string): number {
-  if (value === 'general' || value.startsWith('cmrc_')) return 0x34D399; // 閻у墽顫栭敍姘辫雹
-  if (value === 'medical' || value.startsWith('doc_')) return 0x4A9AF5;  // 閸栬崵鏋熼敍姘虫憫
-  if (value === 'law') return 0xE74C3C;
-  return 0xF5A623;                                  // 濞撳憡鍨?鐏忓繗顕╅敍姘煻
+  if (value === 'general' || value.startsWith('cmrc_')) return 0x6FD7FF; // 閻у墽顫栭敍姘辫雹
+  if (value === 'medical' || value.startsWith('doc_')) return 0x4AA8FF;  // 閸栬崵鏋熼敍姘虫憫
+  if (value === 'law') return 0x23C9E6;
+  return 0x89D7FF;                                  // 濞撳憡鍨?鐏忓繗顕╅敍姘煻
 }
 import { EffectRegistry } from '../core/EffectRegistry';
 import { EffectFactory } from '../core/EffectFactory';
@@ -645,7 +645,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     const oldColor = '#' + oldMat.color.getHexString();
     const oldOpacity = oldMat.opacity;
     const finalMat = oldMat.clone();
-    finalMat.color.setHex(0xFFFFFF);
+    finalMat.color.setHex(0xF2FDFF);
     finalMat.opacity = 1;
     finalMat.blending = THREE.AdditiveBlending;
     finalMat.needsUpdate = true;
@@ -703,7 +703,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       trueOriginalMaterial,
       domainColor: '#' + trueOriginalMaterial.color.getHexString(),
       appliedStyle: {
-        coreColor: '#ffffff',
+        coreColor: '#f2fdff',
         opacity: visuals.opacity,
         blending: THREE.AdditiveBlending,
         scaleMultiplier: visuals.scaleMultiplier,
@@ -816,7 +816,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
     rrf_top5: Array<{ chunk_id: string }>;
     reranker_final: { chunk_id: string } | null;
   }) {
-    clearAllGlows();
+    cleanup();
 
     await sleep(120);
 
@@ -848,7 +848,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
 
     await frameTargetCluster(framingPositions, 0.95);
 
-    await playMeteorWave(bm25Ids, 0xFFD700, 'bm25', {
+    await playMeteorWave(bm25Ids, 0x6FD7FF, 'bm25', {
       maxTargets: 6,
       scale: 1.4,
       staggerMs: 70,
@@ -858,7 +858,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       finalAnchor,
     });
 
-    await playMeteorWave(knnIds, 0x60A5FA, 'knn', {
+    await playMeteorWave(knnIds, 0x4AA8FF, 'knn', {
       maxTargets: 6,
       scale: 1.4,
       staggerMs: 70,
@@ -868,7 +868,7 @@ export function useSearchAnimation(context: SearchAnimationContext) {
       finalAnchor,
     });
 
-    await playMeteorWave(rrfIds, 0xA78BFA, 'rrf', {
+    await playMeteorWave(rrfIds, 0x23C9E6, 'rrf', {
       maxTargets: 5,
       scale: 1.6,
       staggerMs: 90,
@@ -906,15 +906,10 @@ export function useSearchAnimation(context: SearchAnimationContext) {
         }
       });
 
-      const original = highlightedSprites.get(finalStar.sprite);
-      if (!original) {
-        return;
-      }
-
-      const trueOrig = trueOriginals.get(finalStar.sprite);
-      if (!trueOrig) {
-        return;
-      }
+      const trueOrig = trueOriginals.get(finalStar.sprite) ?? {
+        scale: finalStar.originalScale.clone(),
+        material: finalStar.originalMaterial.clone(),
+      };
 
       const trueOriginalScale = trueOrig.scale.clone();
       const trueOriginalMaterial = trueOrig.material;
